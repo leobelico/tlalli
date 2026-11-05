@@ -13,7 +13,7 @@
 | 6 | WhatsApp: adaptador (simulado + Cloud API), plantillas, webhook entrante | 2 h | ✅ |
 | 7 | Cotizador (enganche, mensualidades, plazo) + PDF | 1 h | ✅ |
 | 8 | Dashboard de métricas | 1.5 h | ✅ |
-| 9 | Landing y precios públicos | 1 h | ⏳ |
+| 9 | Landing y precios públicos | 1 h | ✅ |
 | 10 | README, .env.example, riesgos | 0.5 h | ⏳ |
 
 Total estimado: ~15 h.
@@ -134,3 +134,14 @@ E2E: lead → Cotizar → vista previa → guardar → PDF 200 `application/pdf`
 
 **Pruebas** (+10, total 123): rangos de fechas en hora de México, totales y conversión, CPL/costo por venta, ocultar costos al asesor, embudo con etapas saltadas, primera respuesta, ventas por asesor, aislamiento entre organizaciones y filtro por fechas.
 Verificado en navegador con los datos del seed (admin, asesor y la otra organización).
+
+### Fase 9 — Landing y precios ✅
+
+**Hecho**
+- Landing en español de México (`/`): propuesta de valor, funciones, cómo empezar, planes, preguntas frecuentes y llamadas a la acción. Estática, sin desbordamiento horizontal en móvil (390 px).
+- `/precios`: **tres planes con precio visible** por número de usuarios — Básico $1,490 (3), Profesional $3,490 (10), Desarrolladora $6,990 (25), MXN + IVA — con comparativo y preguntas sobre precios.
+- `/terminos` y `/privacidad` (borrador base, con aviso de que requiere revisión jurídica), `robots.txt` y `sitemap.xml`.
+- Los precios y límites salen de un solo archivo (`src/lib/plans.ts`), el mismo que aplica el límite de usuarios y de desarrollos; las tablas no prometen nada que el producto no haga.
+
+**Verificación**: `npm run build` de producción exitoso (25 rutas). Revisado en navegador, escritorio y móvil.
+**Pendiente**: no hay cobro en línea (ver riesgos); los precios son una propuesta mía, por validar con clientes.

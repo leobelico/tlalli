@@ -63,3 +63,9 @@ Registro de decisiones tomadas ante ambigüedades. Formato: decisión — motivo
 36. **Primera respuesta** = `first_contact_at − created_at` (promedio y mediana). Marcar un lead como perdido no cuenta como contacto; un WhatsApp saliente, llamada, visita, correo o avanzar de etapa sí.
 37. **Visibilidad**: el asesor ve el mismo dashboard limitado a sus leads y sin gasto/costos de campaña. Zona horaria de los filtros de fecha: México (UTC−6).
 38. **Seed** (`npm run db:seed`): solo corre contra Supabase local, crea usuarios de Auth con la API de administración (`SUPABASE_SERVICE_ROLE_KEY`, nunca en el cliente) y es idempotente. Teléfonos `+52 444 555 0xxx` y correos `@ejemplo.test` inventados.
+
+## Planes y precios (propuesta)
+
+39. **Tres planes por número de usuarios**: Básico $1,490/mes (3 usuarios, 1 desarrollo), Profesional $3,490 (10, desarrollos ilimitados), Desarrolladora $6,990 (25 + acompañamiento). MXN + IVA, prueba de 14 días sin tarjeta, sin contrato. Son cifras iniciales para validar con clientes, no un estudio de mercado. Lo único que el sistema hace cumplir hoy es el límite de usuarios y los desarrollos del Básico; el soporte y el acompañamiento son servicios humanos.
+40. **Sin cobro en línea en el MVP**: la prueba de 14 días y el cambio de plan no se aplican automáticamente (el plan se cambia a mano en BD). Integrar un procesador (Stripe/Conekta/Mercado Pago) queda como pendiente.
+41. **Marca provisional "Prospecta"** y correo `hola@prospecta.mx` son marcadores de posición; no se ha verificado disponibilidad de marca ni de dominio.
