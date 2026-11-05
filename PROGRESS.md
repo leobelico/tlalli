@@ -6,7 +6,7 @@
 |---|---|---|---|
 | 0 | Scaffold Next.js 16 + Prisma 7 + Supabase local + Tailwind 4 + Vitest, esquema de BD y RLS | 1 h | ✅ |
 | 1 | Auth (Supabase), organizaciones, roles (admin/asesor), invitaciones | 2 h | ✅ |
-| 2 | Desarrollos e inventario de unidades | 1 h | ⏳ |
+| 2 | Desarrollos e inventario de unidades | 1 h | ✅ |
 | 3 | Leads: captura manual, importación CSV, webhook público, campañas con código único, consentimiento | 2 h | ⏳ |
 | 4 | Pipeline kanban con motivo de pérdida | 1.5 h | ⏳ |
 | 5 | Tareas, recordatorios y alerta de lead "frío" (X horas configurables) | 1.5 h | ⏳ |
@@ -42,3 +42,16 @@ Verificado además de punta a punta en navegador (Playwright headless): registro
 **Notas**
 - El puerto 3000 de esta máquina lo ocupa otra app (WSL) y 3093–3989 están reservados por Windows; el proyecto usa **3010**.
 
+
+### Fase 2 — Desarrollos e inventario ✅
+
+**Hecho**
+- Desarrollos: alta, edición, activar/desactivar; tarjetas con avance de ventas (apartadas + vendidas).
+- Unidades (lote, casa, departamento, local): alta individual, **alta en bloque** ("Lote " del 1 al 40), estatus disponible/apartado/vendido editable en línea, borrado protegido si tiene cotizaciones, filtro por estatus, precio por m², orden natural (Lote 2 antes que Lote 10).
+- Plan Básico limitado a 1 desarrollo activo.
+- Los asesores ven el inventario pero no lo editan.
+- Todo id referenciado se resuelve dentro de `withOrg` antes de usarlo (las llaves foráneas de Postgres no pasan por RLS).
+
+**Pruebas** (+6): conteos por estatus, claves duplicadas, asesor sin permisos de escritura, no se puede colgar una unidad de un desarrollo de otra organización, no se puede leer/modificar inventario ajeno, límite del plan Básico.
+
+**Cómo probarlo**: `/app/desarrollos` → crea un desarrollo → "Alta en bloque".

@@ -68,3 +68,7 @@ export function parseForm<S extends z.ZodType>(
   }
   return { data: parsed.data };
 }
+
+export function isUuid(v: unknown): v is string {
+  return uuidSchema.safeParse(v).success;
+}
