@@ -1,0 +1,426 @@
+// Multi-tenant CRM schema.
+// Every table with `organization_id` is protected by Postgres RLS (see migrations/*_rls).
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  ASESOR
+}
+
+enum Plan {
+  BASICO
+  PROFESIONAL
+  DESARROLLADORA
+}
+
+enum UnitType {
+  LOTE
+  CASA
+  DEPARTAMENTO
+  LOCAL
+}
+
+enum UnitStatus {
+  DISPONIBLE
+  APARTADO
+  VENDIDO
+}
+
+enum Channel {
+  RADIO
+  ESPECTACULAR
+  FACEBOOK
+  INSTAGRAM
+  GOOGLE
+  TIKTOK
+  REFERIDO
+  SITIO_WEB
+  WHATSAPP
+  VOLANTE
+  EVENTO
+  PORTAL
+  OTRO
+}
+
+enum Stage {
+  NUEVO
+  CONTACTADO
+  CITA_AGENDADA
+  VISITA_REALIZADA
+  COTIZACION
+  APARTADO
+  VENDIDO
+  PERDIDO
+}
+
+enum LostReason {
+  PRECIO
+  UBICACION
+  FINANCIAMIENTO
+  NO_CONTESTA
+  COMPRO_OTRO
+  SOLO_CURIOSIDAD
+  DATOS_INCORRECTOS
+  OTRO
+}
+
+enum LeadSource {
+  MANUAL
+  CSV
+  WEBHOOK
+  WHATSAPP
+  SEED
+}
+
+enum ActivityType {
+  NOTA
+  LLAMADA
+  WHATSAPP_SALIENTE
+  WHATSAPP_ENTRANTE
+  CORREO
+  VISITA
+  CAMBIO_ETAPA
+  ASIGNACION
+  SISTEMA
+}
+
+enum MessageDirection {
+  ENTRANTE
+  SALIENTE
+}
+
+enum MessageStatus {
+  EN_COLA
+  ENVIADO
+  ENTREGADO
+  LEIDO
+  FALLIDO
+  RECIBIDO
+}
+
+model Organization {
+  id                  String   @id @default(uuid()) @db.Uuid
+  name                String
+  slug                String   @unique
+  plan                Plan     @default(BASICO)
+  staleLeadHours      Int      @default(24) @map("stale_lead_hours")
+  /// Publishable key used by public web forms to post leads to this organization.
+  leadFormKey         String   @unique @map("lead_form_key")
+  /// Meta WhatsApp Cloud API phone number id that routes incoming messages to this org.
+  waPhoneNumberId     String?  @unique @map("wa_phone_number_id")
+  waDisplayPhone      String?  @map("wa_display_phone")
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  memberships      Membership[]
+  invitations      Invitation[]
+  developments     Development[]
+  units            Unit[]
+  campaigns        Campaign[]
+  leads            Lead[]
+  activities       Activity[]
+  tasks            Task[]
+  messages         WhatsAppMessage[]
+  quotes           Quote[]
+  stageEvents      LeadStageEvent[]
+  consents         ConsentRecord[]
+  privacyNotices   PrivacyNotice[]
+
+  @@map("organizations")
+}
+
+/// Mirrors auth.users (same id).
+model User {
+  id        String   @id @db.Uuid
+  email     String   @unique
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  memberships Membership[]
+
+  @@map("users")
+}
+
+model Membership {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  userId         String   @map("user_id") @db.Uuid
+  role           Role
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+  @@index([userId])
+  @@map("memberships")
+}
+
+model Invitation {
+  id             String    @id @default(uuid()) @db.Uuid
+  organizationId String    @map("organization_id") @db.Uuid
+  email          String
+  role           Role
+  tokenHash      String    @unique @map("token_hash")
+  invitedById    String    @map("invited_by_id") @db.Uuid
+  expiresAt      DateTime  @map("expires_at")
+  acceptedAt     DateTime? @map("accepted_at")
+  revokedAt      DateTime? @map("revoked_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@map("invitations")
+}
+
+model PrivacyNotice {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  version        Int
+  content        String
+  createdById    String?  @map("created_by_id") @db.Uuid
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  organization Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  consents     ConsentRecord[]
+
+  @@unique([organizationId, version])
+  @@map("privacy_notices")
+}
+
+model Development {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  name           String
+  city           String   @default("San Luis Potosí")
+  address        String?
+  description    String?
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  units        Unit[]
+  leads        Lead[]
+  campaigns    Campaign[]
+
+  @@index([organizationId])
+  @@map("developments")
+}
+
+model Unit {
+  id             String     @id @default(uuid()) @db.Uuid
+  organizationId String     @map("organization_id") @db.Uuid
+  developmentId  String     @map("development_id") @db.Uuid
+  code           String
+  type           UnitType
+  areaM2         Decimal?   @map("area_m2") @db.Decimal(10, 2)
+  price          Decimal    @db.Decimal(14, 2)
+  status         UnitStatus @default(DISPONIBLE)
+  notes          String?
+  createdAt      DateTime   @default(now()) @map("created_at")
+  updatedAt      DateTime   @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  development  Development  @relation(fields: [developmentId], references: [id], onDelete: Cascade)
+  leads        Lead[]
+  quotes       Quote[]
+
+  @@unique([developmentId, code])
+  @@index([organizationId, status])
+  @@map("units")
+}
+
+model Campaign {
+  id             String    @id @default(uuid()) @db.Uuid
+  organizationId String    @map("organization_id") @db.Uuid
+  name           String
+  channel        Channel
+  /// Unique per organization; used in ads ("menciona el código RADIO-OCT"), URLs (?c=) and web forms.
+  code           String
+  spend          Decimal?  @db.Decimal(14, 2)
+  startDate      DateTime? @map("start_date") @db.Date
+  endDate        DateTime? @map("end_date") @db.Date
+  developmentId  String?   @map("development_id") @db.Uuid
+  active         Boolean   @default(true)
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  development  Development? @relation(fields: [developmentId], references: [id], onDelete: SetNull)
+  leads        Lead[]
+
+  @@unique([organizationId, code])
+  @@map("campaigns")
+}
+
+model Lead {
+  id             String      @id @default(uuid()) @db.Uuid
+  organizationId String      @map("organization_id") @db.Uuid
+  firstName      String      @map("first_name")
+  lastName       String?     @map("last_name")
+  /// E.164 normalized, e.g. +524441234567
+  phone          String
+  email          String?
+  channel        Channel
+  source         LeadSource
+  campaignId     String?     @map("campaign_id") @db.Uuid
+  developmentId  String?     @map("development_id") @db.Uuid
+  unitId         String?     @map("unit_id") @db.Uuid
+  assignedToId   String?     @map("assigned_to_id") @db.Uuid
+  stage          Stage       @default(NUEVO)
+  lostReason     LostReason? @map("lost_reason")
+  lostNote       String?     @map("lost_note")
+  budget         Decimal?    @db.Decimal(14, 2)
+  notes          String?
+  saleAmount     Decimal?    @map("sale_amount") @db.Decimal(14, 2)
+  firstContactAt DateTime?   @map("first_contact_at")
+  lastContactAt  DateTime?   @map("last_contact_at")
+  lastInboundAt  DateTime?   @map("last_inbound_at")
+  stageChangedAt DateTime    @default(now()) @map("stage_changed_at")
+  soldAt         DateTime?   @map("sold_at")
+  consentAt      DateTime?   @map("consent_at")
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+
+  organization Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  campaign     Campaign?         @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  development  Development?      @relation(fields: [developmentId], references: [id], onDelete: SetNull)
+  unit         Unit?             @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  activities   Activity[]
+  tasks        Task[]
+  messages     WhatsAppMessage[]
+  quotes       Quote[]
+  stageEvents  LeadStageEvent[]
+  consents     ConsentRecord[]
+
+  @@unique([organizationId, phone])
+  @@index([organizationId, stage])
+  @@index([organizationId, assignedToId])
+  @@index([organizationId, campaignId])
+  @@map("leads")
+}
+
+model ConsentRecord {
+  id              String     @id @default(uuid()) @db.Uuid
+  organizationId  String     @map("organization_id") @db.Uuid
+  leadId          String     @map("lead_id") @db.Uuid
+  granted         Boolean
+  source          LeadSource
+  privacyNoticeId String?    @map("privacy_notice_id") @db.Uuid
+  ip              String?
+  userAgent       String?    @map("user_agent")
+  recordedById    String?    @map("recorded_by_id") @db.Uuid
+  createdAt       DateTime   @default(now()) @map("created_at")
+
+  organization  Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  lead          Lead           @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  privacyNotice PrivacyNotice? @relation(fields: [privacyNoticeId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, leadId])
+  @@map("consent_records")
+}
+
+model Activity {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  leadId         String       @map("lead_id") @db.Uuid
+  userId         String?      @map("user_id") @db.Uuid
+  type           ActivityType
+  body           String
+  createdAt      DateTime     @default(now()) @map("created_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  lead         Lead         @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, leadId, createdAt])
+  @@map("activities")
+}
+
+model LeadStageEvent {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  leadId         String   @map("lead_id") @db.Uuid
+  fromStage      Stage?   @map("from_stage")
+  toStage        Stage    @map("to_stage")
+  userId         String?  @map("user_id") @db.Uuid
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  lead         Lead         @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, toStage])
+  @@map("lead_stage_events")
+}
+
+model Task {
+  id             String    @id @default(uuid()) @db.Uuid
+  organizationId String    @map("organization_id") @db.Uuid
+  leadId         String    @map("lead_id") @db.Uuid
+  assignedToId   String    @map("assigned_to_id") @db.Uuid
+  createdById    String    @map("created_by_id") @db.Uuid
+  title          String
+  dueAt          DateTime  @map("due_at")
+  completedAt    DateTime? @map("completed_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  lead         Lead         @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, assignedToId, completedAt, dueAt])
+  @@map("tasks")
+}
+
+model WhatsAppMessage {
+  id             String           @id @default(uuid()) @db.Uuid
+  organizationId String           @map("organization_id") @db.Uuid
+  leadId         String           @map("lead_id") @db.Uuid
+  direction      MessageDirection
+  /// Provider message id (wamid.* for Cloud API). Unique to make webhooks idempotent.
+  providerId     String?          @unique @map("provider_id")
+  body           String
+  templateName   String?          @map("template_name")
+  status         MessageStatus
+  error          String?
+  sentById       String?          @map("sent_by_id") @db.Uuid
+  createdAt      DateTime         @default(now()) @map("created_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  lead         Lead         @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, leadId, createdAt])
+  @@map("whatsapp_messages")
+}
+
+model Quote {
+  id               String   @id @default(uuid()) @db.Uuid
+  organizationId   String   @map("organization_id") @db.Uuid
+  unitId           String   @map("unit_id") @db.Uuid
+  leadId           String?  @map("lead_id") @db.Uuid
+  createdById      String   @map("created_by_id") @db.Uuid
+  price            Decimal  @db.Decimal(14, 2)
+  discount         Decimal  @default(0) @db.Decimal(14, 2)
+  downPaymentPct   Decimal  @map("down_payment_pct") @db.Decimal(5, 2)
+  downPayment      Decimal  @map("down_payment") @db.Decimal(14, 2)
+  months           Int
+  annualRatePct    Decimal  @map("annual_rate_pct") @db.Decimal(5, 2)
+  monthlyPayment   Decimal  @map("monthly_payment") @db.Decimal(14, 2)
+  totalPaid        Decimal  @map("total_paid") @db.Decimal(14, 2)
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  unit         Unit         @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  lead         Lead?        @relation(fields: [leadId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId])
+  @@map("quotes")
+}
