@@ -55,3 +55,11 @@ Registro de decisiones tomadas ante ambigüedades. Formato: decisión — motivo
 31. La cotización guarda una copia de los montos (precio, descuento, enganche, plazo, tasa) para que cambios posteriores de precio no alteren documentos ya entregados. Vigencia impresa en el PDF: 15 días (texto informativo, no se hace cumplir).
 32. Cotizar a un lead en etapa temprana (Nuevo → Visita realizada) lo mueve a "Cotización". No se cotizan unidades vendidas.
 33. PDF con `pdf-lib` (fuentes estándar, sin dependencias nativas). Caracteres fuera de WinAnsi (p. ej. emojis) se omiten en el PDF en lugar de fallar.
+
+## Dashboard y seed
+
+34. **Vista de cohorte**: los indicadores cuentan los leads *creados* en el periodo (por defecto 30 días); las ventas cuentan por fecha de venta. El costo por lead = gasto total capturado de la campaña ÷ leads del periodo (el gasto no se prorratea por fechas: simplificación del MVP; si el periodo es corto el CPL sale inflado).
+35. **Embudo**: cuenta leads distintos que alcanzaron cada etapa a partir del historial (`lead_stage_events`); saltarse etapas (Nuevo → Vendido) cuenta como haber pasado por las anteriores. "Perdido" es salida, no paso.
+36. **Primera respuesta** = `first_contact_at − created_at` (promedio y mediana). Marcar un lead como perdido no cuenta como contacto; un WhatsApp saliente, llamada, visita, correo o avanzar de etapa sí.
+37. **Visibilidad**: el asesor ve el mismo dashboard limitado a sus leads y sin gasto/costos de campaña. Zona horaria de los filtros de fecha: México (UTC−6).
+38. **Seed** (`npm run db:seed`): solo corre contra Supabase local, crea usuarios de Auth con la API de administración (`SUPABASE_SERVICE_ROLE_KEY`, nunca en el cliente) y es idempotente. Teléfonos `+52 444 555 0xxx` y correos `@ejemplo.test` inventados.

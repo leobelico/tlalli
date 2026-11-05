@@ -12,7 +12,7 @@
 | 5 | Tareas, recordatorios y alerta de lead "frío" (X horas configurables) | 1.5 h | ✅ |
 | 6 | WhatsApp: adaptador (simulado + Cloud API), plantillas, webhook entrante | 2 h | ✅ |
 | 7 | Cotizador (enganche, mensualidades, plazo) + PDF | 1 h | ✅ |
-| 8 | Dashboard de métricas | 1.5 h | ⏳ |
+| 8 | Dashboard de métricas | 1.5 h | ✅ |
 | 9 | Landing y precios públicos | 1 h | ⏳ |
 | 10 | README, .env.example, riesgos | 0.5 h | ⏳ |
 
@@ -124,3 +124,13 @@ E2E: webhook firmado real contra el servidor → lead creado → respuesta → p
 E2E: lead → Cotizar → vista previa → guardar → PDF 200 `application/pdf`; sin sesión 401.
 
 **Pendiente**: revisión visual del PDF (en esta máquina no hay herramienta para rasterizarlo; abre una cotización y revísala a ojo).
+
+### Fase 8 — Dashboard + seed ✅
+
+**Hecho**
+- Inicio (`/app`) con filtro de fechas: leads nuevos, ventas y monto, conversión, **tiempo promedio (y mediana) de primera respuesta**, leads fríos; **leads por campaña con costo por lead y por venta**; **conversión por etapa** (embudo con % del total y de la etapa anterior); **ventas por asesor** con monto y tiempo de primera respuesta.
+- El asesor ve el tablero limitado a sus leads y sin costos.
+- `prisma/seed.ts` (`npm run db:seed`): 2 organizaciones, 3 desarrollos, 46 unidades, 40 leads con historial, tareas y consentimientos, todo inventado y determinista. Idempotente. Logins demo en el encabezado del archivo (contraseña `Demo1234!`).
+
+**Pruebas** (+10, total 123): rangos de fechas en hora de México, totales y conversión, CPL/costo por venta, ocultar costos al asesor, embudo con etapas saltadas, primera respuesta, ventas por asesor, aislamiento entre organizaciones y filtro por fechas.
+Verificado en navegador con los datos del seed (admin, asesor y la otra organización).
