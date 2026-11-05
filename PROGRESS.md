@@ -9,7 +9,7 @@
 | 2 | Desarrollos e inventario de unidades | 1 h | ✅ |
 | 3 | Leads: captura manual, importación CSV, webhook público, campañas con código único, consentimiento | 2 h | ✅ |
 | 4 | Pipeline kanban con motivo de pérdida | 1.5 h | ✅ |
-| 5 | Tareas, recordatorios y alerta de lead "frío" (X horas configurables) | 1.5 h | ⏳ |
+| 5 | Tareas, recordatorios y alerta de lead "frío" (X horas configurables) | 1.5 h | ✅ |
 | 6 | WhatsApp: adaptador (simulado + Cloud API), plantillas, webhook entrante | 2 h | ⏳ |
 | 7 | Cotizador (enganche, mensualidades, plazo) + PDF | 1 h | ⏳ |
 | 8 | Dashboard de métricas | 1.5 h | ⏳ |
@@ -87,3 +87,14 @@ E2E en navegador: campaña → lead manual (sin y con consentimiento) → activi
 
 **Pruebas** (+7, total 70): motivo de pérdida, historial y primer contacto, sincronización de unidad y doble venta, liberación de unidad, permisos del asesor, aislamiento entre organizaciones, columnas filtradas por visibilidad.
 E2E: arrastre Nuevo → Cita, Perdido con validación de motivo, Apartado → Vendido con la unidad marcada como vendida.
+
+### Fase 5 — Tareas, recordatorios y alerta de lead frío ✅
+
+**Hecho**
+- Tareas por lead (título con sugerencias, fecha/hora en hora del centro de México, responsable). El asesor solo crea tareas para sí y solo sobre sus leads; el admin puede asignar a cualquiera.
+- `/app/tareas`: Vencidas / Hoy / Próximas / Completadas (7 días); el admin puede ver "Todo el equipo".
+- **Alerta visible**: banner en todas las páginas privadas con tareas vencidas, leads fríos (más de X horas sin contacto, X configurable en Configuración) y leads sin asignar; insignia "Frío" en lista, pipeline y ficha.
+- Llamada/visita/correo/WhatsApp saliente reinician el contador; la nota no.
+
+**Pruebas** (+9, total 79): regla de lead frío (sin contacto, con contacto, etapas cerradas), interpretación de fechas en hora de México, permisos de tareas, conteos de alertas, umbral configurable por organización.
+E2E: tarea vencida → banner; lead envejecido 30 h → banner y filtro "Solo fríos"; llamada → desaparece la alerta; completar tarea → desaparece el banner.

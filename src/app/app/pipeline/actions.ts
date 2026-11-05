@@ -30,8 +30,7 @@ export async function moveStageAction(payload: StageChangePayload): Promise<Acti
   const { leadId, stage, ...rest } = parsed.data;
   return runAction(async () => {
     await changeStage(ctx, leadId, { stage: stage as (typeof STAGES)[number], ...rest });
-    revalidatePath("/app/pipeline");
-    revalidatePath(`/app/leads/${leadId}`);
+    revalidatePath("/app", "layout");
     return { ok: true };
   });
 }

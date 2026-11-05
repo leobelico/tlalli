@@ -56,3 +56,13 @@ export function toDateTimeLocal(d: Date): string {
   }).format(d);
   return parts.replace(" ", "T");
 }
+
+/**
+ * Parses "YYYY-MM-DDTHH:mm" from <input type="datetime-local"> as Mexico City time.
+ * Mexico (except border zones) has no DST since 2022: fixed UTC-6.
+ */
+export function parseMxDateTimeLocal(value: string): Date | null {
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/.test(value)) return null;
+  const d = new Date(`${value.length === 16 ? `${value}:00` : value}-06:00`);
+  return Number.isNaN(d.getTime()) ? null : d;
+}

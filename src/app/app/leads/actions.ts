@@ -53,7 +53,7 @@ export async function addActivityAction(_: ActionState, formData: FormData): Pro
   if (parsed.error) return parsed.error;
   return runAction(async () => {
     await addActivity(ctx, parsed.data.leadId, parsed.data.type, parsed.data.body);
-    revalidatePath(`/app/leads/${parsed.data.leadId}`);
+    revalidatePath("/app", "layout");
     return { ok: true };
   });
 }

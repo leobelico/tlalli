@@ -2,6 +2,7 @@ import { requireCtx } from "@/server/auth/session";
 import { Logo } from "@/components/ui";
 import { can } from "@/server/auth/permissions";
 import { SideNav } from "./side-nav";
+import { AlertsBanner } from "./alerts-banner";
 import { logoutAction, switchOrgAction } from "../(auth)/actions";
 
 export default async function AppLayout({ children }: LayoutProps<"/app">) {
@@ -56,6 +57,7 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
         <div className="border-b border-stone-200 bg-white md:hidden">
           <SideNav isAdmin={isAdmin} horizontal />
         </div>
+        <AlertsBanner ctx={ctx} />
         <main className="flex-1 px-4 py-6 sm:px-8">{children}</main>
       </div>
     </div>

@@ -16,6 +16,8 @@ import { hoursWithoutContact, isStale } from "@/lib/stale";
 import { isUuid } from "@/lib/validation/common";
 import { LeadFields } from "../lead-fields";
 import { StageControl } from "../../pipeline/stage-control";
+import { TaskForm } from "../../tareas/task-form";
+import { TaskItem } from "../../tareas/task-item";
 import { addActivityAction, deleteLeadAction, updateLeadAction } from "../actions";
 
 export const metadata: Metadata = { title: "Lead" };
@@ -98,6 +100,24 @@ export default async function LeadDetailPage({ params, searchParams }: PageProps
               <SubmitButton>Guardar</SubmitButton>
               <p className="text-xs text-stone-500">Llamadas, visitas y correos cuentan como contacto y reinician la alerta de lead frío.</p>
             </ActionForm>
+          </Card>
+
+          <Card>
+            <h2 className="mb-1 font-semibold">Tareas y recordatorios</h2>
+            {lead.tasks.length ? (
+              <ul className="mb-4 divide-y divide-stone-100">
+                {lead.tasks.map((t) => (
+                  <TaskItem key={t.id} task={{ ...t, assignee: users[t.assignedToId] }} />
+                ))}
+              </ul>
+            ) : (
+              <p className="mb-3 text-sm text-stone-500">Sin tareas. Agenda el siguiente paso para no perder al lead.</p>
+            )}
+            <TaskForm
+              leadId={lead.id}
+              agents={can(ctx.role, "leads:assign") ? options.agents : undefined}
+              defaultAssignee={null}
+            />
           </Card>
 
           <Card>
