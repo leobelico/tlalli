@@ -14,7 +14,7 @@
 | 7 | Cotizador (enganche, mensualidades, plazo) + PDF | 1 h | ✅ |
 | 8 | Dashboard de métricas | 1.5 h | ✅ |
 | 9 | Landing y precios públicos | 1 h | ✅ |
-| 10 | README, .env.example, riesgos | 0.5 h | ⏳ |
+| 10 | README, .env.example, riesgos | 0.5 h | ✅ |
 
 Total estimado: ~15 h.
 
@@ -145,3 +145,18 @@ Verificado en navegador con los datos del seed (admin, asesor y la otra organiza
 
 **Verificación**: `npm run build` de producción exitoso (25 rutas). Revisado en navegador, escritorio y móvil.
 **Pendiente**: no hay cobro en línea (ver riesgos); los precios son una propuesta mía, por validar con clientes.
+
+### Fase 10 — Documentación final ✅
+
+- `README.md`: cómo correrlo, scripts, variables, arquitectura y **los 10 riesgos/pendientes** antes de vender a un cliente real.
+- `.env.example` comentado, sin valores reales (`.env.local` está en .gitignore; verificado que no hay secretos en git).
+- Verificación final: lint, typecheck y build limpios; 123 pruebas pasando (12 archivos).
+
+## Estado final y cómo probar todo
+
+1. `npx supabase start && npx prisma migrate deploy && npm run db:seed && npm run dev` → http://localhost:3010
+2. Entra como `admin@potosi.ejemplo.test` / `Demo1234!` (dashboard con datos) y como `asesor1@potosi.ejemplo.test` (vista limitada).
+3. Flujo sugerido: Campañas → Leads (CSV, formulario hospedado, webhook con curl) → Pipeline → ficha del lead (WhatsApp simulado, tareas, cotizar) → Inicio.
+
+## Bloqueos
+Ninguna fase se bloqueó más de 20 minutos. Incidencias menores resueltas: puerto 3000 ocupado por otra app (se usa 3010), Tailwind 4 (`@utility` en lugar de `@apply` de clases propias), formularios que perdían valores al fallar la validación, seed no idempotente (corregido).
