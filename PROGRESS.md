@@ -7,7 +7,7 @@
 | 0 | Scaffold Next.js 16 + Prisma 7 + Supabase local + Tailwind 4 + Vitest, esquema de BD y RLS | 1 h | ✅ |
 | 1 | Auth (Supabase), organizaciones, roles (admin/asesor), invitaciones | 2 h | ✅ |
 | 2 | Desarrollos e inventario de unidades | 1 h | ✅ |
-| 3 | Leads: captura manual, importación CSV, webhook público, campañas con código único, consentimiento | 2 h | ⏳ |
+| 3 | Leads: captura manual, importación CSV, webhook público, campañas con código único, consentimiento | 2 h | ✅ |
 | 4 | Pipeline kanban con motivo de pérdida | 1.5 h | ⏳ |
 | 5 | Tareas, recordatorios y alerta de lead "frío" (X horas configurables) | 1.5 h | ⏳ |
 | 6 | WhatsApp: adaptador (simulado + Cloud API), plantillas, webhook entrante | 2 h | ⏳ |
@@ -55,3 +55,23 @@ Verificado además de punta a punta en navegador (Playwright headless): registro
 **Pruebas** (+6): conteos por estatus, claves duplicadas, asesor sin permisos de escritura, no se puede colgar una unidad de un desarrollo de otra organización, no se puede leer/modificar inventario ajeno, límite del plan Básico.
 
 **Cómo probarlo**: `/app/desarrollos` → crea un desarrollo → "Alta en bloque".
+
+### Fase 3 — Leads, campañas, CSV, webhook y consentimiento ✅
+
+**Hecho**
+- Campañas (`/app/campanas`): canal, código único sugerido automáticamente, gasto, fechas, desarrollo; métricas de leads, ventas y **costo por lead**; liga al formulario hospedado por campaña.
+- Leads (`/app/leads`): lista con búsqueda (nombre/teléfono/correo), filtros por etapa, campaña, asesor y "solo fríos", paginación; alerta visual de lead frío.
+- Captura manual con consentimiento obligatorio; deduplicación por teléfono.
+- Ficha del lead: datos editables, origen, registro de actividades (llamada, nota, visita, correo) con historial, consentimientos, eliminación por derecho ARCO.
+- Importación CSV (`/app/leads/importar`): coma o punto y coma, encabezados en español con o sin acentos, BOM de Excel, errores por fila, deduplicación, reparto automático, plantilla descargable.
+- **Webhook público** `POST /api/public/leads` (JSON o formulario HTML, CORS, alias en inglés, honeypot, rate limit, redirect opcional) y formulario hospedado `/f/[slug]?c=CODIGO`.
+
+**Pruebas** (+29, total 63): normalización de teléfonos MX, webhook (llave inválida, alta con campaña/consentimiento/asignación, deduplicación, consentimiento obligatorio, validación, código de campaña de otra org ignorado, honeypot, form-urlencoded con redirect, redirect `javascript:` ignorado, JSON malformado, rate limit), parseo e importación CSV, visibilidad de leads por asesor y reasignación prohibida.
+E2E en navegador: campaña → lead manual (sin y con consentimiento) → actividad → duplicado → CSV → formulario hospedado → CPL en campañas.
+
+**Cómo probarlo**
+- Webhook:
+  ```bash
+  curl -X POST http://localhost:3010/api/public/leads -H "Content-Type: application/json"     -H "X-Form-Key: <llave en Configuración>"     -d '{"nombre":"Ana","telefono":"4441234567","campana":"ESP-57","acepta_privacidad":true}'
+  ```
+- Formulario hospedado: en Campañas → "Editar y liga del formulario".

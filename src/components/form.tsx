@@ -1,12 +1,13 @@
 "use client";
 
-import { createContext, useActionState, useContext, useEffect, useRef, type ReactNode } from "react";
+import { createContext, startTransition, useActionState, useContext, useEffect, useRef, type ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 import type { ActionState } from "@/lib/validation/common";
 
 type Action = (prev: ActionState, formData: FormData) => Promise<ActionState>;
 
 const FormStateContext = createContext<ActionState>({});
+const FormPendingContext = createContext(false);
 
 export function ActionForm({
   action,
@@ -21,7 +22,7 @@ export function ActionForm({
   resetOnSuccess?: boolean;
   onSuccess?: (state: ActionState) => void;
 }) {
-  const [state, formAction] = useActionState(action, {});
+  const [state, formAction, pending] = useActionState(action, {});
   const ref = useRef<HTMLFormElement>(null);
   useEffect(() => {
     if (state.ok) {
@@ -31,10 +32,22 @@ export function ActionForm({
   }, [state, resetOnSuccess, onSuccess]);
   return (
     <FormStateContext.Provider value={state}>
-      <form ref={ref} action={formAction} className={className} noValidate>
-        {children}
-        <FormMessage />
-      </form>
+      <FormPendingContext.Provider value={pending}>
+        {/* Dispatch manually so React does not reset the fields when validation fails. */}
+        <form
+          ref={ref}
+          className={className}
+          noValidate
+          onSubmit={(e) => {
+            e.preventDefault();
+            const fd = new FormData(e.currentTarget);
+            startTransition(() => formAction(fd));
+          }}
+        >
+          {children}
+          <FormMessage />
+        </form>
+      </FormPendingContext.Provider>
     </FormStateContext.Provider>
   );
 }
@@ -100,7 +113,9 @@ export function SubmitButton({
   pendingText?: string;
   className?: string;
 }) {
-  const { pending } = useFormStatus();
+  const ctxPending = useContext(FormPendingContext);
+  const { pending: nativePending } = useFormStatus();
+  const pending = ctxPending || nativePending;
   return (
     <button type="submit" className={className} disabled={pending}>
       {pending ? pendingText : children}

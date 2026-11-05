@@ -5,6 +5,10 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   poweredByHeader: false,
   serverExternalPackages: ["pdf-lib"],
+  experimental: {
+    // CSV imports accept up to 2 MB (+ multipart overhead).
+    serverActions: { bodySizeLimit: "2200kb" },
+  },
   turbopack: {
     rules: {
       "*.css": {

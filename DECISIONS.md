@@ -28,3 +28,13 @@ Registro de decisiones tomadas ante ambigüedades. Formato: decisión — motivo
 13. **RLS sin `FORCE`**: el dueño de las tablas (`postgres`) no está sujeto a RLS, y solo se usa en módulos auditados (`src/server/db/root.ts`, permitido solo en `src/server/auth/*`, `src/server/public/*`, seed y pruebas, vía regla de ESLint). Toda la lógica de negocio usa `withOrg()` con el rol `app_rls`, que sí está sujeto a RLS.
 14. **Lugares del plan** = miembros activos (admins + asesores) + invitaciones pendientes vigentes.
 15. **Nombre comercial provisional: "Prospecta"**. Fácil de cambiar en `src/lib/brand.ts`.
+
+## Leads y campañas
+
+16. **Campaña con código único por organización** (ej. `ESP-57`, `RAD-EXA`). El lead guarda su campaña y además su `channel` (denormalizado) para leads sin campaña. El código se usa en el anuncio, en la URL (`?c=`), en el formulario hospedado y en el CSV.
+17. **Deduplicación por teléfono** normalizado E.164 (`+52` por defecto; quita el "1" antiguo de celulares). Si el lead ya existe no se duplica: se agrega una actividad "Volvió a dejar sus datos" con el nuevo origen. La campaña original se conserva (atribución *first-touch*).
+18. **Asignación automática** (webhook y CSV): al miembro activo con menos leads abiertos, prefiriendo asesores sobre admins. El asesor que captura un lead manual siempre queda asignado.
+19. **Consentimiento LFPDPPP**: captura manual exige casilla "el prospecto aceptó el aviso"; webhook exige `acepta_privacidad=true`; CSV exige que el admin confirme el consentimiento del archivo (queda registrado a su nombre). Cada consentimiento se liga a la versión del aviso vigente, con IP y user-agent cuando aplica. Borrar un lead (derecho ARCO de cancelación) elimina su historial en cascada.
+20. **Llave de formulario pública** (`lfk_…`): es publicable por diseño (va en el HTML de la landing). Solo permite crear leads en esa organización; se puede regenerar. Protecciones: honeypot `website`, límite de 20 req/min por IP y 300/min por organización, cuerpo ≤16 KB.
+21. **Formulario hospedado** `/f/[slug]?c=CODIGO` sin JavaScript, para QR en espectaculares/volantes.
+22. **"Contacto" para la alerta de lead frío** = llamada, visita, correo o WhatsApp saliente. Las notas no cuentan. Etapas que generan alerta: Nuevo → Cotización (no Apartado, Vendido ni Perdido). El primer contacto mueve automáticamente Nuevo → Contactado.
