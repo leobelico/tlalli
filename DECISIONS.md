@@ -40,3 +40,11 @@ Registro de decisiones tomadas ante ambigüedades. Formato: decisión — motivo
 22. **"Contacto" para la alerta de lead frío** = llamada, visita, correo o WhatsApp saliente. Las notas no cuentan. Etapas que generan alerta: Nuevo → Cotización (no Apartado, Vendido ni Perdido). El primer contacto mueve automáticamente Nuevo → Contactado.
 23. **Recordatorios dentro de la app** (sin correo ni push en el MVP): banner rojo en todas las páginas privadas con tareas vencidas, leads fríos y leads sin asignar, más la vista `/app/tareas` (Vencidas / Hoy / Próximas / Completadas). Enviar recordatorios por WhatsApp o correo al asesor queda como pendiente (requiere guardar el teléfono del asesor y una plantilla aprobada).
 24. **Zona horaria fija `America/Mexico_City` (UTC−6, sin horario de verano desde 2022)** para mostrar fechas y para interpretar `datetime-local`. Clientes en zona fronteriza requerirían zona configurable.
+
+## WhatsApp
+
+25. **Adaptador `WhatsAppProvider`** con dos implementaciones (`mock` y `cloud`) seleccionadas por `WHATSAPP_PROVIDER`. Ambos comparten el formato de webhook de Meta y el mismo procesamiento de entrada; la firma `X-Hub-Signature-256` se valida siempre (en desarrollo con un secreto de prueba).
+26. **Una app de Meta para toda la plataforma**; cada organización configura su *Phone number ID*, que enruta los mensajes entrantes. Tokens por organización / Embedded Signup quedan como pendiente.
+27. **Consentimiento y WhatsApp**: las plantillas (contacto proactivo) exigen consentimiento registrado. Las respuestas de texto libre se permiten solo dentro de la ventana de 24 h abierta por un mensaje del propio prospecto (atender su solicitud). Si escribe un número desconocido se crea el lead sin consentimiento y el asesor debe compartir el aviso y registrarlo.
+28. Un WhatsApp saliente cuenta como contacto (reinicia la alerta de lead frío y mueve Nuevo → Contactado). Un mensaje entrante no, porque la alerta mide la respuesta del equipo.
+29. Las plantillas viven en código (`src/server/whatsapp/templates.ts`) porque deben coincidir exactamente con las aprobadas en Meta.

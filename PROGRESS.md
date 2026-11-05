@@ -10,7 +10,7 @@
 | 3 | Leads: captura manual, importación CSV, webhook público, campañas con código único, consentimiento | 2 h | ✅ |
 | 4 | Pipeline kanban con motivo de pérdida | 1.5 h | ✅ |
 | 5 | Tareas, recordatorios y alerta de lead "frío" (X horas configurables) | 1.5 h | ✅ |
-| 6 | WhatsApp: adaptador (simulado + Cloud API), plantillas, webhook entrante | 2 h | ⏳ |
+| 6 | WhatsApp: adaptador (simulado + Cloud API), plantillas, webhook entrante | 2 h | ✅ |
 | 7 | Cotizador (enganche, mensualidades, plazo) + PDF | 1 h | ⏳ |
 | 8 | Dashboard de métricas | 1.5 h | ⏳ |
 | 9 | Landing y precios públicos | 1 h | ⏳ |
@@ -98,3 +98,16 @@ E2E: arrastre Nuevo → Cita, Perdido con validación de motivo, Apartado → Ve
 
 **Pruebas** (+9, total 79): regla de lead frío (sin contacto, con contacto, etapas cerradas), interpretación de fechas en hora de México, permisos de tareas, conteos de alertas, umbral configurable por organización.
 E2E: tarea vencida → banner; lead envejecido 30 h → banner y filtro "Solo fríos"; llamada → desaparece la alerta; completar tarea → desaparece el banner.
+
+### Fase 6 — WhatsApp ✅
+
+**Hecho**
+- Adaptador `src/server/whatsapp/`: interfaz `WhatsAppProvider`, proveedor **simulado** y proveedor **Cloud API** (Graph API, plantillas y texto, manejo de errores, timeout).
+- Webhook `/api/webhooks/whatsapp`: verificación GET (`hub.verify_token`), POST con firma HMAC obligatoria, enrutamiento por Phone number ID, creación de lead si el número es nuevo, idempotencia por `wamid`, estados de entrega sin retroceso.
+- Ficha del lead: conversación tipo WhatsApp, respuesta libre dentro de la ventana de 24 h, plantillas con variables prellenadas y vista previa, simulador de mensaje entrante (solo modo simulado), registro/revocación de consentimiento.
+- Configuración muestra el estado de la conexión sin exponer secretos. Guía paso a paso: `docs/WHATSAPP.md`.
+
+**Pruebas** (+13, total 92): firma HMAC, parser de payload (incl. números MX con 521 y tipos de mensaje), proveedor Cloud con `fetch` simulado (formato y errores), GET de verificación, POST sin firma, alta de lead desde número desconocido en la org correcta, idempotencia, phone number ID desconocido, ventana de 24 h, consentimiento para plantillas, estados sin retroceso, permisos de asesor, validación de variables.
+E2E: webhook firmado real contra el servidor → lead creado → respuesta → plantilla bloqueada sin consentimiento → consentimiento → plantilla enviada → entrante simulado.
+
+**Cómo probarlo**: abre cualquier lead → panel WhatsApp → "Simular mensaje entrante" y responde. Para la cuenta real, sigue `docs/WHATSAPP.md`.

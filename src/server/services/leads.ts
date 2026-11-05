@@ -407,3 +407,33 @@ export async function deleteLead(ctx: Ctx, leadId: string) {
     if (!res.count) throw new NotFoundError("Lead no encontrado.");
   });
 }
+
+/** Records that the lead accepted (or revoked) the privacy notice, e.g. after the asesor shared it. */
+export async function recordConsent(ctx: Ctx, leadId: string, granted: boolean) {
+  return withOrg(ctx.orgId, async (tx) => {
+    const lead = await requireLead(tx, ctx, leadId);
+    const notice = await tx.privacyNotice.findFirst({ orderBy: { version: "desc" } });
+    await tx.consentRecord.create({
+      data: {
+        organizationId: ctx.orgId,
+        leadId,
+        granted,
+        source: "MANUAL",
+        privacyNoticeId: notice?.id,
+        recordedById: ctx.userId,
+      },
+    });
+    await tx.lead.update({ where: { id: lead.id }, data: { consentAt: granted ? new Date() : null } });
+    await tx.activity.create({
+      data: {
+        organizationId: ctx.orgId,
+        leadId,
+        userId: ctx.userId,
+        type: "SISTEMA",
+        body: granted
+          ? `Registró la aceptación del aviso de privacidad (v${notice?.version ?? "?"}).`
+          : "El prospecto revocó su consentimiento: no enviar comunicaciones.",
+      },
+    });
+  });
+}

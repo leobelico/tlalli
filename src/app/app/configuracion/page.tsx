@@ -13,6 +13,8 @@ export default async function SettingsPage() {
   const { ctx } = await requireCtx("org:settings");
   const [org, notice] = await Promise.all([getOrganization(ctx), currentPrivacyNotice(ctx)]);
   const appUrl = process.env.APP_URL ?? "";
+  const waProvider = process.env.WHATSAPP_PROVIDER === "cloud" ? "cloud" : "mock";
+  const waConfigured = Boolean(process.env.WHATSAPP_VERIFY_TOKEN && process.env.WHATSAPP_APP_SECRET);
 
   return (
     <>
@@ -67,6 +69,28 @@ export default async function SettingsPage() {
           <form action={regenerateFormKeyAction} className="mt-3">
             <button className="btn-secondary text-xs">Regenerar llave (la anterior dejará de funcionar)</button>
           </form>
+        </Card>
+
+        <Card className="lg:col-span-2">
+          <h2 className="mb-2 font-semibold">Conexión de WhatsApp</h2>
+          <dl className="grid gap-x-6 gap-y-1 text-sm sm:grid-cols-[auto_1fr]">
+            <dt className="text-stone-500">Proveedor</dt>
+            <dd>{waProvider === "cloud" ? "WhatsApp Cloud API (Meta)" : "Simulado (desarrollo, no envía mensajes reales)"}</dd>
+            <dt className="text-stone-500">URL del webhook</dt>
+            <dd>
+              <code className="break-all">{appUrl}/api/webhooks/whatsapp</code>
+            </dd>
+            <dt className="text-stone-500">Phone number ID</dt>
+            <dd>{org.waPhoneNumberId ?? <span className="text-amber-700">Sin configurar (captúralo arriba)</span>}</dd>
+            <dt className="text-stone-500">Token de verificación / App secret</dt>
+            <dd>
+              {waConfigured ? "Configurados en el servidor" : <span className="text-amber-700">Faltan variables de entorno</span>}
+            </dd>
+          </dl>
+          <p className="mt-3 text-xs text-stone-500">
+            Los pasos para conectar el número están en <code>docs/WHATSAPP.md</code>. Las plantillas deben aprobarse en Meta con el
+            mismo nombre que usa el sistema.
+          </p>
         </Card>
       </div>
 

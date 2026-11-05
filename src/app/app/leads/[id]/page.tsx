@@ -18,12 +18,15 @@ import { LeadFields } from "../lead-fields";
 import { StageControl } from "../../pipeline/stage-control";
 import { TaskForm } from "../../tareas/task-form";
 import { TaskItem } from "../../tareas/task-item";
+import { WhatsAppPanel } from "./whatsapp-panel";
+import { consentAction } from "./whatsapp-actions";
+import { getWhatsAppProvider } from "@/server/whatsapp/providers";
 import { addActivityAction, deleteLeadAction, updateLeadAction } from "../actions";
 
 export const metadata: Metadata = { title: "Lead" };
 
 export default async function LeadDetailPage({ params, searchParams }: PageProps<"/app/leads/[id]">) {
-  const { ctx } = await requireCtx();
+  const { ctx, session } = await requireCtx();
   const { id } = await params;
   const sp = await searchParams;
   if (!isUuid(id)) notFound();
@@ -83,6 +86,17 @@ export default async function LeadDetailPage({ params, searchParams }: PageProps
 
       <div className="grid gap-6 xl:grid-cols-[1fr_380px]">
         <div className="space-y-6">
+          <WhatsAppPanel
+            lead={lead}
+            messages={lead.messages}
+            providerName={getWhatsAppProvider().name}
+            context={{
+              development: lead.development?.name ?? "nuestros desarrollos",
+              agentName: (lead.assignedToId && users[lead.assignedToId]) || session.user.name,
+              orgName: session.active!.organization.name,
+            }}
+          />
+
           <Card>
             <h2 className="mb-3 font-semibold">Registrar actividad</h2>
             <ActionForm action={addActivityAction} resetOnSuccess className="space-y-3">
@@ -196,6 +210,13 @@ export default async function LeadDetailPage({ params, searchParams }: PageProps
                 ))}
               </ul>
             )}
+            {lead.consentAt ? (
+              <form action={consentAction} className="mt-2">
+                <input type="hidden" name="leadId" value={lead.id} />
+                <input type="hidden" name="granted" value="0" />
+                <button className="text-xs text-stone-500 underline hover:text-red-700">Registrar revocación del consentimiento</button>
+              </form>
+            ) : null}
             {can(ctx.role, "leads:delete") ? (
               <form action={deleteLeadAction} className="mt-4 border-t border-stone-100 pt-3">
                 <input type="hidden" name="id" value={lead.id} />
