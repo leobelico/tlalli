@@ -9,12 +9,13 @@ import { can } from "@/server/auth/permissions";
 import { NotFoundError } from "@/server/errors";
 import { getLeadDetail } from "@/server/services/leads";
 import { leadFormOptions } from "@/server/services/lead-options";
-import { ACTIVITY_LABEL, CHANNEL_LABEL, SOURCE_LABEL, STAGE_LABEL, STAGE_TONE, LOST_REASON_LABEL } from "@/lib/labels";
+import { ACTIVITY_LABEL, CHANNEL_LABEL, SOURCE_LABEL, LOST_REASON_LABEL } from "@/lib/labels";
 import { formatDateTime, formatMoney, timeAgo } from "@/lib/format";
 import { formatPhone, waDigits } from "@/lib/phone";
 import { hoursWithoutContact, isStale } from "@/lib/stale";
 import { isUuid } from "@/lib/validation/common";
 import { LeadFields } from "../lead-fields";
+import { StageControl } from "../../pipeline/stage-control";
 import { addActivityAction, deleteLeadAction, updateLeadAction } from "../actions";
 
 export const metadata: Metadata = { title: "Lead" };
@@ -64,7 +65,7 @@ export default async function LeadDetailPage({ params, searchParams }: PageProps
       />
 
       <div className="mb-6 flex flex-wrap items-center gap-2">
-        <Badge tone={STAGE_TONE[lead.stage]}>{STAGE_LABEL[lead.stage]}</Badge>
+        <StageControl leadId={lead.id} name={fullName} stage={lead.stage} />
         {lead.stage === "PERDIDO" && lead.lostReason ? (
           <span className="text-sm text-stone-600">Motivo: {LOST_REASON_LABEL[lead.lostReason]}</span>
         ) : null}
