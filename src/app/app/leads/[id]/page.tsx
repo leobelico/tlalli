@@ -59,6 +59,9 @@ export default async function LeadDetailPage({ params, searchParams }: PageProps
         description={[formatPhone(lead.phone), lead.email].filter(Boolean).join(" · ")}
         actions={
           <>
+            <Link className="btn-secondary" href={`/app/cotizador?lead=${lead.id}${lead.unitId ? `&unidad=${lead.unitId}` : ""}`}>
+              Cotizar
+            </Link>
             <a className="btn-secondary" href={`tel:${lead.phone}`}>
               Llamar
             </a>

@@ -11,7 +11,7 @@
 | 4 | Pipeline kanban con motivo de pérdida | 1.5 h | ✅ |
 | 5 | Tareas, recordatorios y alerta de lead "frío" (X horas configurables) | 1.5 h | ✅ |
 | 6 | WhatsApp: adaptador (simulado + Cloud API), plantillas, webhook entrante | 2 h | ✅ |
-| 7 | Cotizador (enganche, mensualidades, plazo) + PDF | 1 h | ⏳ |
+| 7 | Cotizador (enganche, mensualidades, plazo) + PDF | 1 h | ✅ |
 | 8 | Dashboard de métricas | 1.5 h | ⏳ |
 | 9 | Landing y precios públicos | 1 h | ⏳ |
 | 10 | README, .env.example, riesgos | 0.5 h | ⏳ |
@@ -111,3 +111,16 @@ E2E: tarea vencida → banner; lead envejecido 30 h → banner y filtro "Solo fr
 E2E: webhook firmado real contra el servidor → lead creado → respuesta → plantilla bloqueada sin consentimiento → consentimiento → plantilla enviada → entrante simulado.
 
 **Cómo probarlo**: abre cualquier lead → panel WhatsApp → "Simular mensaje entrante" y responde. Para la cuenta real, sigue `docs/WHATSAPP.md`.
+
+### Fase 7 — Cotizador y PDF ✅
+
+**Hecho**
+- `/app/cotizador`: unidad, cliente opcional, descuento, enganche %, plazo y tasa anual, con **vista previa en vivo**. Guarda la cotización, la registra en el historial del lead y lo pasa a "Cotización".
+- `/app/cotizador/[id]`: resumen, PDF incrustado, enlace "Enviar por WhatsApp" (wa.me).
+- PDF tamaño carta (`/api/quotes/[id]/pdf`, requiere sesión y respeta aislamiento y permisos): datos del cliente y la unidad, plan de pagos, notas legales, asesor.
+- Botón "Cotizar" en la ficha del lead y en la tabla de unidades.
+
+**Pruebas** (+21, total 113): cálculo (sin interés, redondeo, descuento, anualidad estándar, contado, centavos, 9 entradas inválidas), montos calculados en servidor, cambio de etapa, unidad vendida, aislamiento entre organizaciones y asesores, PDF válido con acentos y emojis.
+E2E: lead → Cotizar → vista previa → guardar → PDF 200 `application/pdf`; sin sesión 401.
+
+**Pendiente**: revisión visual del PDF (en esta máquina no hay herramienta para rasterizarlo; abre una cotización y revísala a ojo).

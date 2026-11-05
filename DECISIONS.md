@@ -48,3 +48,10 @@ Registro de decisiones tomadas ante ambigüedades. Formato: decisión — motivo
 27. **Consentimiento y WhatsApp**: las plantillas (contacto proactivo) exigen consentimiento registrado. Las respuestas de texto libre se permiten solo dentro de la ventana de 24 h abierta por un mensaje del propio prospecto (atender su solicitud). Si escribe un número desconocido se crea el lead sin consentimiento y el asesor debe compartir el aviso y registrarlo.
 28. Un WhatsApp saliente cuenta como contacto (reinicia la alerta de lead frío y mueve Nuevo → Contactado). Un mensaje entrante no, porque la alerta mide la respuesta del equipo.
 29. Las plantillas viven en código (`src/server/whatsapp/templates.ts`) porque deben coincidir exactamente con las aprobadas en Meta.
+
+## Cotizador
+
+30. **Cálculo en centavos enteros** (`src/lib/quote.ts`), una sola función usada por la vista previa del navegador y por el servidor. Sin interés: mensualidad fija y la última absorbe el redondeo. Con interés: anualidad estándar (tasa anual / 12); la última mensualidad cierra el saldo exacto. El servidor siempre recalcula con el precio de la unidad en BD; nunca confía en montos del cliente.
+31. La cotización guarda una copia de los montos (precio, descuento, enganche, plazo, tasa) para que cambios posteriores de precio no alteren documentos ya entregados. Vigencia impresa en el PDF: 15 días (texto informativo, no se hace cumplir).
+32. Cotizar a un lead en etapa temprana (Nuevo → Visita realizada) lo mueve a "Cotización". No se cotizan unidades vendidas.
+33. PDF con `pdf-lib` (fuentes estándar, sin dependencias nativas). Caracteres fuera de WinAnsi (p. ej. emojis) se omiten en el PDF en lugar de fallar.
