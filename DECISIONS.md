@@ -27,7 +27,7 @@ Registro de decisiones tomadas ante ambigüedades. Formato: decisión — motivo
 12. **Se desactiva `cacheComponents`** (venía activado en el scaffold de Next 16.4). Todo el CRM depende de la sesión y la organización activa; con Cache Components cada lectura de cookies tendría que ir detrás de `<Suspense>`. Se usa renderizado dinámico tradicional. Se puede adoptar después ruta por ruta (landing y precios sí son estáticas).
 13. **RLS sin `FORCE`**: el dueño de las tablas (`postgres`) no está sujeto a RLS, y solo se usa en módulos auditados (`src/server/db/root.ts`, permitido solo en `src/server/auth/*`, `src/server/public/*`, seed y pruebas, vía regla de ESLint). Toda la lógica de negocio usa `withOrg()` con el rol `app_rls`, que sí está sujeto a RLS.
 14. **Lugares del plan** = miembros activos (admins + asesores) + invitaciones pendientes vigentes.
-15. **Nombre comercial provisional: "Prospecta"**. Fácil de cambiar en `src/lib/brand.ts`.
+15. **Nombre comercial provisional: "Prospecta"** (reemplazado por "Pórtico", ver punto 42). Fácil de cambiar en `src/lib/brand.ts`.
 
 ## Leads y campañas
 
@@ -69,3 +69,12 @@ Registro de decisiones tomadas ante ambigüedades. Formato: decisión — motivo
 39. **Tres planes por número de usuarios**: Básico $1,490/mes (3 usuarios, 1 desarrollo), Profesional $3,490 (10, desarrollos ilimitados), Desarrolladora $6,990 (25 + acompañamiento). MXN + IVA, prueba de 14 días sin tarjeta, sin contrato. Son cifras iniciales para validar con clientes, no un estudio de mercado. Lo único que el sistema hace cumplir hoy es el límite de usuarios y los desarrollos del Básico; el soporte y el acompañamiento son servicios humanos.
 40. **Sin cobro en línea en el MVP**: la prueba de 14 días y el cambio de plan no se aplican automáticamente (el plan se cambia a mano en BD). Integrar un procesador (Stripe/Conekta/Mercado Pago) queda como pendiente.
 41. **Marca provisional "Prospecta"** y correo `hola@prospecta.mx` son marcadores de posición; no se ha verificado disponibilidad de marca ni de dominio.
+
+## Rebranding, estilo e IA
+
+42. **Nombre: Pórtico** (reemplaza a "Prospecta"). Sigue siendo un marcador: sin búsqueda de marca ni dominio.
+43. **Posicionamiento general**: ya no se limita a radio ni a San Luis Potosí. El mensaje cubre todos los canales (radio, espectaculares, redes, Google, portales, referidos, expos, sitio web) y México en general. La ciudad de un desarrollo ya no tiene valor por defecto.
+44. **Identidad visual**: tema de plano arquitectónico en lugar de "SaaS verde": vitela fría `#f1f3ef`, grafito `#1c2226`, azul cianotipo `#1f4e8c` como primario, naranja de topógrafo `#f0531c` solo para urgencia, esquinas casi rectas y bordes finos; Bricolage Grotesque en titulares y Geist en el cuerpo. El hero es un plano de lotificación en SVG. Los verdes de éxito (vendido, mensajes) usan esmeralda para no confundirse con el color de marca.
+45. **Plan Élite IA ($12,990/mes, 50 usuarios, 500 consultas/mes)**: único plan con IA. Dos funciones: asistente por lead (resumen, temperatura, siguiente paso, borrador de WhatsApp) y análisis de métricas para administradores.
+46. **Reglas de la IA**: solo propone, nunca envía; el prompt no incluye teléfono, correo ni apellido; notas y mensajes del lead se tratan como datos no confiables (se neutralizan `<` y `>` y el system prompt prohíbe obedecerlos); un asesor solo analiza sus propios leads; el plan y la cuota mensual (hora de CDMX) se validan antes de llamar al modelo; cada llamada se registra en `ai_usage` (tokens y modelo, sin contenido). Salida estructurada validada con Zod; fallback de seguridad del lado del servidor (`fallbacks: "default"`).
+47. **Modelo**: `claude-opus-5-5` por defecto con esfuerzo `low` (tareas cortas); configurable con `AI_MODEL` por si se prefiere uno más barato.

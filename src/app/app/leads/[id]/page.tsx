@@ -19,6 +19,9 @@ import { StageControl } from "../../pipeline/stage-control";
 import { TaskForm } from "../../tareas/task-form";
 import { TaskItem } from "../../tareas/task-item";
 import { WhatsAppPanel } from "./whatsapp-panel";
+import { AiBadge, LeadAssistant } from "@/components/ai-panels";
+import { getAiStatus } from "@/server/services/ai";
+import { PLANS } from "@/lib/plans";
 import { consentAction } from "./whatsapp-actions";
 import { getWhatsAppProvider } from "@/server/whatsapp/providers";
 import { addActivityAction, deleteLeadAction, updateLeadAction } from "../actions";
@@ -38,7 +41,7 @@ export default async function LeadDetailPage({ params, searchParams }: PageProps
     throw e;
   }
   const { lead, users, staleLeadHours } = detail;
-  const options = await leadFormOptions(ctx);
+  const [options, ai] = await Promise.all([leadFormOptions(ctx), getAiStatus(ctx)]);
   const stale = isStale(lead, staleLeadHours);
   const fullName = [lead.firstName, lead.lastName].filter(Boolean).join(" ");
 
@@ -89,6 +92,26 @@ export default async function LeadDetailPage({ params, searchParams }: PageProps
 
       <div className="grid gap-6 xl:grid-cols-[1fr_380px]">
         <div className="space-y-6">
+          <Card>
+            <h2 className="mb-1 flex items-center gap-2 font-semibold">
+              Asistente <AiBadge />
+            </h2>
+            {ai.enabled ? (
+              <>
+                <p className="mb-3 text-sm text-stone-600">Resume el caso, mide qué tan cerca está de comprar y sugiere qué hacer y qué escribirle.</p>
+                <LeadAssistant leadId={lead.id} used={ai.used} limit={ai.limit} />
+              </>
+            ) : (
+              <p className="text-sm text-stone-600">
+                El asistente de IA resume cada lead, sugiere el siguiente paso y redacta borradores de WhatsApp. Está incluido en el plan{" "}
+                <Link href="/precios" className="text-brand-700 underline">
+                  {PLANS.ELITE.name}
+                </Link>
+                .
+              </p>
+            )}
+          </Card>
+
           <WhatsAppPanel
             lead={lead}
             messages={lead.messages}

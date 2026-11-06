@@ -54,7 +54,7 @@ export default async function DevelopmentsPage() {
                 <input id="name" name="name" className="input" placeholder="Ej. Residencial Las Lomas" required />
               </Field>
               <Field label="Ciudad" name="city">
-                <input id="city" name="city" className="input" defaultValue="San Luis Potosí" />
+                <input id="city" name="city" className="input" placeholder="Ej. Monterrey" />
               </Field>
               <Field label="Dirección" name="address">
                 <input id="address" name="address" className="input" />

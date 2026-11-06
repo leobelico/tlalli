@@ -160,3 +160,11 @@ Verificado en navegador con los datos del seed (admin, asesor y la otra organiza
 
 ## Bloqueos
 Ninguna fase se bloqueó más de 20 minutos. Incidencias menores resueltas: puerto 3000 ocupado por otra app (se usa 3010), Tailwind 4 (`@utility` en lugar de `@apply` de clases propias), formularios que perdían valores al fallar la validación, seed no idempotente (corregido).
+
+### Cambio posterior — Rebranding, estilo y plan Élite IA ✅
+
+- Nuevo nombre **Pórtico**, mensaje general (todos los canales, todo México) y rediseño: paleta y tipografía nuevas, logo propio, landing con hero de plano de lotificación, sección de IA, cuatro planes y comparativo ampliado.
+- **Plan Élite IA**: enum `ELITE`, tabla `ai_usage` con RLS (migración `ai_elite`), servicio `src/server/services/ai.ts`, proveedor Anthropic `src/server/ai/client.ts`, asistente en la ficha del lead, análisis en el Inicio (admin) y consumo del mes en Configuración.
+- **Pruebas** (+10, total 133): solo Élite tiene IA, mes en hora de CDMX, neutralización de etiquetas, el prompt no incluye teléfono/correo/apellido, cuota mensual, permisos de asesor, aislamiento entre organizaciones, solo admin para el análisis.
+- Verificado en navegador: landing y precios (escritorio y móvil, sin desbordamiento), tablero con el nuevo tema, botones de IA (sin llave muestran un error claro) y una organización Básico ve la invitación a Élite.
+- **Pendiente**: probar la IA con una llave real de Anthropic (riesgo 2 del README). En `.env.local` hay `ANTHROPIC_API_KEY=""`.

@@ -4,10 +4,11 @@ import { BRAND } from "@/lib/brand";
 
 export function Logo({ className = "" }: { className?: string }) {
   return (
-    <span className={`inline-flex items-center gap-2 font-semibold tracking-tight ${className}`}>
-      <span className="grid size-7 place-items-center rounded-lg bg-brand-600 text-sm font-bold text-white">
-        P
-      </span>
+    <span className={`inline-flex items-center gap-2 font-[family-name:var(--font-display)] font-semibold tracking-tight ${className}`}>
+      <svg viewBox="0 0 28 28" className="size-7" aria-hidden>
+        <rect width="28" height="28" rx="4" className="fill-brand-600" />
+        <path d="M8 22V13a6 6 0 0 1 12 0v9h-3.2v-9a2.8 2.8 0 0 0-5.6 0v9z" fill="#f1f3ef" />
+      </svg>
       {BRAND.name}
     </span>
   );
@@ -35,7 +36,7 @@ export function PageHeader({
 
 const BADGE_TONES = {
   gray: "bg-stone-100 text-stone-700",
-  green: "bg-brand-100 text-brand-800",
+  green: "bg-emerald-100 text-emerald-800",
   amber: "bg-amber-100 text-amber-800",
   red: "bg-red-100 text-red-700",
   blue: "bg-sky-100 text-sky-800",

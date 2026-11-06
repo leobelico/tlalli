@@ -67,7 +67,7 @@ export function FormMessage() {
   }
   if (state.ok && state.message) {
     return (
-      <p role="status" className="mt-3 rounded-lg bg-brand-50 px-3 py-2 text-sm text-brand-800">
+      <p role="status" className="mt-3 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
         {state.message}
       </p>
     );

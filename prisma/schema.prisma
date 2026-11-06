@@ -19,6 +19,13 @@ enum Plan {
   BASICO
   PROFESIONAL
   DESARROLLADORA
+  /// Top tier: includes the AI assistant.
+  ELITE
+}
+
+enum AiFeature {
+  LEAD_ASSISTANT
+  WEEKLY_INSIGHTS
 }
 
 enum UnitType {
@@ -133,6 +140,7 @@ model Organization {
   stageEvents      LeadStageEvent[]
   consents         ConsentRecord[]
   privacyNotices   PrivacyNotice[]
+  aiUsage          AiUsage[]
 
   @@map("organizations")
 }
@@ -423,4 +431,21 @@ model Quote {
 
   @@index([organizationId])
   @@map("quotes")
+}
+
+/// One row per AI call: monthly quota accounting and cost visibility. No prompt/response content is stored.
+model AiUsage {
+  id             String    @id @default(uuid()) @db.Uuid
+  organizationId String    @map("organization_id") @db.Uuid
+  userId         String    @map("user_id") @db.Uuid
+  feature        AiFeature
+  model          String
+  inputTokens    Int       @default(0) @map("input_tokens")
+  outputTokens   Int       @default(0) @map("output_tokens")
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, createdAt])
+  @@map("ai_usage")
 }

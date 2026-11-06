@@ -2,6 +2,9 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { Card, EmptyState, PageHeader } from "@/components/ui";
 import { requireCtx } from "@/server/auth/session";
+import { AiBadge, InsightsPanel } from "@/components/ai-panels";
+import { getAiStatus } from "@/server/services/ai";
+import { PLANS } from "@/lib/plans";
 import { getDashboard, parseRange } from "@/server/services/dashboard";
 import { CHANNEL_LABEL, STAGE_LABEL } from "@/lib/labels";
 import { formatHours, formatMoney, toDateTimeLocal } from "@/lib/format";
@@ -15,7 +18,7 @@ export default async function AppHome({ searchParams }: PageProps<"/app">) {
   const { ctx, session } = await requireCtx();
   const sp = await searchParams;
   const range = parseRange(str(sp.desde), str(sp.hasta));
-  const d = await getDashboard(ctx, range);
+  const [d, ai] = await Promise.all([getDashboard(ctx, range), getAiStatus(ctx)]);
   const isAdmin = d.scope === "all";
   const fromValue = toDateTimeLocal(range.from).slice(0, 10);
   const toValue = toDateTimeLocal(new Date(range.to.getTime() - 1)).slice(0, 10);
@@ -60,6 +63,27 @@ export default async function AppHome({ searchParams }: PageProps<"/app">) {
         />
         <Kpi label="Leads fríos ahora" value={String(d.totals.stale)} tone={d.totals.stale ? "alert" : undefined} href="/app/leads?frios=1" />
       </section>
+
+      {isAdmin ? (
+        <Card className="mb-6 border-ink/30">
+          <h2 className="mb-1 flex items-center gap-2 font-semibold">
+            Análisis de tu operación <AiBadge />
+          </h2>
+          {ai.enabled ? (
+            <>
+              <p className="mb-3 text-sm text-stone-600">La IA lee las métricas de este periodo y te dice qué funciona, dónde se pierden prospectos y qué hacer.</p>
+              <InsightsPanel desde={fromValue} hasta={toValue} used={ai.used} limit={ai.limit} />
+            </>
+          ) : (
+            <p className="text-sm text-stone-600">
+              Con el plan {PLANS.ELITE.name}, la IA analiza tus campañas, tu embudo y a tu equipo, y te propone tres acciones cada semana.{" "}
+              <Link href="/precios" className="text-brand-700 underline">
+                Ver el plan
+              </Link>
+            </p>
+          )}
+        </Card>
+      ) : null}
 
       {d.totals.leads === 0 && d.totals.sold === 0 ? (
         <EmptyState title="Sin datos en este periodo">Captura o importa leads, o amplía el rango de fechas.</EmptyState>

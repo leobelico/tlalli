@@ -2,7 +2,7 @@
 export function defaultPrivacyNotice(orgName: string): string {
   return `AVISO DE PRIVACIDAD SIMPLIFICADO
 
-${orgName}, con domicilio en San Luis Potosí, S.L.P., es responsable del tratamiento de los datos personales que nos proporcione (nombre, teléfono y correo electrónico).
+${orgName}, con domicilio en [ciudad, estado], es responsable del tratamiento de los datos personales que nos proporcione (nombre, teléfono y correo electrónico).
 
 Finalidades primarias: contactarle para darle información sobre los desarrollos, unidades, precios y formas de pago por los que mostró interés; agendar citas y visitas; y elaborar cotizaciones.
 

@@ -66,7 +66,7 @@ export default async function LeadsPage({ searchParams }: PageProps<"/app/leads"
         }
       />
       {str(sp.eliminado) ? (
-        <p className="mb-4 rounded-lg bg-brand-50 px-3 py-2 text-sm text-brand-800">Lead eliminado.</p>
+        <p className="mb-4 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-800">Lead eliminado.</p>
       ) : null}
 
       <form className="card mb-4 grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-6" method="get">

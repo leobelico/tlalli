@@ -4,41 +4,51 @@ import { formatMoney } from "@/lib/format";
 
 export function PricingCards() {
   return (
-    <div className="grid gap-5 lg:grid-cols-3">
-      {PLAN_LIST.map((plan) => (
-        <div
-          key={plan.id}
-          className={`relative flex flex-col rounded-2xl border bg-white p-6 ${
-            plan.highlighted ? "border-brand-500 shadow-lg ring-1 ring-brand-500" : "border-stone-200"
-          }`}
-        >
-          {plan.highlighted ? (
-            <span className="absolute -top-3 left-6 rounded-full bg-brand-600 px-3 py-0.5 text-xs font-semibold text-white">
-              El más elegido
-            </span>
-          ) : null}
-          <h3 className="text-lg font-semibold">{plan.name}</h3>
-          <p className="mt-1 min-h-10 text-sm text-stone-600">{plan.tagline}</p>
-          <p className="mt-5 flex items-baseline gap-1">
-            <span className="text-4xl font-semibold tracking-tight tabular-nums">{formatMoney(plan.priceMxn, false)}</span>
-            <span className="text-sm text-stone-500">MXN / mes + IVA</span>
-          </p>
-          <p className="mt-1 text-sm font-medium text-brand-700">Hasta {plan.seats} usuarios (asesores y administradores)</p>
-          <ul className="mt-5 flex-1 space-y-2 text-sm">
-            {plan.features.map((f) => (
-              <li key={f} className="flex gap-2">
-                <span aria-hidden className="mt-0.5 text-brand-600">
-                  ✓
-                </span>
-                <span>{f}</span>
-              </li>
-            ))}
-          </ul>
-          <Link href="/registro" className={`mt-6 ${plan.highlighted ? "btn-primary" : "btn-secondary"}`}>
-            Empezar prueba de 14 días
-          </Link>
-        </div>
-      ))}
+    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      {PLAN_LIST.map((plan) => {
+        const dark = plan.ai;
+        return (
+          <div
+            key={plan.id}
+            className={`flex flex-col border p-6 ${
+              dark
+                ? "border-ink bg-ink text-paper"
+                : plan.highlighted
+                  ? "border-ink/25 border-t-4 border-t-brand-600 bg-white"
+                  : "border-ink/20 bg-white"
+            }`}
+          >
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="text-lg font-semibold">{plan.name}</h3>
+              {plan.highlighted ? <span className="text-xs font-medium text-brand-700">El más elegido</span> : null}
+              {dark ? <span className="rounded-sm bg-paper px-1.5 py-0.5 text-[10px] font-semibold text-ink">IA incluida</span> : null}
+            </div>
+            <p className={`mt-1 min-h-12 text-sm ${dark ? "text-paper/70" : "text-stone-600"}`}>{plan.tagline}</p>
+            <p className="mt-5 flex items-baseline gap-1">
+              <span className="font-[family-name:var(--font-display)] text-4xl font-semibold tracking-tight tabular-nums">
+                {formatMoney(plan.priceMxn, false)}
+              </span>
+              <span className={`text-sm ${dark ? "text-paper/60" : "text-stone-500"}`}>MXN/mes + IVA</span>
+            </p>
+            <ul className="mt-5 flex-1 space-y-2 border-t border-current/15 pt-5 text-sm">
+              {plan.features.map((f) => (
+                <li key={f} className="flex gap-2">
+                  <span aria-hidden className={dark ? "text-[#8aaedb]" : "text-brand-600"}>
+                    ✓
+                  </span>
+                  <span>{f}</span>
+                </li>
+              ))}
+            </ul>
+            <Link
+              href="/registro"
+              className={`mt-6 ${dark ? "btn bg-paper text-ink hover:bg-white" : plan.highlighted ? "btn-primary" : "btn-secondary"}`}
+            >
+              Empezar prueba de 14 días
+            </Link>
+          </div>
+        );
+      })}
     </div>
   );
 }

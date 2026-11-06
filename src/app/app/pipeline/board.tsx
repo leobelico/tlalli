@@ -29,7 +29,7 @@ const COLUMN_ACCENT: Record<Stage, string> = {
   VISITA_REALIZADA: "border-t-indigo-500",
   COTIZACION: "border-t-amber-400",
   APARTADO: "border-t-amber-500",
-  VENDIDO: "border-t-brand-500",
+  VENDIDO: "border-t-emerald-500",
   PERDIDO: "border-t-red-400",
 };
 

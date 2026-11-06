@@ -1,20 +1,30 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-50: #eefbf6;
-  --color-brand-100: #d5f4e8;
-  --color-brand-200: #aee8d4;
-  --color-brand-300: #78d5bb;
-  --color-brand-400: #42ba9c;
-  --color-brand-500: #1f9e82;
-  --color-brand-600: #12806a;
-  --color-brand-700: #106657;
-  --color-brand-800: #105147;
-  --color-brand-900: #0e433b;
-  --color-ink: #14201d;
-  --color-paper: #f7f6f2;
+  /* Cyanotype blue: the colour of blueprints. Primary actions and links. */
+  --color-brand-50: #eef3fb;
+  --color-brand-100: #dbe6f5;
+  --color-brand-200: #b8cdeb;
+  --color-brand-300: #8aaedb;
+  --color-brand-400: #5a8bc7;
+  --color-brand-500: #3a6fb0;
+  --color-brand-600: #1f4e8c;
+  --color-brand-700: #183f73;
+  --color-brand-800: #14335d;
+  --color-brand-900: #102a4c;
+  /* Surveyor's stake orange: reserved for "se enfría" / urgency. */
+  --color-stake: #f0531c;
+  /* Ochre: apartado. */
+  --color-ochre: #d9a441;
+  --color-ink: #1c2226;
+  --color-paper: #f1f3ef;
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-bricolage), var(--font-geist-sans), ui-sans-serif, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  /* Drafting-table corners: tighter than the usual SaaS roundness. */
+  --radius-lg: 0.3rem;
+  --radius-xl: 0.4rem;
+  --radius-2xl: 0.5rem;
 }
 
 :root {
@@ -24,6 +34,15 @@
 body {
   background: var(--color-paper);
   color: var(--color-ink);
+}
+
+@layer base {
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.015em;
+  }
 }
 
 @utility input {
@@ -48,7 +67,7 @@ body {
   @apply btn text-stone-700 hover:bg-stone-100;
 }
 @utility card {
-  @apply rounded-xl border border-stone-200 bg-white shadow-xs;
+  @apply rounded-xl border border-stone-300/70 bg-white;
 }
 
 @layer components {
@@ -60,5 +79,23 @@ body {
   }
   .table-base td {
     @apply border-b border-stone-100 px-3 py-2 align-top;
+  }
+}
+
+/* Hero plan: sold lots fill in once on load. */
+@keyframes lot-in {
+  from {
+    fill-opacity: 0;
+  }
+  to {
+    fill-opacity: 1;
+  }
+}
+.lot-in {
+  animation: lot-in 600ms ease-out both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lot-in {
+    animation: none;
   }
 }

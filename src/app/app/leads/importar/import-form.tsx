@@ -56,7 +56,7 @@ export function ImportForm({ campaigns }: { campaigns: { id: string; name: strin
       ) : null}
       {state.ok ? (
         <div className="space-y-2">
-          <p role="status" className="rounded-lg bg-brand-50 px-3 py-2 text-sm text-brand-800">
+          <p role="status" className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
             {state.message}
           </p>
           {state.data?.unknownHeaders ? (

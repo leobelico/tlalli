@@ -10,6 +10,8 @@ export type PlanInfo = {
   tagline: string;
   features: string[];
   highlighted?: boolean;
+  /** Includes the AI assistant. */
+  ai?: boolean;
 };
 
 export const PLANS: Record<Plan, PlanInfo> = {
@@ -58,6 +60,30 @@ export const PLANS: Record<Plan, PlanInfo> = {
       "Capacitación al equipo de ventas",
     ],
   },
+  ELITE: {
+    id: "ELITE",
+    name: "Élite IA",
+    seats: 50,
+    priceMxn: 12990,
+    tagline: "Para equipos que quieren que la IA trabaje junto a sus asesores.",
+    features: [
+      "Hasta 50 usuarios",
+      "Todo lo del plan Desarrolladora",
+      "Asistente IA en cada lead: resumen, temperatura y siguiente paso",
+      "Borradores de respuesta para WhatsApp (siempre los envía una persona)",
+      "Análisis semanal con IA de tus campañas y tu embudo",
+      "500 consultas de IA al mes incluidas",
+      "Soporte prioritario",
+    ],
+    ai: true,
+  },
 };
 
-export const PLAN_LIST: PlanInfo[] = [PLANS.BASICO, PLANS.PROFESIONAL, PLANS.DESARROLLADORA];
+export const PLAN_LIST: PlanInfo[] = [PLANS.BASICO, PLANS.PROFESIONAL, PLANS.DESARROLLADORA, PLANS.ELITE];
+
+/** AI calls allowed per calendar month (Mexico City) by plan. Plans not listed have no AI. */
+export const AI_MONTHLY_LIMIT: Partial<Record<Plan, number>> = { ELITE: 500 };
+
+export function planHasAi(plan: Plan): boolean {
+  return plan in AI_MONTHLY_LIMIT;
+}

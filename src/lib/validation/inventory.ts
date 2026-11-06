@@ -3,7 +3,7 @@ import { moneySchema, nameSchema, optionalMoney, optionalText } from "./common";
 
 export const developmentSchema = z.object({
   name: nameSchema,
-  city: z.string().trim().min(2).max(80).default("San Luis Potosí"),
+  city: z.string().trim().min(2, { error: "Escribe la ciudad." }).max(80),
   address: optionalText(200),
   description: optionalText(1000),
 });

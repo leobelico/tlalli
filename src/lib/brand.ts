@@ -1,5 +1,6 @@
 export const BRAND = {
-  name: "Prospecta",
-  tagline: "El CRM de leads con WhatsApp para inmobiliarias y desarrolladoras de San Luis Potosí.",
-  supportEmail: "hola@prospecta.mx",
+  name: "Pórtico",
+  tagline: "El CRM para inmobiliarias y desarrolladoras que convierte cada contacto en una escritura.",
+  // Placeholder: the domain and mailbox are not registered yet.
+  supportEmail: "hola@portico.mx",
 } as const;

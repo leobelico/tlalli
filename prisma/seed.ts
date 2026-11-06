@@ -69,7 +69,7 @@ type LeadPlan = { n: number; stages: Stage[] };
 async function seedOrg(opts: {
   name: string;
   slug: string;
-  plan: "BASICO" | "PROFESIONAL";
+  plan: "BASICO" | "PROFESIONAL" | "ELITE";
   people: { email: string; name: string; role: "ADMIN" | "ASESOR" }[];
   developments: { name: string; address: string; units: { prefix: string; count: number; type: "LOTE" | "CASA" | "DEPARTAMENTO"; area: number; price: number }[] }[];
   campaigns: { name: string; channel: Channel; code: string; spend?: number }[];
@@ -202,7 +202,7 @@ async function main() {
   await seedOrg({
     name: "Desarrollos del Potosí (demo)",
     slug: "demo-potosi",
-    plan: "PROFESIONAL",
+    plan: "ELITE",
     people: [
       { email: "admin@potosi.ejemplo.test", name: "Andrea Admin", role: "ADMIN" },
       { email: "asesor1@potosi.ejemplo.test", name: "Beto Asesor", role: "ASESOR" },
