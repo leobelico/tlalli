@@ -1,5 +1,26 @@
 import { z } from "zod";
 
+/**
+ * Zod ships English messages ("Too big: expected string to have <=80 characters"). Anything a field
+ * does not override itself is rendered in plain Spanish (QA B11). Falls back to Zod's own Spanish locale.
+ */
+const zodEs = z.locales.es().localeError;
+z.config({
+  customError: (iss) => {
+    if (iss.code === "too_big") {
+      if (iss.origin === "string") return `Máximo ${iss.maximum} caracteres.`;
+      if (iss.origin === "number") return `El valor máximo es ${iss.maximum}.`;
+    }
+    if (iss.code === "too_small") {
+      if (iss.origin === "string") return Number(iss.minimum) <= 1 ? "Este campo es obligatorio." : `Mínimo ${iss.minimum} caracteres.`;
+      if (iss.origin === "number") return `El valor mínimo es ${iss.minimum}.`;
+    }
+    if (iss.code === "invalid_type") return iss.input === undefined || iss.input === null ? "Este campo es obligatorio." : "El dato no es válido.";
+    if (iss.code === "invalid_format") return "El formato no es válido.";
+    return zodEs?.(iss);
+  },
+});
+
 export type ActionState = {
   ok?: boolean;
   message?: string;

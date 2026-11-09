@@ -203,7 +203,7 @@ export async function createLeadManual(
 ) {
   assertCan(ctx, "leads:create");
   const assignTo = can(ctx.role, "leads:assign") ? (input.assignedToId ?? ctx.userId) : ctx.userId;
-  return withOrg(ctx.orgId, (tx) =>
+  const res = await withOrg(ctx.orgId, (tx) =>
     createLeadTx(tx, ctx.orgId, input, {
       source: "MANUAL",
       actorUserId: ctx.userId,
@@ -211,6 +211,9 @@ export async function createLeadManual(
       consent: { granted: true },
     }),
   );
+  // An asesor who re-captures a phone that belongs to someone else's lead cannot open it (QA B10).
+  const accessible = can(ctx.role, "leads:viewAll") || res.lead.assignedToId === ctx.userId;
+  return { ...res, accessible };
 }
 
 /** Loads a lead the user may access, or throws NotFound (never reveal existence to asesores). */

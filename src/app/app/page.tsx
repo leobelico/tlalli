@@ -27,6 +27,11 @@ export default async function AppHome({ searchParams }: PageProps<"/app">) {
 
   return (
     <>
+      {str(sp.error) === "permiso" ? (
+        <p role="alert" className="mb-4 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900">
+          No tienes permiso para entrar a esa sección. Si la necesitas, pídesela a tu administrador.
+        </p>
+      ) : null}
       <PageHeader
         title={`Hola, ${session.user.name.split(" ")[0]}`}
         description={isAdmin ? `Resumen de ${session.active!.organization.name}.` : "Resumen de tus leads."}

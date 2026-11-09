@@ -19,12 +19,20 @@ export async function createLeadAction(_: ActionState, formData: FormData): Prom
   const input = { ...parsed.data, consent: undefined };
   let leadId = "";
   let created = true;
+  let accessible = true;
   const res = await runAction(async () => {
     const r = await createLeadManual(ctx, input);
     leadId = r.lead.id;
     created = r.created;
+    accessible = r.accessible;
   });
   if (res.error) return res;
+  if (!accessible) {
+    return {
+      error:
+        "Ese teléfono ya está registrado y lo atiende otro asesor. Anotamos tu intento en el historial del prospecto para que el administrador lo vea.",
+    };
+  }
   revalidatePath("/app/leads");
   redirect(`/app/leads/${leadId}${created ? "" : "?duplicado=1"}`);
 }
