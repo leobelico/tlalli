@@ -22,6 +22,8 @@ const MATRIX = {
   "leads:delete": ["ADMIN"],
   "leads:create": ["ADMIN", "ASESOR"],
   "quotes:create": ["ADMIN", "ASESOR"],
+  /** Discount above ASESOR_MAX_DISCOUNT_PCT, or a sale amount below that threshold (QA B04/B05). */
+  "pricing:override": ["ADMIN"],
   "dashboard:viewAll": ["ADMIN"],
 } as const satisfies Record<string, readonly Role[]>;
 

@@ -2,10 +2,11 @@ import "server-only";
 import type { LostReason, Stage } from "@/generated/prisma/enums";
 import type { Prisma } from "@/generated/prisma/client";
 import { withOrg } from "@/server/db/tenant";
-import { leadScope, type Ctx } from "@/server/auth/permissions";
+import { can, leadScope, type Ctx } from "@/server/auth/permissions";
 import { DomainError, NotFoundError } from "@/server/errors";
 import { LOST_REASON_LABEL, STAGE_LABEL, STAGES } from "@/lib/labels";
-import { formatMoney } from "@/lib/format";
+import { formatMoney, toNumber } from "@/lib/format";
+import { ASESOR_MAX_DISCOUNT_PCT } from "@/lib/policy";
 import { requireLead } from "./leads";
 
 export type StageChangeInput = {
@@ -14,6 +15,26 @@ export type StageChangeInput = {
   lostNote?: string;
   saleAmount?: number;
 };
+
+/**
+ * Sales are money: the amount must be positive, and an asesor may only sell the linked unit at list
+ * price or within the discount cap. Anything else needs an administrator (QA B04).
+ */
+async function assertSaleAmountAllowed(tx: Prisma.TransactionClient, ctx: Ctx, unitId: string | null, amount?: number) {
+  if (amount !== undefined && !(amount > 0)) throw new DomainError("El monto de la venta debe ser mayor a 0.");
+  if (can(ctx.role, "pricing:override")) return;
+  const unit = unitId ? await tx.unit.findUnique({ where: { id: unitId } }) : null;
+  if (!unit) {
+    throw new DomainError("Para registrar la venta liga primero la unidad al cliente (Editar datos) o pide a un administrador que la registre.");
+  }
+  const price = toNumber(unit.price);
+  const floor = price * (1 - ASESOR_MAX_DISCOUNT_PCT / 100);
+  if (amount !== undefined && amount < floor) {
+    throw new DomainError(
+      `El monto está por debajo del descuento permitido para asesores (${ASESOR_MAX_DISCOUNT_PCT}%, mínimo ${formatMoney(floor)}). Pide a un administrador que registre la venta.`,
+    );
+  }
+}
 
 export async function changeStage(ctx: Ctx, leadId: string, input: StageChangeInput) {
   return withOrg(ctx.orgId, async (tx) => {
@@ -27,6 +48,8 @@ export async function changeStage(ctx: Ctx, leadId: string, input: StageChangeIn
         throw new DomainError("Describe el motivo de pérdida.");
       }
     }
+
+    if (to === "VENDIDO") await assertSaleAmountAllowed(tx, ctx, lead.unitId, input.saleAmount);
 
     const now = new Date();
     const data: Prisma.LeadUpdateInput = { stage: to, stageChangedAt: now };

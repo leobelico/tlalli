@@ -63,7 +63,8 @@ describe("dashboard metrics", () => {
     await rootPrisma.leadStageEvent.create({ data: { organizationId: org.org.id, leadId: r2.id, fromStage: "NUEVO", toStage: "CONTACTADO" } });
 
     await changeStage(ana.ctx, r1.id, { stage: "CITA_AGENDADA" });
-    await changeStage(ana.ctx, r1.id, { stage: "VENDIDO", saleAmount: 500000 }); // skips steps
+    // Sales without a linked unit need an admin (QA B04); the dashboard credits the assigned asesor.
+    await changeStage(org.adminCtx, r1.id, { stage: "VENDIDO", saleAmount: 500000 }); // skips steps
     await changeStage(ana.ctx, r3.id, { stage: "PERDIDO", lostReason: "PRECIO" });
     await changeStage(beto.ctx, f1.id, { stage: "COTIZACION" });
   });

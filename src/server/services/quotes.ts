@@ -4,7 +4,8 @@ import { withOrg } from "@/server/db/tenant";
 import { assertCan, can, leadScope, type Ctx } from "@/server/auth/permissions";
 import { DomainError, NotFoundError } from "@/server/errors";
 import { calculateQuote, QuoteInputError } from "@/lib/quote";
-import { toNumber } from "@/lib/format";
+import { formatMoney, toNumber } from "@/lib/format";
+import { ASESOR_MAX_DISCOUNT_PCT } from "@/lib/policy";
 import { requireLead } from "./leads";
 import { changeStage } from "./pipeline";
 
@@ -25,6 +26,12 @@ export async function createQuote(ctx: Ctx, input: CreateQuoteInput) {
     const unit = await tx.unit.findUnique({ where: { id: input.unitId } });
     if (!unit) throw new NotFoundError("Unidad no encontrada.");
     if (unit.status === "VENDIDO") throw new DomainError(`La unidad ${unit.code} ya está vendida.`);
+    const listPrice = toNumber(unit.price);
+    if (!can(ctx.role, "pricing:override") && (input.discount ?? 0) > (listPrice * ASESOR_MAX_DISCOUNT_PCT) / 100) {
+      throw new DomainError(
+        `Descuento máximo para asesores: ${ASESOR_MAX_DISCOUNT_PCT}% (${formatMoney((listPrice * ASESOR_MAX_DISCOUNT_PCT) / 100)}). Pide autorización a un administrador.`,
+      );
+    }
     const lead = input.leadId ? await requireLead(tx, ctx, input.leadId) : null;
 
     let calc;
