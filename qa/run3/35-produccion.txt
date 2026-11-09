@@ -1,0 +1,14 @@
+ok  : sin cabecera x-powered-by
+ok  : el HTML de /login no trae restos de desarrollo
+     cookie sb-127-auth-token -> HttpOnly, Secure, SameSite=Lax
+ok  : cookie org_id: no presente
+ok  : cookie de sesión de Supabase: HttpOnly + SameSite=Lax + Secure
+ok  : 404 en español, sin detalles técnicos
+ok  : un ID inválido no filtra detalles técnicos (404)
+ok  : cron sin secreto: 401
+ok  : cron con secreto incorrecto: 401
+ok  : cron con el secreto correcto: 200 {"ok":true,"sent":12,"orgs":29}
+ok  : formulario público: misma respuesta para nuevo y existente
+
+Todo OK
+exit=0

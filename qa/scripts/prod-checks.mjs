@@ -6,7 +6,8 @@ let failures = 0;
 const fail = (m) => { failures++; console.error('FAIL:', m); };
 const ok = (m) => console.log('ok  :', m);
 const env = fs.readFileSync(new URL('../../.env.local', import.meta.url), 'utf8');
-const cronSecret = (env.match(/^CRON_SECRET=(.*)$/m) ?? [])[1]?.trim().replace(/^["']|["']$/g, '');
+// QA_CRON_SECRET: the value the server under test was started with (the endpoint needs 16+ characters)
+const cronSecret = process.env.QA_CRON_SECRET || (env.match(/^CRON_SECRET=(.*)$/m) ?? [])[1]?.trim().replace(/^["']|["']$/g, '');
 
 // 1) response headers on a public page
 const res = await fetch(BASE + '/login');
@@ -50,7 +51,7 @@ if (cronSecret && cronSecret.length >= 16) {
   const good = await fetch(BASE + '/api/cron/daily-digest', { headers: { authorization: `Bearer ${cronSecret}` } });
   const body = await good.json().catch(() => ({}));
   if (good.status !== 200 || body.ok !== true) fail('el cron con el secreto correcto falló: ' + good.status + ' ' + JSON.stringify(body)); else ok('cron con el secreto correcto: 200 ' + JSON.stringify(body));
-} else console.log('     (CRON_SECRET no configurado o de menos de 16 caracteres: no se probó el caso correcto)');
+} else fail('CRON_SECRET no está configurado o mide menos de 16 caracteres (' + (cronSecret?.length ?? 0) + '): el cron del resumen diario quedaría cerrado');
 
 // 5) the public form answers the same for new and existing phones (B15) on the real build
 const key = (await sql("select lead_form_key k from organizations where slug='demo-potosi'"))[0].k;

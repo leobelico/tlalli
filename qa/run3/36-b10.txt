@@ -1,0 +1,4 @@
+url: /app/leads/nuevo
+aviso: Ese teléfono ya está registrado y lo atiende otro asesor. Anotamos tu intento en el historial del prospecto para que el administrador lo vea.
+OK
+exit=0

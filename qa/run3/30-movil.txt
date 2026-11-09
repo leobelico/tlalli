@@ -1,0 +1,19 @@
+ok  : /app: cabe en 390 px
+ok  : /app/leads: cabe en 390 px
+ok  : /app/leads/nuevo: cabe en 390 px
+ok  : /app/leads/importar: cabe en 390 px
+ok  : /app/leads/1c221800-bf6c-413e-a3c2-56d116f30d06: cabe en 390 px
+ok  : /app/pipeline: cabe en 390 px
+ok  : /app/tareas: cabe en 390 px
+ok  : /app/desarrollos: cabe en 390 px
+ok  : /app/desarrollos/72fdc014-bba9-4e4e-8d14-1f8c9aec31e0: cabe en 390 px
+ok  : /app/campanas: cabe en 390 px
+ok  : /app/cotizador: cabe en 390 px
+ok  : /app/autorizaciones: cabe en 390 px
+ok  : /app/cotizador/0cb15f99-ffc2-4ab3-b656-aa95067870ea: cabe en 390 px
+ok  : /app/equipo: cabe en 390 px
+ok  : /app/configuracion: cabe en 390 px
+ok  : las 10 secciones están a la vista en el menú del celular
+
+Todo OK
+exit=0

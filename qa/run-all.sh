@@ -43,5 +43,7 @@ step 31-lenguaje     node scripts/e2e-lenguaje.mjs
 step 32-etapa        node scripts/e2e-etapa.mjs
 step 33-autorizaciones node scripts/v-autorizaciones.mjs
 step 34-formulario   node scripts/v-form.mjs
+# QA_CRON_SECRET must be the CRON_SECRET the server under test was started with (16+ characters)
 step 35-produccion   node scripts/prod-checks.mjs
+step 36-b10          node scripts/v-b10.mjs
 echo ">>> terminado"

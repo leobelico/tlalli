@@ -10,6 +10,8 @@ Auth y organizaciones con roles (admin/asesor) e invitaciones · desarrollos e i
 
 Bitácora por fase, pendientes y cómo probar cada cosa: [PROGRESS.md](PROGRESS.md). Decisiones tomadas ante ambigüedades: [DECISIONS.md](DECISIONS.md). Conectar WhatsApp real: [docs/WHATSAPP.md](docs/WHATSAPP.md).
 
+**Antes del primer piloto con una desarrolladora real:** [docs/PILOTO.md](docs/PILOTO.md) (checklist, pasos manuales con credenciales reales, despliegue con `migrate deploy` y límites en lenguaje de cliente). Estado de la última auditoría de QA: [REPORTE_QA.md](REPORTE_QA.md).
+
 ## Requisitos
 
 - Node.js 22+ y npm

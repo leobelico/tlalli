@@ -1,0 +1,10 @@
+=== banner Contacta primero: Juan 714 López (174 d) · Juan 354 López (174 d) · Héctor 534 López (174 d) · Héctor 174 López (174 d) · Héctor 894 López (174 d) · ver los 2472 fríos 2 solicitudes por autorizar
+=== fríos (lista) 2472 leads.
+=== guardar límites [
+  'Contacta primero: Juan 714 López (174 d) · Juan 354 López (174 d) · Héctor 174 López (174 d) · Héctor 534 López (174 d) · Héctor 894 López (174 d) · ver los 1916 fríos\n' +
+    '\n' +
+    '2 solicitudes por autorizar',
+  'Límites por etapa guardados.'
+]
+=== fríos con Contactado=720 h 1916 leads.
+exit=0

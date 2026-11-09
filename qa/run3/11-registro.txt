@@ -1,0 +1,233 @@
+=== registro vacío
+http://localhost:3300/registro
+Pórtico
+Crea tu cuenta
+
+14 días de prueba, sin tarjeta.
+
+Tu nombre
+
+Escribe un nombre válido.
+
+Nombre de tu inmobiliaria o desarrolladora
+
+Escribe un nombre válido.
+
+Correo electrónico
+
+Correo electrónico inválido.
+
+Contraseña
+
+Mínimo 8 caracteres.
+
+La contraseña debe tener al menos 8 caracteres.
+
+Acepto los términos del servicio y el aviso de privacidad.
+
+Debes aceptar los términos y el aviso de 
+=== registro inválido
+http://localhost:3300/registro
+Pórtico
+Crea tu cuenta
+
+14 días de prueba, sin tarjeta.
+
+Tu nombre
+
+Escribe un nombre válido.
+
+Nombre de tu inmobiliaria o desarrolladora
+
+Escribe un nombre válido.
+
+Correo electrónico
+
+Correo electrónico inválido.
+
+Contraseña
+
+Mínimo 8 caracteres.
+
+La contraseña debe tener al menos 8 caracteres.
+
+Acepto los términos del servicio y el aviso de privacidad.
+
+Debes aceptar los términos y el aviso de privacidad.
+
+Crear cuenta
+
+Revisa los datos marcados.
+
+¿Ya tienes cuenta? Inicia sesión
+=== registro A
+http://localhost:3300/app
+164ms
+Pórtico
+
+Fraccionamientos Peña & Núñez 🏡
+
+Inicio
+Pipeline
+Leads
+Tareas
+Desarrollos
+Cotizador
+Autorizaciones
+Campañas
+Equipo
+Configuración
+
+José Ñúñez Peña
+
+qa-a-mw9ocu5u@ejemplo.test · Administrador
+
+Cerrar sesión
+Hola, José
+
+Resumen de Fraccionamientos Peña & Núñez 🏡.
+
+Desde
+Hasta
+Aplicar
+
+Leads creados en el periodo. Las ventas cuentan por fecha de venta.
+
+Leads nuevos
+
+0
+
+Ventas
+
+0
+
+$0
+
+Conversión a venta
+
+0%
+
+0 perdidos
+
+Primera respuesta
+
+—
+
+0 sin contactar
+
+Leads fríos ahora
+
+0
+
+Análisis de tu operación
+IA
+
+Con el plan Élite IA, la IA analiza tus campañas, tu embudo y a tu equipo, y te propone tres acciones cada semana. Ver el plan
+
+Sin datos en este periodo
+
+Captura o importa leads, o amplía el rango de fechas.
+=== registro B
+http://localhost:3300/app
+131ms
+Pórtico
+
+Competencia Inmobiliaria S.A. de C.V.
+
+Inicio
+Pipeline
+Leads
+Tareas
+Desarrollos
+Cotizador
+Autorizaciones
+Campañas
+Equipo
+Configuración
+
+Rival Admin
+
+qa-b-mw9ocu5u@ejemplo.test · Administrador
+
+Cerrar sesión
+Hola, Rival
+
+Resumen de Competencia Inmobiliaria S.A. de C.V..
+
+Desde
+Hasta
+Aplicar
+
+Leads creados en el periodo. Las ventas cuentan por fecha de venta.
+
+Leads nuevos
+
+0
+
+Ventas
+
+0
+
+$0
+
+Conversión a venta
+
+0%
+
+0 perdidos
+
+Primera respuesta
+
+—
+
+0 sin contactar
+
+Leads fríos ahora
+
+0
+
+Análisis de tu operación
+IA
+
+Con el plan Élite IA, la IA analiza tus campañas, tu embudo y a tu equipo, y te propone tres acciones cada semana. Ver el plan
+
+Sin datos en este periodo
+
+Captura o importa leads, o amplía el rango de fechas.
+=== registro duplicado
+http://localhost:3300/registro
+Pórtico
+Crea tu cuenta
+
+14 días de prueba, sin tarjeta.
+
+Tu nombre
+Nombre de tu inmobiliaria o desarrolladora
+Correo electrónico
+Contraseña
+
+Mínimo 8 caracteres.
+
+Acepto los términos del servicio y el aviso de privacidad.
+Crear cuenta
+
+Ya existe una cuenta con ese correo. Inicia sesión.
+
+¿Ya tienes cuenta? Inicia sesión
+=== login 7 intentos fallidos
+Pórtico
+Inicia sesión
+
+Entra a tu cuenta para dar seguimiento a tus leads.
+
+Correo electrónico
+Contraseña
+¿Olvidaste tu contraseña?
+Entrar
+
+Correo o contraseña incorrectos.
+
+¿No tienes cuenta? Prueba gratis 14 días
+=== login tiene olvidé
+true
+exit=0

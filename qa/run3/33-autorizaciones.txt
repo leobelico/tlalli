@@ -1,0 +1,9 @@
+=== asesor ve (no es error) [
+  'Tu descuento supera el descuento máximo para asesores (5%). Lo enviamos a un administrador para que lo autorice; verás la respuesta en "Autorizaciones" y te avisaremos por correo.'
+]
+=== alertas en rojo 1
+=== banner del admin 1 solicitud por autorizar
+=== admin []
+=== cotización creada a nombre del asesor asesor1@potosi.ejemplo.test descuento 100200.00
+=== asesor ve el resultado Autorizaciones Tus solicitudes a un administrador. Cuando respondan, te llega un correo y lo verás aquí. Pendientes No hay solicitudes pendientes Historial Autorizada Descuento autorizada por Andrea Admin el 9 nov 2026, 1:56 p.m. Descuento de $100,200.00 (20%)
+exit=0

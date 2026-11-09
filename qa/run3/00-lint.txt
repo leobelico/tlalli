@@ -1,0 +1,20 @@
+
+> inmobiliaria@0.1.0 lint
+> eslint
+
+
+C:\Users\Smartis Locales\Documents\inmobiliaria\qa\scripts\e2e-etapa.mjs
+  15:7  warning  'before' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Smartis Locales\Documents\inmobiliaria\qa\scripts\e2e-movil.mjs
+  6:7  warning  'acc' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Smartis Locales\Documents\inmobiliaria\qa\scripts\f2-inventario.mjs
+  37:71  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Smartis Locales\Documents\inmobiliaria\qa\scripts\f3-equipo-leads.mjs
+  56:111  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 4 problems (0 errors, 4 warnings)
+
+exit=0

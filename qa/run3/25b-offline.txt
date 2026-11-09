@@ -1,0 +1,7 @@
+alerta: [
+  'No hay conexión con el servidor. Revisa tu internet y vuelve a intentar: lo que escribiste sigue aquí.',
+  ''
+]
+conserva: Sin Internet | Nota larga que no quiero perder
+reintento OK -> /app/leads/003b1d48-ed0e-483d-a043-7abc974faedb
+exit=0

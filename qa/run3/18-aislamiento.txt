@@ -1,0 +1,7 @@
+=== B GET /app/leads/7dc43f23-78a9-410d-a3d0-0a5495b16643 404 Pórtico Competencia Inmobiliaria S.A. de C.V. Inicio Pipeline Leads Tareas Desarrollos Cotizador Autorizaciones Campañas 
+=== B GET /app/desarrollos/c3bc0fd8-52dc-4b64-b721-4df980d59e5a 404 Pórtico Competencia Inmobiliaria S.A. de C.V. Inicio Pipeline Leads Tareas Desarrollos Cotizador Autorizaciones Campañas 
+=== B GET /app/cotizador/b85b4122-e3e0-4ac2-a90e-628c039f0765 404 Pórtico Competencia Inmobiliaria S.A. de C.V. Inicio Pipeline Leads Tareas Desarrollos Cotizador Autorizaciones Campañas 
+=== B GET /api/quotes/b85b4122-e3e0-4ac2-a90e-628c039f0765/pdf 404 No encontrado 
+=== B GET /api/developments/72fdc014-bba9-4e4e-8d14-1f8c9aec31e0/plan 404 No encontrado 
+=== B GET /app/cotizador?lead=7dc43f23-78a9-410d-a3d0-0a5495b16643 200 Pórtico Competencia Inmobiliaria S.A. de C.V. Inicio Pipeline Leads Tareas Desarrollos Cotizador Autorizaciones Campañas 
+exit=0

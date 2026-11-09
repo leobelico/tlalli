@@ -1,0 +1,20 @@
+=== desarrollo vacío José Ñúñez Peña | Tus proyectos y su inventario de lotes, casas y departamentos. | Escribe un nombre válido. | Escribe la ciudad. | Revisa los datos marcados.
+=== desarrollo nombre 240 José Ñúñez Peña | Tus proyectos y su inventario de lotes, casas y departamentos. | Máximo 120 caracteres. | Revisa los datos marcados.
+=== desarrollo emoji http://localhost:3300/app/desarrollos/c3bc0fd8-52dc-4b64-b721-4df980d59e5a José Ñúñez Peña | ← Desarrollos | Soledad de Graciano Sánchez | Fraccionamiento La Peñita 🌵 Ñandú
+=== segundo desarrollo José Ñúñez Peña | Tus proyectos y su inventario de lotes, casas y departamentos. | Soledad de Graciano Sánchez | El plan Básico incluye 1 desarrollo activo. Cambia a Profesional para agregar más.
+=== dev /app/desarrollos/c3bc0fd8-52dc-4b64-b721-4df980d59e5a
+=== unidad code= price=500000 area=120 José Ñúñez Peña | ← Desarrollos | Soledad de Graciano Sánchez | Escribe la clave (ej. Lote 12). | Revisa los datos marcados.
+=== unidad code=Lote 1 price=-500000 area=120 José Ñúñez Peña | ← Desarrollos | Soledad de Graciano Sánchez | El monto no puede ser negativo. | Revisa los datos marcados.
+=== unidad code=Lote 1 price=0 area=120 José Ñúñez Peña | ← Desarrollos | Soledad de Graciano Sánchez | El precio debe ser mayor a 0. | Revisa los datos marcados.
+=== fill price fail abc
+=== unidad code=Lote 1 price=abc area=120 José Ñúñez Peña | ← Desarrollos | Soledad de Graciano Sánchez | El precio debe ser mayor a 0. | Revisa los datos marcados.
+=== unidad code=Lote 1 price=450000 area=-5 José Ñúñez Peña | ← Desarrollos | Soledad de Graciano Sánchez | El monto no puede ser negativo. | Revisa los datos marcados.
+=== unidad code=Mz 3 Lt 1 price=450000 area=120 José Ñúñez Peña | ← Desarrollos | Soledad de Graciano Sánchez | Borrar | Unidad Mz 3 Lt 1 agregada.
+=== unidad code=Mz 3 Lt 1 price=450000 area=120 José Ñúñez Peña | ← Desarrollos | Soledad de Graciano Sánchez | Borrar | Ya existe una unidad con la clave "Mz 3 Lt 1".
+=== unidad code=LLLLLLLLLLLLLLLLLLLL price=450000 area=120 José Ñúñez Peña | ← Desarrollos | Soledad de Graciano Sánchez | Borrar | Máximo 40 caracteres. | Revisa los datos marcados.
+=== unidad code=Lote 🏠 Ñ price=99999999999 area=120 José Ñúñez Peña | ← Desarrollos | Soledad de Graciano Sánchez | Borrar | Monto demasiado grande. | Revisa los datos marcados.
+=== bulk 1-600 José Ñúñez Peña | ← Desarrollos | Soledad de Graciano Sánchez | Borrar | Máximo 500 unidades por carga.
+=== bulk 5-1 José Ñúñez Peña | ← Desarrollos | Soledad de Graciano Sánchez | Borrar | El número final debe ser mayor o igual al inicial.
+=== bulk 1-40 José Ñúñez Peña | ← Desarrollos | Soledad de Graciano Sánchez | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | 40 unidades creadas (las claves repetidas se omitieron).
+=== doble clic José Ñúñez Peña | ← Desarrollos | Soledad de Graciano Sánchez | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | Unidad Doble clic agregada.
+exit=0
