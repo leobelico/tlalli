@@ -449,3 +449,13 @@ model AiUsage {
   @@index([organizationId, createdAt])
   @@map("ai_usage")
 }
+
+/// Shared fixed-window counters for public endpoints (QA B16). No tenant: only server/public uses it.
+model RateLimitBucket {
+  key     String   @id
+  count   Int
+  resetAt DateTime @map("reset_at")
+
+  @@index([resetAt])
+  @@map("rate_limit_buckets")
+}

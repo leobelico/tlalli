@@ -1,0 +1,10 @@
+import { browser, shot, BASE, sql } from './lib.mjs';
+const b = await browser(); const p = await (await b.newContext({ viewport: { width: 390, height: 844 } })).newPage();
+const phone = '444' + String(Date.now()).slice(-7);
+await p.goto(BASE + '/f/demo-potosi');
+await p.fill('#nombre', 'Humano'); await p.waitForTimeout(1200); await p.fill('#telefono', phone); await p.waitForTimeout(1500);
+await p.check('input[name=acepta_privacidad]'); await p.click('button:has-text("Quiero información")');
+await p.waitForURL(/gracias/, { timeout: 15000 }).catch(() => {});
+console.log('tras enviar:', p.url().replace(BASE, ''), '| lead creado:', (await sql('select count(*)::int n from leads where phone=$1', ['+52' + phone]))[0].n);
+await shot(p, 'v3-form-hospedado-gracias-cel', false);
+await b.close();

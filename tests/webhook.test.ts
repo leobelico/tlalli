@@ -3,7 +3,7 @@ import { NextRequest } from "next/server";
 import { POST, OPTIONS } from "@/app/api/public/leads/route";
 import { rootPrisma } from "@/server/db/root";
 import { createCampaign } from "@/server/services/campaigns";
-import { resetRateLimits } from "@/lib/rate-limit";
+import { resetSharedRateLimits } from "@/server/public/rate-limit";
 import { addMember, cleanup, makeOrg } from "./helpers/factory";
 
 let ipCounter = 0;
@@ -37,7 +37,7 @@ describe("POST /api/public/leads (web form webhook)", () => {
     await createCampaign(a.adminCtx, { name: "Radio Exa", channel: "RADIO", code: "RAD-EXA" });
     await createCampaign(b.adminCtx, { name: "Solo B", channel: "GOOGLE", code: "GOO-B" });
   });
-  beforeEach(() => resetRateLimits());
+  beforeEach(() => resetSharedRateLimits());
   afterAll(cleanup);
 
   it("answers CORS preflight", async () => {
@@ -55,10 +55,11 @@ describe("POST /api/public/leads (web form webhook)", () => {
     const res = await POST(
       req({ ...valid, campana: "rad-exa", mensaje: "Me interesa un lote" }, { key: a.org.leadFormKey }),
     );
-    expect(res.status).toBe(201);
-    const body = await res.json();
-    const lead = await rootPrisma.lead.findUniqueOrThrow({
-      where: { id: body.id },
+    // QA B15: neutral answer, no internal id; look the lead up by phone.
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ ok: true });
+    const lead = await rootPrisma.lead.findFirstOrThrow({
+      where: { organizationId: a.org.id, phone: "+524445550001" },
       include: { campaign: true, consents: true, activities: true },
     });
     expect(lead.organizationId).toBe(a.org.id);
@@ -76,7 +77,7 @@ describe("POST /api/public/leads (web form webhook)", () => {
   it("deduplicates by phone and logs the new touch", async () => {
     const res = await POST(req({ ...valid, telefono: "+52 1 444 555 0001" }, { key: a.org.leadFormKey }));
     expect(res.status).toBe(200);
-    expect((await res.json()).nuevo).toBe(false);
+    expect(await res.json()).toEqual({ ok: true }); // QA B15: same answer as a new lead
     expect(await rootPrisma.lead.count({ where: { organizationId: a.org.id, phone: "+524445550001" } })).toBe(1);
   });
 
@@ -97,9 +98,9 @@ describe("POST /api/public/leads (web form webhook)", () => {
 
   it("does not attach a campaign code that belongs to another org", async () => {
     const res = await POST(req({ ...valid, telefono: "4445550003", campana: "GOO-B" }, { key: a.org.leadFormKey }));
-    expect(res.status).toBe(201);
-    const lead = await rootPrisma.lead.findUniqueOrThrow({
-      where: { id: (await res.json()).id },
+    expect(res.status).toBe(200);
+    const lead = await rootPrisma.lead.findFirstOrThrow({
+      where: { organizationId: a.org.id, phone: "+524445550003" },
       include: { activities: true },
     });
     expect(lead.campaignId).toBeNull();
@@ -146,7 +147,8 @@ describe("POST /api/public/leads (web form webhook)", () => {
         { contentType: "application/x-www-form-urlencoded" },
       ),
     );
-    expect(res.status).toBe(201);
+    expect(res.status).toBe(200); // no redirect to a javascript: URL, neutral answer instead
+    expect(res.headers.get("location")).toBeNull();
   });
 
   it("rejects malformed JSON and unsupported content types", async () => {
@@ -159,7 +161,9 @@ describe("POST /api/public/leads (web form webhook)", () => {
     expect((await POST(req("hola", { key: a.org.leadFormKey, contentType: "text/plain" }))).status).toBe(415);
   });
 
-  it("rate limits by IP", async () => {
+  it("rate limits by IP when the proxy is trusted (QA B16)", async () => {
+    const prev = process.env.TRUSTED_PROXY;
+    process.env.TRUSTED_PROXY = "xff:1";
     const statuses: number[] = [];
     for (let i = 0; i < 22; i++) {
       const r = await POST(req({ nombre: "x" }, { key: a.org.leadFormKey, ip: "9.9.9.9" }));
@@ -167,6 +171,8 @@ describe("POST /api/public/leads (web form webhook)", () => {
     }
     expect(statuses.slice(0, 20).every((s) => s === 400)).toBe(true);
     expect(statuses.at(-1)).toBe(429);
+    if (prev === undefined) delete process.env.TRUSTED_PROXY;
+    else process.env.TRUSTED_PROXY = prev;
   });
 
   it("org B never receives org A leads", async () => {

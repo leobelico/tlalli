@@ -78,3 +78,11 @@ Registro de decisiones tomadas ante ambigüedades. Formato: decisión — motivo
 45. **Plan Élite IA ($12,990/mes, 50 usuarios, 500 consultas/mes)**: único plan con IA. Dos funciones: asistente por lead (resumen, temperatura, siguiente paso, borrador de WhatsApp) y análisis de métricas para administradores.
 46. **Reglas de la IA**: solo propone, nunca envía; el prompt no incluye teléfono, correo ni apellido; notas y mensajes del lead se tratan como datos no confiables (se neutralizan `<` y `>` y el system prompt prohíbe obedecerlos); un asesor solo analiza sus propios leads; el plan y la cuota mensual (hora de CDMX) se validan antes de llamar al modelo; cada llamada se registra en `ai_usage` (tokens y modelo, sin contenido). Salida estructurada validada con Zod; fallback de seguridad del lado del servidor (`fallbacks: "default"`).
 47. **Modelo**: `claude-opus-5-5` por defecto con esfuerzo `low` (tareas cortas); configurable con `AI_MODEL` por si se prefiere uno más barato.
+
+## Pasada de piloto (10 nov 2026)
+
+### D-P1. Formulario público: respuesta neutra, límites compartidos y anti-bots (QA B15/B16)
+- `POST /api/public/leads` responde siempre `{ ok: true }` con 200 a todo envío aceptado: lead nuevo, repetido, bot o fuera de límite. Los errores de validación siguen siendo 400 porque no revelan nada sobre clientes existentes y las integraciones los necesitan. El contacto repetido se sigue registrando en el historial del lead.
+- Límites en Postgres (`rate_limit_buckets`, UPSERT atómico), no en Redis: ya tenemos la base y no agrega otro servicio que pagar u operar. Si el volumen lo exige, se cambia por Upstash sin tocar las rutas.
+- La IP del visitante solo se usa si `TRUSTED_PROXY` dice cómo leerla (`vercel`, `cloudflare` o `xff:N`). Sin eso no hay límite por IP (sería un solo contador compartido por todos, que un atacante podría agotar) y protegen el límite por organización (300/min) y por teléfono (5/h).
+- Anti-bots: honeypot + token firmado con tiempo mínimo de llenado (2.5 s) en el formulario hospedado, sin captcha de terceros (sin cookies, sin JavaScript, sin pedir datos a Google/Cloudflare). Los sitios propios del cliente que mandan sin token siguen funcionando; para ellos protegen honeypot y límites. Si aparece abuso real, el siguiente paso es Cloudflare Turnstile.

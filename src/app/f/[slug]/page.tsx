@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { findOrgBySlug } from "@/server/public/lead-intake";
+import { issueFormToken } from "@/server/public/form-token";
 
 export const metadata: Metadata = { title: "Solicita información", robots: { index: false } };
 
@@ -23,6 +24,7 @@ export default async function HostedFormPage({ params, searchParams }: PageProps
       <form method="post" action="/api/public/leads" className="card space-y-4 p-6">
         <input type="hidden" name="form_key" value={org.leadFormKey} />
         <input type="hidden" name="campana" value={code} />
+        <input type="hidden" name="_t" value={issueFormToken()} />
         <input type="hidden" name="redirect" value={`${appUrl}/f/${org.slug}/gracias`} />
         <div aria-hidden className="absolute -left-[9999px]">
           <label>

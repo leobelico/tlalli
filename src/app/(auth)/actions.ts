@@ -15,7 +15,7 @@ import { ACTIVE_ORG_COOKIE, ensureUserProfile, getAuthUser, getSession } from "@
 import { createOrganization } from "@/server/auth/organizations";
 import { acceptInvitation, findValidInvitation, InvitationError } from "@/server/auth/invitations";
 import { ForbiddenError } from "@/server/auth/permissions";
-import { rateLimit } from "@/lib/rate-limit";
+import { hitRateLimit } from "@/server/public/rate-limit";
 
 const COOKIE_OPTS = { httpOnly: true, sameSite: "lax" as const, secure: process.env.NODE_ENV === "production", path: "/" };
 
@@ -53,7 +53,7 @@ export async function requestPasswordResetAction(_: ActionState, formData: FormD
   const parsed = parseForm(z.object({ email: emailSchema }), formData);
   if (parsed.error) return parsed.error;
   const { email } = parsed.data;
-  if (rateLimit(`reset:${email}`, 3, 15 * 60_000).ok) {
+  if ((await hitRateLimit(`reset:${email}`, 3, 15 * 60_000)).ok) {
     const supabase = await createSupabaseServerClient();
     // No redirectTo: the email template links to /restablecer with a token hash (works from any browser).
     const { error } = await supabase.auth.resetPasswordForEmail(email);
