@@ -8,16 +8,19 @@ import { formatDate } from "@/lib/format";
 import { InviteForm } from "./invite-form";
 import { MemberRowActions } from "./member-row-actions";
 import { revokeInvitationAction } from "./actions";
+import { openLeadCounts } from "@/server/services/organization";
 
 export const metadata: Metadata = { title: "Equipo" };
 
 export default async function TeamPage() {
   const { ctx } = await requireCtx("members:manage");
-  const [members, invitations, seats] = await Promise.all([
+  const [members, invitations, seats, openLeads] = await Promise.all([
     listMembers(ctx),
     listPendingInvitations(ctx),
     seatUsage(ctx),
+    openLeadCounts(ctx),
   ]);
+  const activeMembers = members.filter((m) => m.active).map((m) => ({ id: m.userId, name: m.user.name }));
 
   return (
     <>
@@ -53,7 +56,15 @@ export default async function TeamPage() {
                 </td>
                 <td>{m.active ? <Badge tone="green">Activo</Badge> : <Badge>Inactivo</Badge>}</td>
                 <td className="text-right">
-                  <MemberRowActions id={m.id} active={m.active} role={m.role} isSelf={m.userId === ctx.userId} />
+                  <MemberRowActions
+                    id={m.id}
+                    active={m.active}
+                    role={m.role}
+                    isSelf={m.userId === ctx.userId}
+                    name={m.user.name}
+                    openLeads={openLeads[m.userId] ?? 0}
+                    heirs={activeMembers.filter((h) => h.id !== m.userId)}
+                  />
                 </td>
               </tr>
             ))}

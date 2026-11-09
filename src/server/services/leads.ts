@@ -238,39 +238,45 @@ export type LeadFilters = {
 
 export const PAGE_SIZE = 50;
 
+/** The Prisma filter behind the leads list; also used by bulk reassignment so both always agree. */
+export function leadWhere(ctx: Ctx, f: LeadFilters, staleLeadHours: number): Prisma.LeadWhereInput {
+  const where: Prisma.LeadWhereInput = { ...leadScope(ctx) };
+  if (f.stage) where.stage = f.stage;
+  if (f.campaignId) where.campaignId = f.campaignId;
+  if (f.channel) where.channel = f.channel;
+  if (f.developmentId) where.developmentId = f.developmentId;
+  if (f.assignedToId && can(ctx.role, "leads:viewAll")) {
+    where.assignedToId = f.assignedToId === "none" ? null : f.assignedToId;
+  }
+  if (f.q) {
+    const q = f.q.trim().slice(0, 80);
+    const digits = q.replace(/\D/g, "");
+    where.OR = [
+      { firstName: { contains: q, mode: "insensitive" } },
+      { lastName: { contains: q, mode: "insensitive" } },
+      { email: { contains: q, mode: "insensitive" } },
+      ...(digits.length >= 3 ? [{ phone: { contains: digits } }] : []),
+    ];
+  }
+  if (f.staleOnly) {
+    const cutoff = staleCutoff(staleLeadHours);
+    where.stage = f.stage && OPEN_STAGES.includes(f.stage) ? f.stage : { in: OPEN_STAGES };
+    where.AND = [
+      {
+        OR: [
+          { lastContactAt: { lt: cutoff } },
+          { lastContactAt: null, createdAt: { lt: cutoff } },
+        ],
+      },
+    ];
+  }
+  return where;
+}
+
 export async function listLeads(ctx: Ctx, f: LeadFilters) {
   return withOrg(ctx.orgId, async (tx) => {
     const org = await tx.organization.findUniqueOrThrow({ where: { id: ctx.orgId } });
-    const where: Prisma.LeadWhereInput = { ...leadScope(ctx) };
-    if (f.stage) where.stage = f.stage;
-    if (f.campaignId) where.campaignId = f.campaignId;
-    if (f.channel) where.channel = f.channel;
-    if (f.developmentId) where.developmentId = f.developmentId;
-    if (f.assignedToId && can(ctx.role, "leads:viewAll")) {
-      where.assignedToId = f.assignedToId === "none" ? null : f.assignedToId;
-    }
-    if (f.q) {
-      const q = f.q.trim().slice(0, 80);
-      const digits = q.replace(/\D/g, "");
-      where.OR = [
-        { firstName: { contains: q, mode: "insensitive" } },
-        { lastName: { contains: q, mode: "insensitive" } },
-        { email: { contains: q, mode: "insensitive" } },
-        ...(digits.length >= 3 ? [{ phone: { contains: digits } }] : []),
-      ];
-    }
-    if (f.staleOnly) {
-      const cutoff = staleCutoff(org.staleLeadHours);
-      where.stage = f.stage && OPEN_STAGES.includes(f.stage) ? f.stage : { in: OPEN_STAGES };
-      where.AND = [
-        {
-          OR: [
-            { lastContactAt: { lt: cutoff } },
-            { lastContactAt: null, createdAt: { lt: cutoff } },
-          ],
-        },
-      ];
-    }
+    const where = leadWhere(ctx, f, org.staleLeadHours);
     const page = Math.max(1, f.page ?? 1);
     const [total, leads] = await Promise.all([
       tx.lead.count({ where }),

@@ -7,6 +7,8 @@ import { randomToken, sha256 } from "@/lib/tokens";
 import { DomainError } from "@/server/errors";
 import { sendEmail } from "@/server/notify/email";
 import { invitationEmail } from "@/server/notify/templates";
+import { notifyLeadsAssignedSummary } from "@/server/notify/leads";
+import { assertHeir, CLOSED_STAGES, reassignInTx } from "@/server/services/reassign";
 import { assertCan, ForbiddenError, type Ctx } from "./permissions";
 
 const INVITATION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
@@ -116,6 +118,10 @@ export async function acceptInvitation(token: string, user: { id: string; email:
 
 export async function setMemberActive(ctx: Ctx, membershipId: string, active: boolean) {
   assertCan(ctx, "members:manage");
+  if (!active) {
+    // Deactivating must say who inherits the leads (QA B17): use deactivateMember.
+    throw new InvitationError("Para desactivar a alguien elige a quién pasar sus leads abiertos.");
+  }
   await withOrg(ctx.orgId, async (tx) => {
     const m = await tx.membership.findUnique({ where: { id: membershipId } });
     if (!m) throw new InvitationError("Miembro no encontrado.");
@@ -138,4 +144,38 @@ export async function setMemberRole(ctx: Ctx, membershipId: string, role: Role) 
     }
     await tx.membership.update({ where: { id: membershipId }, data: { role } });
   });
+}
+
+/**
+ * Deactivates a member and hands over their open leads and pending tasks in the same transaction
+ * (QA B17). `reassignTo: null` leaves the leads unassigned; their tasks then go to the admin doing it.
+ * Access ends immediately: every request re-reads active memberships (requireCtx).
+ */
+export async function deactivateMember(ctx: Ctx, membershipId: string, opts: { reassignTo: string | null }) {
+  assertCan(ctx, "members:manage");
+  const res = await withOrg(ctx.orgId, async (tx) => {
+    const m = await tx.membership.findUnique({ where: { id: membershipId }, include: { user: { select: { name: true } } } });
+    if (!m) throw new InvitationError("Miembro no encontrado.");
+    if (m.userId === ctx.userId) throw new InvitationError("No puedes desactivarte a ti mismo.");
+    if (!m.active) throw new InvitationError("Esa persona ya está inactiva.");
+    if (opts.reassignTo === m.userId) throw new InvitationError("Elige a otra persona para recibir sus leads.");
+    if (opts.reassignTo) await assertHeir(tx, opts.reassignTo);
+    const { ids } = await reassignInTx(
+      tx,
+      ctx,
+      { assignedToId: m.userId, stage: { notIn: CLOSED_STAGES } },
+      opts.reassignTo,
+      `baja de ${m.user.name}`,
+    );
+    const tasks = await tx.task.updateMany({
+      where: { assignedToId: m.userId, completedAt: null },
+      data: { assignedToId: opts.reassignTo ?? ctx.userId },
+    });
+    await tx.membership.update({ where: { id: membershipId }, data: { active: false } });
+    return { leads: ids.length, tasks: tasks.count };
+  });
+  if (opts.reassignTo && res.leads) {
+    await notifyLeadsAssignedSummary(ctx.orgId, new Map([[opts.reassignTo, res.leads]]), ctx.userId);
+  }
+  return res;
 }

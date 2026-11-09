@@ -7,6 +7,7 @@ import { requireCtx } from "@/server/auth/session";
 import {
   createInvitation,
   revokeInvitation,
+  deactivateMember,
   setMemberActive,
   setMemberRole,
 } from "@/server/auth/invitations";
@@ -44,14 +45,21 @@ export async function memberAction(_: ActionState, formData: FormData): Promise<
       id: uuidSchema,
       op: z.enum(["activate", "deactivate", "role"]),
       role: roleSchema.optional(),
+      reassignTo: z.union([z.literal("none"), uuidSchema]).optional(),
     }),
     formData,
   );
   if (parsed.error) return parsed.error;
-  const { id, op, role } = parsed.data;
+  const { id, op, role, reassignTo } = parsed.data;
   return runAction(async () => {
     if (op === "role" && role) await setMemberRole(ctx, id, role);
-    else await setMemberActive(ctx, id, op === "activate");
+    else if (op === "deactivate") {
+      if (!reassignTo) return { error: "Elige a quién pasar sus leads (o déjalos sin asignar)." };
+      const r = await deactivateMember(ctx, id, { reassignTo: reassignTo === "none" ? null : reassignTo });
+      revalidatePath("/app/equipo");
+      revalidatePath("/app/leads");
+      return { ok: true, message: `Desactivado. Se reasignaron ${r.leads} leads y ${r.tasks} tareas.` };
+    } else await setMemberActive(ctx, id, true);
     revalidatePath("/app/equipo");
     return { ok: true };
   });

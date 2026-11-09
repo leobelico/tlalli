@@ -62,3 +62,12 @@ export async function requireCtx(permission?: Permission): Promise<{ ctx: Ctx; s
   if (permission && !can(ctx.role, permission)) redirect("/app?error=permiso");
   return { ctx, session };
 }
+
+/** Organizations that deactivated this user, so the app can say so instead of "create your org". */
+export async function deactivatedOrgNames(userId: string): Promise<string[]> {
+  const rows = await rootPrisma.membership.findMany({
+    where: { userId, active: false },
+    select: { organization: { select: { name: true } } },
+  });
+  return rows.map((r) => r.organization.name);
+}

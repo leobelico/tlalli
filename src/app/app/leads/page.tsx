@@ -5,14 +5,13 @@ import { requireCtx } from "@/server/auth/session";
 import { can } from "@/server/auth/permissions";
 import { listLeads } from "@/server/services/leads";
 import { listCampaignsForSelect } from "@/server/services/campaigns";
-import { listActiveAgents } from "@/server/services/organization";
+import { listAllAgents } from "@/server/services/organization";
+import { parseLeadFilters } from "@/lib/lead-filters";
+import { BulkReassign } from "./bulk-reassign";
 import { CHANNEL_LABEL, STAGES, STAGE_LABEL, STAGE_TONE } from "@/lib/labels";
 import { formatDate, timeAgo } from "@/lib/format";
 import { formatPhone } from "@/lib/phone";
 import { isStale } from "@/lib/stale";
-import { isUuid } from "@/lib/validation/common";
-import { channelSchema } from "@/lib/validation/leads";
-import type { Stage } from "@/generated/prisma/enums";
 
 export const metadata: Metadata = { title: "Leads" };
 
@@ -24,21 +23,13 @@ export default async function LeadsPage({ searchParams }: PageProps<"/app/leads"
   const { ctx } = await requireCtx();
   const sp = await searchParams;
   const isAdmin = can(ctx.role, "leads:viewAll");
-  const stage = STAGES.includes(str(sp.etapa) as Stage) ? (str(sp.etapa) as Stage) : undefined;
-  const asesor = str(sp.asesor);
-  const filters = {
-    q: str(sp.q),
-    stage,
-    campaignId: isUuid(str(sp.campana)) ? str(sp.campana) : undefined,
-    channel: channelSchema.safeParse(str(sp.canal)).data,
-    assignedToId: asesor === "none" || isUuid(asesor) ? asesor : undefined,
-    staleOnly: str(sp.frios) === "1",
-    page: Number(str(sp.pagina) ?? 1) || 1,
-  };
+  const filters = parseLeadFilters(sp);
+  const stage = filters.stage;
+  const asesor = filters.assignedToId;
   const [{ leads, total, page, pages, staleLeadHours }, campaigns, agents] = await Promise.all([
     listLeads(ctx, filters),
     listCampaignsForSelect(ctx),
-    listActiveAgents(ctx),
+    listAllAgents(ctx),
   ]);
   const agentName = Object.fromEntries(agents.map((a) => [a.id, a.name]));
   const qs = (patch: Record<string, string | undefined>) => {
@@ -94,6 +85,7 @@ export default async function LeadsPage({ searchParams }: PageProps<"/app/leads"
             {agents.map((a) => (
               <option key={a.id} value={a.id}>
                 {a.name}
+                {a.active ? "" : " (inactivo)"}
               </option>
             ))}
           </select>
@@ -107,6 +99,18 @@ export default async function LeadsPage({ searchParams }: PageProps<"/app/leads"
           <button className="btn-secondary py-1.5">Filtrar</button>
         </div>
       </form>
+
+      {isAdmin && total > 0 ? (
+        <BulkReassign
+          total={total}
+          filters={Object.fromEntries(
+            Object.entries({ q: str(sp.q), etapa: str(sp.etapa), campana: str(sp.campana), canal: str(sp.canal), asesor: str(sp.asesor), frios: str(sp.frios) }).filter(
+              (e): e is [string, string] => !!e[1],
+            ),
+          )}
+          agents={agents.filter((a) => a.active)}
+        />
+      ) : null}
 
       {leads.length === 0 ? (
         <EmptyState title="No hay leads con estos filtros" />

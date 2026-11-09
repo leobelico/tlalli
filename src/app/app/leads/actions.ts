@@ -10,6 +10,8 @@ import { runAction } from "@/server/errors";
 import { addActivity, createLeadManual, deleteLead, updateLead } from "@/server/services/leads";
 import { importLeadsCsv, MAX_IMPORT_BYTES } from "@/server/services/lead-import";
 import { decodeCsvBytes } from "@/lib/csv-encoding";
+import { parseLeadFilters } from "@/lib/lead-filters";
+import { reassignLeads } from "@/server/services/reassign";
 
 export async function createLeadAction(_: ActionState, formData: FormData): Promise<ActionState> {
   const { ctx } = await requireCtx("leads:create");
@@ -113,5 +115,18 @@ export async function importCsvAction(_: ActionState, formData: FormData): Promi
         unknownHeaders: r.unknownHeaders.join(", "),
       },
     };
+  });
+}
+
+/** Bulk reassignment of exactly the leads the current list filters show (QA B17). */
+export async function reassignFilteredAction(_: ActionState, formData: FormData): Promise<ActionState> {
+  const { ctx } = await requireCtx("leads:assign");
+  const to = String(formData.get("to") ?? "");
+  if (to !== "none" && !uuidSchema.safeParse(to).success) return { error: "Elige a quién pasar los leads." };
+  const filters = parseLeadFilters(Object.fromEntries(formData));
+  return runAction(async () => {
+    const { count } = await reassignLeads(ctx, { ...filters, page: undefined }, to === "none" ? null : to);
+    revalidatePath("/app/leads");
+    return { ok: true, message: count ? `Listo: se reasignaron ${count} leads.` : "No había leads abiertos que mover con esos filtros." };
   });
 }

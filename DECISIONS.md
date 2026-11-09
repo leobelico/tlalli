@@ -86,3 +86,9 @@ Registro de decisiones tomadas ante ambigüedades. Formato: decisión — motivo
 - Límites en Postgres (`rate_limit_buckets`, UPSERT atómico), no en Redis: ya tenemos la base y no agrega otro servicio que pagar u operar. Si el volumen lo exige, se cambia por Upstash sin tocar las rutas.
 - La IP del visitante solo se usa si `TRUSTED_PROXY` dice cómo leerla (`vercel`, `cloudflare` o `xff:N`). Sin eso no hay límite por IP (sería un solo contador compartido por todos, que un atacante podría agotar) y protegen el límite por organización (300/min) y por teléfono (5/h).
 - Anti-bots: honeypot + token firmado con tiempo mínimo de llenado (2.5 s) en el formulario hospedado, sin captcha de terceros (sin cookies, sin JavaScript, sin pedir datos a Google/Cloudflare). Los sitios propios del cliente que mandan sin token siguen funcionando; para ellos protegen honeypot y límites. Si aparece abuso real, el siguiente paso es Cloudflare Turnstile.
+
+### D-P2. Baja de asesor y reasignación masiva (QA B17)
+- No se puede desactivar a nadie sin decidir a quién pasan sus leads abiertos (o "sin asignar"). Sus tareas pendientes van al heredero; si los leads quedan sin asignar, las tareas pasan al administrador que hizo la baja, para que nadie las pierda de vista.
+- Vendidos y perdidos **no** se reasignan (ni en la baja ni en la reasignación masiva): conservan a su asesor para historial y comisiones.
+- La reasignación masiva aplica exactamente a los leads que muestran los filtros actuales (mismo `leadWhere` que la lista). El filtro "asesor" ahora incluye a los inactivos, para poder rescatar leads huérfanos de bajas anteriores.
+- El acceso termina en la siguiente petición (cada página relee las membresías activas). No se cierran las sesiones de Supabase: la persona puede entrar a la app, pero solo ve el aviso de que fue desactivada y la opción de crear su propia organización.

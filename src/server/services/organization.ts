@@ -83,3 +83,19 @@ export async function listPendingInvitations(ctx: Ctx) {
     }),
   );
 }
+
+/** Every member, active or not: filters must still find the leads of someone who left (QA B17). */
+export async function listAllAgents(ctx: Ctx) {
+  const members = await withOrg(ctx.orgId, (tx) =>
+    tx.membership.findMany({ include: { user: { select: { id: true, name: true } } }, orderBy: { createdAt: "asc" } }),
+  );
+  return members.map((m) => ({ id: m.user.id, name: m.user.name, role: m.role, active: m.active }));
+}
+
+/** Open (not sold / not lost) leads per assignee, for the "who inherits them" prompt. */
+export async function openLeadCounts(ctx: Ctx): Promise<Record<string, number>> {
+  const rows = await withOrg(ctx.orgId, (tx) =>
+    tx.lead.groupBy({ by: ["assignedToId"], where: { stage: { notIn: ["VENDIDO", "PERDIDO"] } }, _count: { _all: true } }),
+  );
+  return Object.fromEntries(rows.filter((r) => r.assignedToId).map((r) => [r.assignedToId!, r._count._all]));
+}
