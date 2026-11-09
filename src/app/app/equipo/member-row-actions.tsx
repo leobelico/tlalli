@@ -2,9 +2,10 @@
 
 import { useActionState } from "react";
 import { memberAction } from "./actions";
+import { guardNetwork } from "@/lib/safe-action";
 
 export function MemberRowActions({ id, active, role, isSelf }: { id: string; active: boolean; role: string; isSelf: boolean }) {
-  const [state, action, pending] = useActionState(memberAction, {});
+  const [state, action, pending] = useActionState(guardNetwork(memberAction), {});
   if (isSelf) return <span className="text-xs text-stone-400">Tú</span>;
   return (
     <div className="flex flex-wrap items-center justify-end gap-2">

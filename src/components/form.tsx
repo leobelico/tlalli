@@ -3,6 +3,7 @@
 import { createContext, startTransition, useActionState, useContext, useEffect, useRef, type ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 import type { ActionState } from "@/lib/validation/common";
+import { guardNetwork } from "@/lib/safe-action";
 
 type Action = (prev: ActionState, formData: FormData) => Promise<ActionState>;
 
@@ -22,7 +23,7 @@ export function ActionForm({
   resetOnSuccess?: boolean;
   onSuccess?: (state: ActionState) => void;
 }) {
-  const [state, formAction, pending] = useActionState(action, {});
+  const [state, formAction, pending] = useActionState(guardNetwork(action), {});
   const ref = useRef<HTMLFormElement>(null);
   useEffect(() => {
     if (state.ok) {

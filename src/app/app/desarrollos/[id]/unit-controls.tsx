@@ -3,9 +3,10 @@
 import { useActionState, useEffect, useRef } from "react";
 import { UNIT_STATUS_LABEL } from "@/lib/labels";
 import { deleteUnitAction, unitStatusAction } from "../actions";
+import { guardNetwork } from "@/lib/safe-action";
 
 export function UnitStatusSelect({ id, developmentId, status }: { id: string; developmentId: string; status: string }) {
-  const [state, action] = useActionState(unitStatusAction, {});
+  const [state, action] = useActionState(guardNetwork(unitStatusAction), {});
   const formRef = useRef<HTMLFormElement>(null);
   // When the server refuses the change, put the select back to the real status.
   useEffect(() => {
@@ -34,7 +35,7 @@ export function UnitStatusSelect({ id, developmentId, status }: { id: string; de
 }
 
 export function DeleteUnitButton({ id, developmentId, code }: { id: string; developmentId: string; code: string }) {
-  const [state, action, pending] = useActionState(deleteUnitAction, {});
+  const [state, action, pending] = useActionState(guardNetwork(deleteUnitAction), {});
   return (
     <form
       action={action}

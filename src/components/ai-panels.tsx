@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import { ActionForm, SubmitButton, useFormState } from "@/components/form";
 import { analyzeLeadAction, insightsAction } from "@/app/app/ai-actions";
 import type { LeadAnalysis, Insights } from "@/server/services/ai";
+import { guardNetwork } from "@/lib/safe-action";
 
 const TEMP: Record<LeadAnalysis["temperatura"], { label: string; cls: string }> = {
   caliente: { label: "Caliente", cls: "bg-stake/15 text-[#a63a10]" },
@@ -25,7 +26,7 @@ export function AiBadge() {
 }
 
 export function LeadAssistant({ leadId, used, limit }: { leadId: string; used: number; limit: number }) {
-  const [state, action, pending] = useActionState(analyzeLeadAction, {});
+  const [state, action, pending] = useActionState(guardNetwork(analyzeLeadAction), {});
   const [copied, setCopied] = useState(false);
   const r = parse<LeadAnalysis>(state.data?.result);
   return (

@@ -3,9 +3,10 @@
 import { useActionState } from "react";
 import { SubmitButton } from "@/components/form";
 import { importCsvAction } from "../actions";
+import { guardNetwork } from "@/lib/safe-action";
 
 export function ImportForm({ campaigns }: { campaigns: { id: string; name: string; code: string }[] }) {
-  const [state, action] = useActionState(importCsvAction, {});
+  const [state, action] = useActionState(guardNetwork(importCsvAction), {});
   return (
     <form action={action} className="space-y-4">
       <div>
