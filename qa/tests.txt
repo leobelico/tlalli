@@ -1,0 +1,17 @@
+
+ RUN  v5.1.0 C:/Users/Smartis Locales/Documents/inmobiliaria
+
+(node:56564) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:14160) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ Test Files  14 passed (14)
+      Tests  141 passed (141)
+   Start at  07:58:07
+   Duration  9.81s (tests 58%, import 38%, transform 3%, worker 1%)
+
+    Isolate  14 workers spawned · ~118ms startup each (spawn + environment, per file)
+             at least ~1.53s faster with isolate: false — reuses workers across files instead of one per file
+
+EXIT 0

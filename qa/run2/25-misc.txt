@@ -1,0 +1,10 @@
+=== offline http://localhost:3010/app/leads/nuevo $480,000 · Disponible Lote 40 · $480,000 · Disponible Mz 3 Lt 1 · $450,000 · Disponible Presupuesto (MXN) Asesor asignado — Sin asignar — José Ñúñez Peña Carla Asesora QA Notas El prospecto conoce y acepta el aviso de privacidad (se le compartió por teléfono, WhatsApp o en persona). Guardar lead No hay conexión con el servidor. Revisa tu internet y vuelve a intentar: lo que escribiste sigue aquí. nombre conservado: Sin Internet
+=== staleLeadHours=0  Mínimo 1 hora. | Revisa los datos marcados. 
+=== staleLeadHours=-5  Mínimo 1 hora. | Revisa los datos marcados. 
+=== staleLeadHours=100000  Máximo 720 horas (30 días). | Revisa los datos marcados. 
+=== staleLeadHours=1.5  Usa horas completas. | Revisa los datos marcados. 
+=== staleLeadHours=  Mínimo 1 hora. | Revisa los datos marcados. 
+=== aviso vacío  El aviso parece incompleto (mínimo 200 caracteres). | Revisa los datos marcados.
+=== input plano 1
+=== plano falso José Ñúñez Peña | ← Desarrollos | Soledad de Graciano Sánchez | Formato no válido. Sube una imagen PNG, JPG o WebP (si es PDF, expórtalo como imagen).
+exit=0

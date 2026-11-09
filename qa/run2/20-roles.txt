@@ -1,0 +1,17 @@
+=== capturado borrarLead
+=== capturado hacerAdmin
+=== capturado statusUnidad
+=== capturado config
+=== capturado invitarAdmin
+=== asesor GET /app/equipo -> /app?error=permiso 200 Pórtico Fraccionamientos Peña & Núñez 🏡 Inicio Pipeline Leads Tareas Desarrollo
+=== asesor GET /app/configuracion -> /app?error=permiso 200 Pórtico Fraccionamientos Peña & Núñez 🏡 Inicio Pipeline Leads Tareas Desarrollo
+=== asesor GET /app/leads/importar -> /app?error=permiso 200 Pórtico Fraccionamientos Peña & Núñez 🏡 Inicio Pipeline Leads Tareas Desarrollo
+=== asesor GET /app/campanas -> /app?error=permiso 200 Pórtico Fraccionamientos Peña & Núñez 🏡 Inicio Pipeline Leads Tareas Desarrollo
+=== asesor GET /app/leads/50c9a2b2-753e-4c3d-984d-d5a4a24942e8 -> /app/leads/50c9a2b2-753e-4c3d-984d-d5a4a24942e8 404 Pórtico Fraccionamientos Peña & Núñez 🏡 Inicio Pipeline Leads Tareas Desarrollo
+=== asesor replay borrarLead 200 /app?error=permiso;push 2:"[project]/node_modules/next/dist/next-devtools/userspace/app/segment-explorer-node.js [app-client] (ecmascript)" 3:"/_next/static/chunks/node_modules_next_dist_20wefz_f1k6jn._.js" 4:I["$2",["$3"],"
+=== asesor replay hacerAdmin 200 /app?error=permiso;push 2:"[project]/node_modules/next/dist/next-devtools/userspace/app/segment-explorer-node.js [app-client] (ecmascript)" 3:"/_next/static/chunks/node_modules_next_dist_20wefz_f1k6jn._.js" 4:I["$2",["$3"],"
+=== asesor replay statusUnidad 200 /app?error=permiso;push 2:"[project]/node_modules/next/dist/next-devtools/userspace/app/segment-explorer-node.js [app-client] (ecmascript)" 3:"/_next/static/chunks/node_modules_next_dist_20wefz_f1k6jn._.js" 4:I["$2",["$3"],"
+=== asesor replay config 200 /app?error=permiso;push 2:"[project]/node_modules/next/dist/next-devtools/userspace/app/segment-explorer-node.js [app-client] (ecmascript)" 3:"/_next/static/chunks/node_modules_next_dist_20wefz_f1k6jn._.js" 4:I["$2",["$3"],"
+=== asesor replay invitarAdmin 200 /app?error=permiso;push 2:"[project]/node_modules/next/dist/next-devtools/userspace/app/segment-explorer-node.js [app-client] (ecmascript)" 3:"/_next/static/chunks/node_modules_next_dist_20wefz_f1k6jn._.js" 4:I["$2",["$3"],"
+=== BD [{"lead_del_asesor_sigue":"1","rol_asesor":"ASESOR","horas":24,"invitaciones_intruso":"0"}]
+exit=0

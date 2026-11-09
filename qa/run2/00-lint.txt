@@ -1,0 +1,14 @@
+
+> inmobiliaria@0.1.0 lint
+> eslint
+
+
+C:\Users\Smartis Locales\Documents\inmobiliaria\qa\scripts\f2-inventario.mjs
+  37:71  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Smartis Locales\Documents\inmobiliaria\qa\scripts\f3-equipo-leads.mjs
+  56:111  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 2 problems (0 errors, 2 warnings)
+
+exit=0

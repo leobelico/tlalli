@@ -13,6 +13,7 @@ await p.check('input[name=consent]');
 await submitForm(p, /guardar|crear|registrar/i);
 const leadPath = new URL(p.url()).pathname;
 log('lead asesor', leadPath);
+fs.writeFileSync('asesor.json', JSON.stringify({ leadPath }));
 // asesor captures phone that already belongs to admin's lead (María José)
 await p.goto(BASE + '/app/leads/nuevo');
 await p.fill('[name=firstName]', 'Robado');
@@ -55,15 +56,4 @@ const id = last.split('/').pop();
 const r = await p.request.get(BASE + `/api/quotes/${id}/pdf`);
 fs.writeFileSync('cotizacion.pdf', await r.body());
 log('pdf', r.status(), r.headers()['content-type'], (await r.body()).length);
-// sold without approval
-await p.goto(BASE + leadPath);
-await p.selectOption('#stage-control', 'VENDIDO');
-await p.waitForTimeout(800);
-await shot(p, 'f6-dialogo-venta-cel');
-const amount = p.locator('#saleAmount');
-if (await amount.count()) { await amount.fill('1'); }
-await p.getByRole('button', { name: /confirmar|guardar|marcar/i }).last().click();
-await p.waitForTimeout(2000);
-log('asesor vende por $1', await p.locator('#stage-control').inputValue(), await msgs(p));
-fs.writeFileSync('asesor.json', JSON.stringify({ leadPath, quoteId: id }));
 await b.close();

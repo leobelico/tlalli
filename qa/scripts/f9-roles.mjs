@@ -1,8 +1,10 @@
-import { browser, login, shot, BASE } from './lib.mjs';
+import { browser, login, shot, BASE, sql, orgOf, leadByPhone } from './lib.mjs';
 import fs from 'fs';
 const acc = JSON.parse(fs.readFileSync('accounts.json'));
 const { devHref } = JSON.parse(fs.readFileSync('devA.json'));
-const asesorLead = 'ab47804b-8a26-4879-8174-02d3266921ae';
+const orgA = await orgOf(acc.A.email);
+const asesorLead = await leadByPhone(orgA, '+524447000001');
+const mjLead = await leadByPhone(orgA, '+524448120007');
 const b = await browser();
 const log = (...a) => console.log('===', ...a);
 const adm = await login(b, acc.A.email, { password: acc.A.password });
@@ -25,7 +27,7 @@ label = 'statusUnidad'; await p.goto(BASE + devHref); await p.locator('select[na
 label = 'config'; await p.goto(BASE + '/app/configuracion'); await p.fill('input[name=staleLeadHours]', '999'); await p.locator('form:has(input[name=staleLeadHours]) button').first().click(); await p.waitForTimeout(1500);
 label = 'invitarAdmin'; await p.goto(BASE + '/app/equipo'); await p.fill('input[name=email]', 'intruso@ejemplo.test'); await p.selectOption('select[name=role]', 'ADMIN'); await p.locator('form:has(input[name=email]) button').first().click(); await p.waitForTimeout(1500);
 const as = await login(b, acc.ASESOR.email, { password: acc.ASESOR.password });
-for (const path of ['/app/equipo', '/app/configuracion', '/app/leads/importar', '/app/campanas', '/app/leads/506c187c-5970-4bcb-944c-605d61b282ef']) {
+for (const path of ['/app/equipo', '/app/configuracion', '/app/leads/importar', '/app/campanas', '/app/leads/' + mjLead]) {
   const r = await as.p.goto(BASE + path);
   log('asesor GET', path, '->', as.p.url().replace(BASE, ''), r.status(), (await as.p.innerText('body')).replace(/\s+/g, ' ').slice(0, 80));
 }
@@ -36,4 +38,5 @@ for (const [k, c] of Object.entries(captured)) {
   const t = (await r.text()).slice(0, 200).replace(/\s+/g, ' ');
   log('asesor replay', k, r.status(), r.headers()['x-action-redirect'] || '', t);
 }
+log('BD', JSON.stringify(await sql("select (select count(*) from leads where id=$1) lead_del_asesor_sigue, (select m.role from memberships m join users u on u.id=m.user_id where u.email=$2 and m.organization_id=$3) rol_asesor, (select stale_lead_hours from organizations where id=$3) horas, (select count(*) from invitations where email='intruso@ejemplo.test') invitaciones_intruso", [asesorLead, acc.ASESOR.email, orgA])));
 await b.close();

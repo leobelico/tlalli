@@ -1,0 +1,18 @@
+
+ RUN  v5.1.0 C:/Users/Smartis Locales/Documents/inmobiliaria
+
+(node:18008) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:40192) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ Test Files  21 passed (21)
+      Tests  190 passed (190)
+   Start at  08:50:21
+   Duration  15.57s (tests 62%, import 34%, transform 2%, worker 1%)
+
+     Import  90 modules were evaluated 116 times · 4.28s total, 34% of tracked time
+             ~960ms faster with isolate: false — shared modules are evaluated once per worker instead of once per file
+             learn more: https://vitest.dev/guide/improving-performance#test-isolation
+
+exit=0

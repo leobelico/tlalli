@@ -1,0 +1,4 @@
+=== asesor vende por $1 {"etapa":"COTIZACION","err":"El monto está por debajo del descuento permitido para asesores (5%, mínimo $456,000.00). Pide a un administrador que registre la venta."}
+=== asesor vende a precio de lista (sin monto) {"etapa":"COTIZACION","err":"La unidad Lote 2 está apartada por otro cliente."}
+=== BD [{"stage":"COTIZACION","sale_amount":null,"code":"Lote 2","status":"APARTADO"}]
+exit=0

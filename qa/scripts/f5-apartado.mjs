@@ -1,4 +1,4 @@
-import { browser, login, shot, BASE } from './lib.mjs';
+import { browser, login, shot, BASE, sql, orgOf, leadByPhone } from './lib.mjs';
 import fs from 'fs';
 const acc = JSON.parse(fs.readFileSync('accounts.json'));
 const { devHref } = JSON.parse(fs.readFileSync('devA.json'));
@@ -6,7 +6,8 @@ const b = await browser();
 const { p } = await login(b, acc.A.email, { password: acc.A.password });
 const log = (...a) => console.log('===', ...a);
 p.on('dialog', d => d.accept());
-const MJ = '/app/leads/506c187c-5970-4bcb-944c-605d61b282ef', ANA = '/app/leads/b72d68d0-8ece-4a8c-8b78-135c903ce163';
+const orgA = await orgOf(acc.A.email);
+const MJ = '/app/leads/' + (await leadByPhone(orgA, '+524448120007')), ANA = '/app/leads/' + (await leadByPhone(orgA, '+524448120001'));
 async function setUnit(path, unitLabel) {
   await p.goto(BASE + path);
   await p.locator('summary', { hasText: 'Editar datos' }).click();
@@ -43,4 +44,7 @@ await stage(ANA, 'Apartado');
 await shot(p, 'f5-doble-apartado');
 // change MJ unit to Lote 2 while apartado
 await setUnit(MJ, 'Lote 2');
+console.log('=== BD final', JSON.stringify(await sql("select l.first_name, l.stage, u.code, u.status from leads l left join units u on u.id=l.unit_id where l.phone in ('+524448120007','+524448120001') and l.organization_id=$1", [orgA])));
+console.log('=== unidades', JSON.stringify(await sql("select code,status from units where code in ('Lote 1','Lote 2') and organization_id=$1", [orgA])));
+console.log('=== unidades con mas de un cliente apartado/vendido', JSON.stringify(await sql("select unit_id, count(*) from leads where organization_id=$1 and stage in ('APARTADO','VENDIDO') and unit_id is not null group by unit_id having count(*)>1", [orgA])));
 await b.close();

@@ -1,18 +1,23 @@
-import { browser, login, shot, BASE } from './lib.mjs';
+import { browser, login, shot, BASE, sql } from './lib.mjs';
 import fs from 'fs';
 const acc = JSON.parse(fs.readFileSync('accounts.json'));
+const { leadPath } = JSON.parse(fs.readFileSync('asesor.json'));
+const leadId = leadPath.split('/').pop();
 const b = await browser();
 const { p } = await login(b, acc.ASESOR.email, { password: acc.ASESOR.password, width: 390, height: 844 });
-const leadPath = '/app/leads/ab47804b-8a26-4879-8174-02d3266921ae';
-await p.goto(BASE + leadPath);
-await p.selectOption('#stage-control', 'VENDIDO');
-await p.waitForTimeout(800);
-console.log('botones dialogo', await p.locator('dialog button').allInnerTexts());
-await p.fill('#saleAmount', '1');
-await shot(p, 'f6-dialogo-venta-cel', false);
-await p.locator('dialog button').last().click();
-await p.waitForTimeout(2500);
-console.log('etapa', await p.locator('#stage-control').inputValue());
-await shot(p, 'f6-vendido-por-1-peso');
-fs.writeFileSync('asesor.json', JSON.stringify({ leadPath, quoteId: '792307d8-d33f-45c7-bd4c-dcc9d3299aee' }));
+const log = (...a) => console.log('===', ...a);
+async function sell(amount) {
+  await p.goto(BASE + leadPath);
+  await p.selectOption('#stage-control', 'VENDIDO');
+  await p.waitForTimeout(700);
+  if (amount !== null) await p.fill('#saleAmount', String(amount));
+  await p.locator('dialog button').last().click();
+  await p.waitForTimeout(2500);
+  const err = await p.locator('#stage-control ~ span.text-red-600').innerText().catch(() => '');
+  return { etapa: await p.locator('#stage-control').inputValue(), err };
+}
+log('asesor vende por $1', JSON.stringify(await sell(1)));
+await shot(p, 'v2-venta-1-peso-rechazada-cel', false);
+log('asesor vende a precio de lista (sin monto)', JSON.stringify(await sell(null)));
+log('BD', JSON.stringify(await sql('select l.stage, l.sale_amount, u.code, u.status from leads l left join units u on u.id=l.unit_id where l.id=$1', [leadId])));
 await b.close();

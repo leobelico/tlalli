@@ -1,7 +1,14 @@
-import { browser, login, shot, BASE, submitForm, msgs } from './lib.mjs';
+import { browser, login, shot, BASE, submitForm, msgs, sql, orgOf, leadByPhone } from './lib.mjs';
 import fs from 'fs';
 const acc = JSON.parse(fs.readFileSync('accounts.json'));
-const A = { lead: '506c187c-5970-4bcb-944c-605d61b282ef', unit: 'ffd40e6a-7330-4425-b094-c6f7733c71d2', leadAna: 'b72d68d0-8ece-4a8c-8b78-135c903ce163' };
+const orgA = await orgOf(acc.A.email);
+const A = {
+  lead: await leadByPhone(orgA, '+524448120007'),
+  leadAna: await leadByPhone(orgA, '+524448120001'),
+  unit: (await sql("select id from units where organization_id=$1 and code='Lote 1'", [orgA]))[0].id,
+};
+const probe = 'select (select stage from leads where id=$1) etapa_mj, (select status from units where id=$2) lote1, (select count(*) from leads where id=$3) ana_existe';
+const before = JSON.stringify(await sql(probe, [A.lead, A.unit, A.leadAna]));
 const b = await browser();
 const log = (...a) => console.log('===', ...a);
 const { p } = await login(b, acc.B.email, { password: acc.B.password });
@@ -78,8 +85,10 @@ log('7 borrar lead A', p.url().replace(BASE, ''), (await p.innerText('body')).sl
 await shot(p, 'f8-borrar-lead-ajeno');
 swap = null;
 // 8 forge org cookie
-const orgA = process.argv[2];
 await p.context().addCookies([{ name: 'org_id', value: orgA, url: BASE }]);
 await p.goto(BASE + '/app/leads');
 log('8 cookie org_id de A', (await p.innerText('body')).slice(0, 150).replace(/\s+/g, ' '));
+log('BD antes  ', before);
+log('BD despues', JSON.stringify(await sql(probe, [A.lead, A.unit, A.leadAna])));
+log('inyectado en A', JSON.stringify(await sql("select (select count(*) from activities where body like '%INYECTADA%') actividades, (select count(*) from tasks where title like '%INYECTADA%') tareas, (select count(*) from quotes where organization_id=$1 and unit_id=$2) cotizaciones_en_unidad_de_A", [orgA, A.unit])));
 await b.close();

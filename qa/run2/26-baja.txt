@@ -1,0 +1,3 @@
+=== equipo tras baja Equipo Plan Básico: 1 de 3 lugares ocupados (incluye invitaciones pendientes). Invitar a alguien Correo de la persona Rol Asesor Administrador Invitar NOMBRE CORREO ROL ESTATUS José Ñúñez Peña qa-a-mw9dq953@ejemplo.test Administrador Activo Tú Carla Asesora QA qa-asesor-mw9dq953@ejemplo.test Asesor Inactivo Hacer admin Reactivar
+=== asesor dado de baja ve /onboarding Pórtico Crea tu organización Aún no perteneces a ninguna inmobiliaria. Crea la tuya o pide a tu administrador un enlace de invitación. Nombre de tu inmobiliaria o desarrolladora Continuar Cerrar sesió
+exit=0

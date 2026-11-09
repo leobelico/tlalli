@@ -1,0 +1,8 @@
+Nombre,Apellidos,Teléfono,Correo,Campaña,Origen,Desarrollo,Presupuesto,Comentarios
+José,Núñez,444 100 0001,jose@x.test,,Facebook,Fraccionamiento La Peñita 🌵 Ñandú,"$1,200,000",Quiere esquina
+María,Peña,(444) 100-0002,,RADIO-X,radio,,1.2M,
+Pedro,,4441000001,,,,,,duplicado del 1
+Luisa,Gómez,12345,,,,,,tel corto
+,SinNombre,4441000005,,,,,,
+Ñoño,Ñañez,+52 1 444 100 0006,correo@malo,,espectacular,,,
+Raro,Columnas,4441000007,,,TikTok,,,

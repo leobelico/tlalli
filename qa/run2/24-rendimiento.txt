@@ -1,0 +1,22 @@
+{
+ "A /app": "min 249ms / max 302ms · DOM 303 nodos · HTML 60 KB",
+ "A /app/leads": "min 418ms / max 461ms · DOM 699 nodos · HTML 132 KB",
+ "A /app/leads?q=Núñez": "min 460ms / max 591ms · DOM 715 nodos · HTML 141 KB",
+ "A /app/leads?q=449000": "min 445ms / max 588ms · DOM 709 nodos · HTML 138 KB",
+ "A /app/leads?frios=1": "min 423ms / max 438ms · DOM 736 nodos · HTML 150 KB",
+ "A /app/leads?page=100": "min 405ms / max 561ms · DOM 699 nodos · HTML 132 KB",
+ "A /app/pipeline": "min 1007ms / max 1131ms · DOM 19357 nodos · HTML 1662 KB",
+ "A /app/tareas": "min 187ms / max 308ms · DOM 102 nodos · HTML 28 KB",
+ "A /app/cotizador": "min 163ms / max 203ms · DOM 217 nodos · HTML 47 KB",
+ "A /app/campanas": "min 190ms / max 485ms · DOM 143 nodos · HTML 31 KB",
+ "ASESOR /app": "min 238ms / max 364ms · DOM 61 nodos · HTML 20 KB",
+ "ASESOR /app/leads": "min 185ms / max 209ms · DOM 61 nodos · HTML 20 KB",
+ "ASESOR /app/leads?q=Núñez": "min 170ms / max 190ms · DOM 60 nodos · HTML 20 KB",
+ "ASESOR /app/leads?q=449000": "min 184ms / max 198ms · DOM 61 nodos · HTML 20 KB",
+ "ASESOR /app/leads?frios=1": "min 197ms / max 306ms · DOM 61 nodos · HTML 20 KB",
+ "ASESOR /app/leads?page=100": "min 193ms / max 219ms · DOM 61 nodos · HTML 20 KB",
+ "ASESOR /app/pipeline": "min 205ms / max 238ms · DOM 61 nodos · HTML 20 KB",
+ "ASESOR /app/tareas": "min 230ms / max 292ms · DOM 61 nodos · HTML 20 KB",
+ "ASESOR /app/cotizador": "min 221ms / max 254ms · DOM 61 nodos · HTML 20 KB",
+ "ASESOR /app/campanas": "min 162ms / max 199ms · DOM 60 nodos · HTML 20 KB"
+}

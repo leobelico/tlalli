@@ -7,6 +7,7 @@ const hrefs = await p.locator('a[href^="/app/leads/"]').evaluateAll(as => as.map
 const lead = hrefs[4];
 await p.goto(BASE + lead);
 const waText = async () => (await p.innerText('body')).match(/Modo simulado[\s\S]{0,700}/)?.[0].replace(/\s+/g, ' ');
+if (!(await p.getByRole('button', { name: 'Enviar plantilla' }).isVisible())) await p.locator('summary', { hasText: 'Enviar plantilla' }).click();
 await p.getByRole('button', { name: 'Enviar plantilla' }).click(); await p.waitForTimeout(2000);
 log('tras plantilla', await waText());
 await p.locator('summary', { hasText: /Simular mensaje/ }).click();
