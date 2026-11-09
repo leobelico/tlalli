@@ -8,3 +8,4 @@ tour.json
 *.pdf
 run-all.log
 dev-server.log
+prod-server.log

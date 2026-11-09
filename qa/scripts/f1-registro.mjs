@@ -36,7 +36,8 @@ for (const [k, org] of [['A', 'Fraccionamientos Peña & Núñez 🏡'], ['B', 'C
   await q.click('button[type=submit]');
   await q.waitForURL(/\/app/, { timeout: 30000 }).catch(() => {});
   log.push([`registro ${k}`, q.url(), `${Date.now() - t}ms`, (await q.innerText('body')).slice(0, 1500)]);
-  await q.waitForLoadState('networkidle');
+  // not 'networkidle': right after signup the production build keeps 3 background prefetches open (see report)
+  await q.waitForLoadState('load'); await q.waitForTimeout(1500);
   await shot(q, `f1-registro-ok-${k}`);
   accounts[k] = { email, password: 'Prueba123!' };
   await c2.close();

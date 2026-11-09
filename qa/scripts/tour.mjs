@@ -2,7 +2,7 @@ import { browser, login, shot, BASE } from './lib.mjs';
 import fs from 'fs';
 const b = await browser();
 const out = { timings: {}, console: [], texts: {} };
-const pages = ['/app', '/app/leads', '/app/leads/nuevo', '/app/leads/importar', '/app/pipeline', '/app/tareas', '/app/desarrollos', '/app/campanas', '/app/cotizador', '/app/equipo', '/app/configuracion'];
+const pages = ['/app', '/app/leads', '/app/leads/nuevo', '/app/leads/importar', '/app/pipeline', '/app/tareas', '/app/desarrollos', '/app/campanas', '/app/cotizador', '/app/autorizaciones', '/app/equipo', '/app/configuracion'];
 for (const [label, w, h] of [['desk', 1280, 800], ['cel', 390, 844]]) {
   const { ctx, p } = await login(b, 'admin@potosi.ejemplo.test', { width: w, height: h });
   p.on('console', m => { if (['error', 'warning'].includes(m.type())) out.console.push(`${label} ${p.url()} ${m.type()}: ${m.text().slice(0, 300)}`); });

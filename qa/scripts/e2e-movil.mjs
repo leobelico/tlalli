@@ -3,7 +3,6 @@
 import { browser, login, shot, BASE, sql, orgOf } from './lib.mjs';
 import fs from 'fs';
 
-const acc = JSON.parse(fs.readFileSync('accounts.json'));
 const SECTIONS = ['Inicio', 'Pipeline', 'Leads', 'Tareas', 'Desarrollos', 'Cotizador', 'Autorizaciones', 'Campañas', 'Equipo', 'Configuración'];
 let failures = 0;
 const fail = (m) => { failures++; console.error('FAIL:', m); };

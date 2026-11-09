@@ -14,7 +14,9 @@ async function sell(amount) {
   await p.locator('dialog button').last().click();
   await p.waitForTimeout(2500);
   const err = await p.locator('#stage-control ~ span.text-red-600').innerText().catch(() => '');
-  return { etapa: await p.locator('#stage-control').inputValue(), err };
+  // above the asesor's limit it is not an error any more: a pending request notice (pilot item 5)
+  const aviso = await p.locator('#stage-control ~ span[role=status]').innerText().catch(() => '');
+  return { etapa: await p.locator('#stage-control').inputValue(), err, aviso: aviso.slice(0, 160) };
 }
 log('asesor vende por $1', JSON.stringify(await sell(1)));
 await shot(p, 'v2-venta-1-peso-rechazada-cel', false);
