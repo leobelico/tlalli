@@ -37,7 +37,7 @@ Cuentas del seed (contraseña `Demo1234!`): `admin@potosi.ejemplo.test`, `asesor
 | `npm run dev` / `build` / `start` | Desarrollo / build / producción (puerto 3010) |
 | `npm run lint` | ESLint (incluye la regla que restringe el cliente Prisma sin RLS) |
 | `npm run typecheck` | `next typegen` + `tsc --noEmit` |
-| `npm test` | Vitest contra la base local (**requiere `supabase start`**) |
+| `npm test` | Vitest contra su **propia base `inmobiliaria_test`** en el Postgres local (**requiere `supabase start`**); se crea, migra y vacía sola, y no toca tus datos de desarrollo |
 | `npm run db:migrate` | `prisma migrate deploy` |
 | `npm run db:seed` | Seed idempotente (solo Supabase local) |
 | `npm run db:reset` | Borra y recrea la base local |

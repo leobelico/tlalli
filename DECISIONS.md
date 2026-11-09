@@ -126,3 +126,9 @@ Registro de decisiones tomadas ante ambigüedades. Formato: decisión — motivo
 - "Deshacer" es de verdad, no solo "mover de regreso": restaura la etapa, las fechas de primer y último contacto (avanzar de etapa las había marcado como contactado), el motivo de pérdida, el monto/fecha de venta y el estatus del lote. Se guarda una foto del estado anterior en `lead_stage_events.undo_snapshot`.
 - Reglas: solo quien hizo el cambio puede deshacerlo; solo si es el último cambio de ese lead; una sola vez; deja constancia en el historial ("Se deshizo el cambio…") y un evento compensatorio que ya no se puede deshacer. Si alguien más cambió el lote en esos segundos, el lote no se toca.
 - No cubre: deshacer cambios de etapa que ocurren por otras vías (cotizar mueve a Cotización; el apartado automático), ni cambios hechos antes de esta versión (no tienen foto).
+
+### D-P8. Base de datos de pruebas separada (QA B26, pilotos punto 8)
+- `npm test` corre contra `inmobiliaria_test` en el mismo Postgres local (se deriva de `DATABASE_URL`; se puede fijar con `TEST_DATABASE_URL`). Una base aparte en el mismo servidor, y no otro servidor ni un contenedor nuevo, para no pedirle nada más a quien desarrolla: Supabase local ya está arriba.
+- `tests/global-setup.ts` la crea si falta, aplica todas las migraciones y la **vacía** (TRUNCATE) antes de cada corrida, así que ninguna prueba depende de datos viejos ni deja basura.
+- Salvaguardas porque vacía datos: se niega a correr si la base no se llama `*_test`, y si no es una `TEST_DATABASE_URL` explícita exige que el servidor sea local.
+- Las ~14 organizaciones basura que las pruebas dejaron antes en la base de desarrollo **no se borraron** (no se puede distinguir con certeza de datos tuyos, p. ej. "Leonardo"); desaparecen con `npm run db:reset && npm run db:seed`.
