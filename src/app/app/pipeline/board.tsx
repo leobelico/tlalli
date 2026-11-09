@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useCallback, useState, useTransition } from "react";
 import { STAGE_LABEL, STAGES } from "@/lib/labels";
-import { moveStageAction } from "./actions";
+import { moveStageAction, undoStageAction } from "./actions";
 import { StageDialog, type PendingMove } from "./stage-dialog";
+import { ConfirmMoveDialog } from "./confirm-move-dialog";
+import { UndoToast } from "./undo-toast";
 import type { Stage } from "@/generated/prisma/enums";
 
 export type BoardCard = {
@@ -42,6 +44,10 @@ export function Board({ initial, showAssignee }: { initial: BoardColumn[]; showA
   const [pending, setPending] = useState<PendingMove | null>(null);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [confirm, setConfirm] = useState<{ id: string; to: Stage } | null>(null);
+  const [undo, setUndo] = useState<{ eventId: string; message: string } | null>(null);
+  const [undoBusy, setUndoBusy] = useState(false);
+  const closeUndo = useCallback(() => setUndo(null), []);
   const [, startTransition] = useTransition();
   // Phones show one collapsible list per stage; the first stage with leads starts open (QA B14).
   const [openStages, setOpenStages] = useState<Set<Stage>>(() => new Set(initial.filter((c) => c.cards.length).slice(0, 1).map((c) => c.stage)));
@@ -70,6 +76,8 @@ export function Board({ initial, showAssignee }: { initial: BoardColumn[]; showA
     const snapshot = columns;
     setError("");
     setNotice("");
+    setUndo(null);
+    const moved = findCard(id);
     applyMove(id, to);
     startTransition(async () => {
       const res = await moveStageAction({ leadId: id, stage: to, ...extra });
@@ -81,16 +89,27 @@ export function Board({ initial, showAssignee }: { initial: BoardColumn[]; showA
         setColumns(snapshot);
         setNotice(res.message ?? "");
       } else {
+        if (res.data?.eventId && moved) setUndo({ eventId: res.data.eventId, message: `Moviste a ${moved.name} a ${STAGE_LABEL[to]}.` });
         router.refresh();
       }
     });
+  }
+
+  async function doUndo() {
+    if (!undo) return;
+    setUndoBusy(true);
+    const res = await undoStageAction(undo.eventId);
+    setUndoBusy(false);
+    if (res.error) setError(res.error);
+    setUndo(null);
+    router.refresh();
   }
 
   function requestMove(id: string, to: Stage) {
     const card = findCard(id);
     if (!card || card.stage === to) return;
     if (to === "PERDIDO" || to === "VENDIDO") setPending({ leadId: id, name: card.name, stage: to });
-    else commit(id, to);
+    else setConfirm({ id, to }); // asks first; then "Deshacer" is offered for 10 s
   }
 
   return (
@@ -203,6 +222,20 @@ export function Board({ initial, showAssignee }: { initial: BoardColumn[]; showA
           </section>
         ))}
       </div>
+      <ConfirmMoveDialog
+        move={
+          confirm && findCard(confirm.id)
+            ? { name: findCard(confirm.id)!.name, fromLabel: STAGE_LABEL[findCard(confirm.id)!.stage], toLabel: STAGE_LABEL[confirm.to] }
+            : null
+        }
+        onCancel={() => setConfirm(null)}
+        onConfirm={() => {
+          const c = confirm;
+          setConfirm(null);
+          if (c) commit(c.id, c.to);
+        }}
+      />
+      {undo ? <UndoToast message={undo.message} busy={undoBusy} onUndo={doUndo} onClose={closeUndo} /> : null}
       <StageDialog
         move={pending}
         onCancel={() => setPending(null)}

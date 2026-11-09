@@ -24,6 +24,9 @@ async function setUnit(path, unitLabel) {
 async function stage(path, label) {
   await p.goto(BASE + path);
   await p.selectOption('#stage-control', { label });
+  await p.waitForTimeout(500);
+  const move = p.locator('dialog[open] button:has-text("Mover")');
+  if (await move.count()) await move.click(); // stage changes now ask first (pilot item 7)
   await p.waitForTimeout(2000);
   const err = await p.locator('#stage-control ~ span.text-red-600').innerText().catch(() => '');
   log(`stage ${path.slice(-6)} -> ${label}`, 'valor:', await p.locator('#stage-control').inputValue(), 'err:', err);

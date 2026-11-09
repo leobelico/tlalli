@@ -119,3 +119,10 @@ Registro de decisiones tomadas ante ambigüedades. Formato: decisión — motivo
 - Los datos del número de WhatsApp se guardan con su propia acción (`updateWhatsAppSettings`); guardar la configuración general ya no puede borrarlos (antes los ponía en nulo si faltaban en el formulario).
 - Mensajes de WhatsApp: "plantilla aprobada" → "mensaje predefinido"; las variables `{{1}} {{2}}` nunca se ven (un campo vacío aparece como `[Nombre del prospecto]` en la vista previa); el estado del encabezado explica en palabras si puede escribirle libremente o solo con un mensaje predefinido.
 - No se tradujeron los textos del código ni de `docs/WHATSAPP.md` (los usa el equipo técnico); "plantilla" sigue apareciendo en los botones "Enviar plantilla".
+
+### D-P7. Confirmar y deshacer el cambio de etapa (pilotos, punto 7)
+- Cada cambio de etapa (selector de la ficha, "Mover a…" del pipeline y arrastrar) pide confirmación diciendo "de X a Y". Pasar a **Vendido** o **Perdido** conserva su diálogo propio (pide monto o motivo), que ya funciona como confirmación.
+- Después de mover, un aviso ofrece **Deshacer** con cuenta regresiva de 10 s y desaparece solo. El servidor lo permite hasta 30 s para absorber latencia.
+- "Deshacer" es de verdad, no solo "mover de regreso": restaura la etapa, las fechas de primer y último contacto (avanzar de etapa las había marcado como contactado), el motivo de pérdida, el monto/fecha de venta y el estatus del lote. Se guarda una foto del estado anterior en `lead_stage_events.undo_snapshot`.
+- Reglas: solo quien hizo el cambio puede deshacerlo; solo si es el último cambio de ese lead; una sola vez; deja constancia en el historial ("Se deshizo el cambio…") y un evento compensatorio que ya no se puede deshacer. Si alguien más cambió el lote en esos segundos, el lote no se toca.
+- No cubre: deshacer cambios de etapa que ocurren por otras vías (cotizar mueve a Cotización; el apartado automático), ni cambios hechos antes de esta versión (no tienen foto).

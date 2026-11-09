@@ -365,6 +365,9 @@ model LeadStageEvent {
   leadId         String   @map("lead_id") @db.Uuid
   fromStage      Stage?   @map("from_stage")
   toStage        Stage    @map("to_stage")
+  /// What the lead (and its unit) looked like before this change, so it can be undone for a few seconds (pilot item 7).
+  undoSnapshot   Json?     @map("undo_snapshot")
+  undoneAt       DateTime? @map("undone_at")
   userId         String?  @map("user_id") @db.Uuid
   createdAt      DateTime @default(now()) @map("created_at")
 

@@ -1,5 +1,5 @@
 import "server-only";
-import type { LostReason, Stage } from "@/generated/prisma/enums";
+import type { LostReason, Stage, UnitStatus } from "@/generated/prisma/enums";
 import type { Prisma } from "@/generated/prisma/client";
 import { withOrg } from "@/server/db/tenant";
 import { can, leadScope, type Ctx } from "@/server/auth/permissions";
@@ -39,7 +39,29 @@ async function checkSaleAmount(tx: Prisma.TransactionClient, ctx: Ctx, lead: { u
   return { ok: true };
 }
 
+/** Same as changeStageDetailed, returning just the lead (what most callers need). */
 export async function changeStage(ctx: Ctx, leadId: string, input: StageChangeInput) {
+  return (await changeStageDetailed(ctx, leadId, input)).lead;
+}
+
+/** How long (server side) a stage change can be undone. The UI offers 10 s; this leaves room for latency. */
+export const UNDO_WINDOW_MS = 30_000;
+
+type UndoSnapshot = {
+  stage: Stage;
+  stageChangedAt: string;
+  firstContactAt: string | null;
+  lastContactAt: string | null;
+  lostReason: LostReason | null;
+  lostNote: string | null;
+  saleAmount: string | null;
+  soldAt: string | null;
+  /** Unit status before the move and what the move set it to (so we never undo someone else's change). */
+  unit?: { id: string; before: UnitStatus; after: UnitStatus };
+};
+
+/** Changes the stage and returns the lead plus the id of the stage event (null when nothing changed). */
+export async function changeStageDetailed(ctx: Ctx, leadId: string, input: StageChangeInput) {
   // A sale below what an asesor may give does not fail: it becomes a request for an admin (pilot item 5).
   // Checked in its own transaction so the request survives (the error below does not roll it back).
   if (input.stage === "VENDIDO" && !can(ctx.role, "pricing:override")) {
@@ -62,7 +84,7 @@ export async function changeStage(ctx: Ctx, leadId: string, input: StageChangeIn
   return withOrg(ctx.orgId, async (tx) => {
     const lead = await requireLead(tx, ctx, leadId);
     const to = input.stage;
-    if (lead.stage === to) return lead;
+    if (lead.stage === to) return { lead, eventId: null as string | null };
 
     if (to === "PERDIDO") {
       if (!input.lostReason) throw new DomainError("Indica el motivo de pérdida.");
@@ -90,6 +112,7 @@ export async function changeStage(ctx: Ctx, leadId: string, input: StageChangeIn
 
     // Keep inventory in sync with the lead's unit of interest.
     let unitNote = "";
+    let unitChange: UndoSnapshot["unit"];
     if (lead.unitId) {
       const unit = await tx.unit.findUnique({ where: { id: lead.unitId } });
       if (unit) {
@@ -99,6 +122,7 @@ export async function changeStage(ctx: Ctx, leadId: string, input: StageChangeIn
             throw new DomainError(`La unidad ${unit.code} ya está apartada por otro cliente.`);
           }
           await tx.unit.update({ where: { id: unit.id }, data: { status: "APARTADO" } });
+          unitChange = { id: unit.id, before: unit.status, after: "APARTADO" };
           unitNote = ` Unidad ${unit.code} marcada como apartada.`;
         } else if (to === "VENDIDO") {
           if (unit.status === "VENDIDO") throw new DomainError(`La unidad ${unit.code} ya está vendida.`);
@@ -106,11 +130,13 @@ export async function changeStage(ctx: Ctx, leadId: string, input: StageChangeIn
             throw new DomainError(`La unidad ${unit.code} está apartada por otro cliente.`);
           }
           await tx.unit.update({ where: { id: unit.id }, data: { status: "VENDIDO" } });
+          unitChange = { id: unit.id, before: unit.status, after: "VENDIDO" };
           unitNote = ` Unidad ${unit.code} marcada como vendida.`;
           data.saleAmount = input.saleAmount ?? unit.price;
         } else if ((lead.stage === "APARTADO" || lead.stage === "VENDIDO") && unit.status !== "DISPONIBLE") {
           // Deal fell through: release the unit.
           await tx.unit.update({ where: { id: unit.id }, data: { status: "DISPONIBLE" } });
+          unitChange = { id: unit.id, before: unit.status, after: "DISPONIBLE" };
           unitNote = ` Unidad ${unit.code} liberada.`;
         }
       }
@@ -123,9 +149,20 @@ export async function changeStage(ctx: Ctx, leadId: string, input: StageChangeIn
       data.saleAmount = null;
     }
 
+    const snapshot: UndoSnapshot = {
+      stage: lead.stage,
+      stageChangedAt: lead.stageChangedAt.toISOString(),
+      firstContactAt: lead.firstContactAt?.toISOString() ?? null,
+      lastContactAt: lead.lastContactAt?.toISOString() ?? null,
+      lostReason: lead.lostReason,
+      lostNote: lead.lostNote,
+      saleAmount: lead.saleAmount === null ? null : String(lead.saleAmount),
+      soldAt: lead.soldAt?.toISOString() ?? null,
+      ...(unitChange ? { unit: unitChange } : {}),
+    };
     const updated = await tx.lead.update({ where: { id: leadId }, data });
-    await tx.leadStageEvent.create({
-      data: { organizationId: ctx.orgId, leadId, fromStage: lead.stage, toStage: to, userId: ctx.userId },
+    const event = await tx.leadStageEvent.create({
+      data: { organizationId: ctx.orgId, leadId, fromStage: lead.stage, toStage: to, userId: ctx.userId, undoSnapshot: snapshot },
     });
     let body = `${STAGE_LABEL[lead.stage]} → ${STAGE_LABEL[to]}.`;
     if (to === "PERDIDO" && input.lostReason) {
@@ -135,7 +172,64 @@ export async function changeStage(ctx: Ctx, leadId: string, input: StageChangeIn
     await tx.activity.create({
       data: { organizationId: ctx.orgId, leadId, userId: ctx.userId, type: "CAMBIO_ETAPA", body: body + unitNote },
     });
-    return updated;
+    return { lead: updated, eventId: event.id as string | null };
+  });
+}
+
+/**
+ * Undoes the stage change `eventId` if it is still the lead's latest change, was made by this user
+ * less than UNDO_WINDOW_MS ago and has not been undone. Restores the lead's earlier state (contact
+ * dates, lost reason, sale) and the unit's status, and leaves an audit trail (a note and a
+ * compensating stage event that cannot itself be undone).
+ */
+export async function undoStageChange(ctx: Ctx, eventId: string) {
+  return withOrg(ctx.orgId, async (tx) => {
+    const ev = await tx.leadStageEvent.findUnique({ where: { id: eventId } });
+    if (!ev) throw new NotFoundError("Cambio no encontrado.");
+    const lead = await requireLead(tx, ctx, ev.leadId);
+    if (ev.userId !== ctx.userId) throw new DomainError("Solo quien lo hizo puede deshacer este cambio.");
+    if (ev.undoneAt) throw new DomainError("Este cambio ya se deshizo.");
+    const snap = ev.undoSnapshot as UndoSnapshot | null;
+    if (!snap) throw new DomainError("Este cambio ya no se puede deshacer.");
+    if (Date.now() - ev.createdAt.getTime() > UNDO_WINDOW_MS) {
+      throw new DomainError("Pasó demasiado tiempo para deshacerlo. Mueve al cliente de nuevo a la etapa anterior.");
+    }
+    const later = await tx.leadStageEvent.count({ where: { leadId: ev.leadId, id: { not: ev.id }, createdAt: { gte: ev.createdAt } } });
+    if (later > 0 || lead.stage !== ev.toStage) throw new DomainError("Hubo otro cambio después de este; ya no se puede deshacer.");
+
+    const date = (v: string | null) => (v ? new Date(v) : null);
+    await tx.lead.update({
+      where: { id: ev.leadId },
+      data: {
+        stage: snap.stage,
+        stageChangedAt: new Date(snap.stageChangedAt),
+        firstContactAt: date(snap.firstContactAt),
+        lastContactAt: date(snap.lastContactAt),
+        lostReason: snap.lostReason,
+        lostNote: snap.lostNote,
+        saleAmount: snap.saleAmount,
+        soldAt: date(snap.soldAt),
+      },
+    });
+    if (snap.unit) {
+      const unit = await tx.unit.findUnique({ where: { id: snap.unit.id } });
+      // Only if nobody changed the unit since our move.
+      if (unit && unit.status === snap.unit.after) await tx.unit.update({ where: { id: unit.id }, data: { status: snap.unit.before } });
+    }
+    await tx.leadStageEvent.update({ where: { id: ev.id }, data: { undoneAt: new Date() } });
+    await tx.leadStageEvent.create({
+      data: { organizationId: ctx.orgId, leadId: ev.leadId, fromStage: ev.toStage, toStage: snap.stage, userId: ctx.userId },
+    });
+    await tx.activity.create({
+      data: {
+        organizationId: ctx.orgId,
+        leadId: ev.leadId,
+        userId: ctx.userId,
+        type: "CAMBIO_ETAPA",
+        body: `Se deshizo el cambio: ${STAGE_LABEL[ev.toStage]} → ${STAGE_LABEL[snap.stage]}.`,
+      },
+    });
+    return { stage: snap.stage };
   });
 }
 

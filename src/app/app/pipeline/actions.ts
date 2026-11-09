@@ -5,7 +5,7 @@ import { z } from "zod";
 import { optionalMoney, optionalText, uuidSchema, type ActionState } from "@/lib/validation/common";
 import { requireCtx } from "@/server/auth/session";
 import { runAction } from "@/server/errors";
-import { changeStage } from "@/server/services/pipeline";
+import { changeStageDetailed, undoStageChange } from "@/server/services/pipeline";
 import { STAGES } from "@/lib/labels";
 
 const stageChangeSchema = z.object({
@@ -29,8 +29,19 @@ export async function moveStageAction(payload: StageChangePayload): Promise<Acti
   if (!parsed.success) return { error: "Datos inválidos." };
   const { leadId, stage, ...rest } = parsed.data;
   return runAction(async () => {
-    await changeStage(ctx, leadId, { stage: stage as (typeof STAGES)[number], ...rest });
+    const { eventId } = await changeStageDetailed(ctx, leadId, { stage: stage as (typeof STAGES)[number], ...rest });
     revalidatePath("/app", "layout");
-    return { ok: true };
+    // The id lets the UI offer "Deshacer" for 10 seconds.
+    return { ok: true, data: eventId ? { eventId } : undefined };
+  });
+}
+
+export async function undoStageAction(eventId: string): Promise<ActionState> {
+  const { ctx } = await requireCtx();
+  if (!uuidSchema.safeParse(eventId).success) return { error: "Datos inválidos." };
+  return runAction(async () => {
+    await undoStageChange(ctx, eventId);
+    revalidatePath("/app", "layout");
+    return { ok: true, message: "Listo, se deshizo el cambio." };
   });
 }
