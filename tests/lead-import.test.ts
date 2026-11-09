@@ -15,11 +15,14 @@ Correo malo;;4441000003;no-es-correo;;;
 
 describe("CSV parsing", () => {
   it("parses semicolon CSV with Spanish headers, BOM and accents", () => {
-    const { rows, errors } = parseLeadsCsv(CSV);
-    expect(rows.map((r) => r.data.phone)).toEqual(["+524441000001", "+524441000002"]);
+    const { rows, errors, warnings } = parseLeadsCsv(CSV);
+    // QA B08: the row with a malformed email is imported (without email) instead of being discarded.
+    expect(rows.map((r) => r.data.phone)).toEqual(["+524441000001", "+524441000002", "+524441000003"]);
+    expect(rows[2].data.email).toBeUndefined();
+    expect(warnings.map((w) => w.line)).toEqual([6]);
     expect(rows[0].data).toMatchObject({ firstName: "Juan", lastName: "Pérez", campaignCode: "ESP-57" });
     expect(rows[1].data.channel).toBe("FACEBOOK");
-    expect(errors.map((e) => e.line)).toEqual([4, 5, 6]);
+    expect(errors.map((e) => e.line)).toEqual([4, 5]);
   });
 
   it("requires name and phone columns", () => {
@@ -58,8 +61,9 @@ describe("CSV import and lead access", () => {
 
   it("imports valid rows, reports errors and dedupes on re-import", async () => {
     const first = await importLeadsCsv(org.adminCtx, CSV, { consentConfirmed: true, assign: "auto" });
-    expect(first).toMatchObject({ created: 2, duplicates: 0 });
-    expect(first.errors).toHaveLength(3);
+    expect(first).toMatchObject({ created: 3, duplicates: 0 });
+    expect(first.errors).toHaveLength(2);
+    expect(first.warnings).toHaveLength(1);
     const juan = await rootPrisma.lead.findFirstOrThrow({
       where: { organizationId: org.org.id, phone: "+524441000001" },
       include: { campaign: true, consents: true },
@@ -75,7 +79,7 @@ describe("CSV import and lead access", () => {
     expect(new Set(assignees.map((a) => a.assignedToId))).toEqual(new Set([asesor.user.id, asesor2.user.id]));
 
     const again = await importLeadsCsv(org.adminCtx, CSV, { consentConfirmed: true, assign: "auto" });
-    expect(again).toMatchObject({ created: 0, duplicates: 2 });
+    expect(again).toMatchObject({ created: 0, duplicates: 3 }); // 3 valid rows now (QA B08)
   });
 
   it("asesor only lists own leads and cannot open or reassign others", async () => {

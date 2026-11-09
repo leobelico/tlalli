@@ -9,6 +9,7 @@ import { requireCtx } from "@/server/auth/session";
 import { runAction } from "@/server/errors";
 import { addActivity, createLeadManual, deleteLead, updateLead } from "@/server/services/leads";
 import { importLeadsCsv, MAX_IMPORT_BYTES } from "@/server/services/lead-import";
+import { decodeCsvBytes } from "@/lib/csv-encoding";
 
 export async function createLeadAction(_: ActionState, formData: FormData): Promise<ActionState> {
   const { ctx } = await requireCtx("leads:create");
@@ -81,7 +82,7 @@ export async function importCsvAction(_: ActionState, formData: FormData): Promi
   );
   if (parsed.error) return parsed.error;
   return runAction(async () => {
-    const text = await file.text();
+    const text = decodeCsvBytes(new Uint8Array(await file.arrayBuffer()));
     const r = await importLeadsCsv(ctx, text, {
       consentConfirmed: true,
       assign: parsed.data.assign,
@@ -92,11 +93,15 @@ export async function importCsvAction(_: ActionState, formData: FormData): Promi
       .slice(0, 50)
       .map((e) => `Fila ${e.line}: ${e.message}`)
       .join("\n");
+    const warningLines = r.warnings
+      .slice(0, 50)
+      .map((w) => `Fila ${w.line}: ${w.message}`)
+      .join("\n");
     return {
       ok: true,
-      message: `Importación terminada: ${r.created} nuevos, ${r.duplicates} ya existían (se registró el nuevo contacto), ${r.errors.length} con errores.`,
+      message: `Importación terminada: ${r.created} nuevos, ${r.duplicates} ya existían (se registró el nuevo contacto), ${r.errors.length} con errores, ${r.warnings.length} con avisos.`,
       data: {
-        errors: errorLines,
+        errors: [errorLines, warningLines].filter(Boolean).join("\n"),
         unknownHeaders: r.unknownHeaders.join(", "),
       },
     };

@@ -44,6 +44,12 @@ const HEADER_ALIASES: Record<string, keyof ParsedRow["data"]> = {
   comentarios: "notes",
   observaciones: "notes",
   presupuesto: "budget",
+  // Facebook / Instagram Lead Ads exports (QA B09).
+  full_name: "firstName",
+  nombre_completo: "firstName",
+  phone_number: "phone",
+  numero_de_telefono: "phone",
+  numero_de_celular: "phone",
 };
 
 export type ParsedRow = {
@@ -62,6 +68,8 @@ export type ParsedRow = {
 };
 
 export type RowError = { line: number; message: string };
+/** Row imported, but something optional was dropped. */
+export type RowWarning = RowError;
 
 function normalizeKey(s: string) {
   return s
@@ -93,7 +101,12 @@ export function parseChannel(v: string | undefined): Channel | undefined {
 }
 
 /** Pure CSV parsing + per-row validation. Accepts comma or semicolon (Excel in es-MX). */
-export function parseLeadsCsv(text: string): { rows: ParsedRow[]; errors: RowError[]; unknownHeaders: string[] } {
+export function parseLeadsCsv(text: string): {
+  rows: ParsedRow[];
+  errors: RowError[];
+  warnings: RowWarning[];
+  unknownHeaders: string[];
+} {
   const clean = text.replace(/^﻿/, "");
   const result = Papa.parse<Record<string, string>>(clean, {
     header: true,
@@ -112,6 +125,7 @@ export function parseLeadsCsv(text: string): { rows: ParsedRow[]; errors: RowErr
 
   const rows: ParsedRow[] = [];
   const errors: RowError[] = [];
+  const warnings: RowWarning[] = [];
   const seenPhones = new Set<string>();
 
   result.data.forEach((raw, i) => {
@@ -129,7 +143,11 @@ export function parseLeadsCsv(text: string): { rows: ParsedRow[]; errors: RowErr
     let email: string | undefined;
     if (d.email) {
       email = d.email.toLowerCase();
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return errors.push({ line, message: `Correo inválido: "${d.email}".` });
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        // A typo in an optional field must not cost us the lead (QA B08).
+        warnings.push({ line, message: `Correo inválido "${d.email}": el prospecto se importó sin correo.` });
+        email = undefined;
+      }
     }
     const budget = d.budget ? Number(d.budget.replace(/[$,\s]/g, "")) : undefined;
     rows.push({
@@ -147,7 +165,7 @@ export function parseLeadsCsv(text: string): { rows: ParsedRow[]; errors: RowErr
       },
     });
   });
-  return { rows, errors, unknownHeaders };
+  return { rows, errors, warnings, unknownHeaders };
 }
 
 export async function importLeadsCsv(
@@ -162,7 +180,7 @@ export async function importLeadsCsv(
     );
   }
   if (text.length > MAX_IMPORT_BYTES) throw new DomainError("El archivo pesa más de 2 MB.");
-  const { rows, errors, unknownHeaders } = parseLeadsCsv(text);
+  const { rows, errors, warnings, unknownHeaders } = parseLeadsCsv(text);
   let created = 0;
   let duplicates = 0;
   const assignTo = opts.assign === "auto" ? "auto" : opts.assign === "me" ? ctx.userId : undefined;
@@ -184,5 +202,5 @@ export async function importLeadsCsv(
       }
     });
   }
-  return { created, duplicates, errors, unknownHeaders, total: rows.length + errors.length };
+  return { created, duplicates, errors, warnings, unknownHeaders, total: rows.length + errors.length };
 }
