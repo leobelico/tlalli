@@ -132,11 +132,29 @@ export async function bulkCreateUnits(
   });
 }
 
+/**
+ * A unit held (APARTADO) or sold (VENDIDO) by a lead cannot be freed by hand: the lead's stage is the
+ * source of truth. Otherwise the same lot could be booked twice (QA B01).
+ */
+async function assertNotHeld(tx: Tx, unit: { id: string; code: string }) {
+  const holder = await tx.lead.findFirst({
+    where: { unitId: unit.id, stage: { in: ["APARTADO", "VENDIDO"] } },
+    select: { firstName: true, lastName: true, stage: true },
+  });
+  if (!holder) return;
+  const who = [holder.firstName, holder.lastName].filter(Boolean).join(" ");
+  const state = holder.stage === "VENDIDO" ? "vendida" : "apartada";
+  throw new DomainError(
+    `La unidad ${unit.code} está ${state} por ${who}. Para liberarla, cambia primero la etapa de ese cliente (por ejemplo a Perdido).`,
+  );
+}
+
 export async function updateUnit(ctx: Ctx, unitId: string, input: UnitInput) {
   assertCan(ctx, "units:write");
   return withOrg(ctx.orgId, async (tx) => {
     const unit = await tx.unit.findUnique({ where: { id: unitId } });
     if (!unit) throw new NotFoundError("Unidad no encontrada.");
+    if (input.status === "DISPONIBLE" && unit.status !== "DISPONIBLE") await assertNotHeld(tx, unit);
     try {
       return await tx.unit.update({ where: { id: unitId }, data: input });
     } catch (e) {
@@ -149,8 +167,10 @@ export async function updateUnit(ctx: Ctx, unitId: string, input: UnitInput) {
 export async function setUnitStatus(ctx: Ctx, unitId: string, status: UnitStatus) {
   assertCan(ctx, "units:write");
   return withOrg(ctx.orgId, async (tx) => {
-    const res = await tx.unit.updateMany({ where: { id: unitId }, data: { status } });
-    if (res.count === 0) throw new NotFoundError("Unidad no encontrada.");
+    const unit = await tx.unit.findUnique({ where: { id: unitId } });
+    if (!unit) throw new NotFoundError("Unidad no encontrada.");
+    if (status === "DISPONIBLE" && unit.status !== "DISPONIBLE") await assertNotHeld(tx, unit);
+    await tx.unit.update({ where: { id: unitId }, data: { status } });
   });
 }
 

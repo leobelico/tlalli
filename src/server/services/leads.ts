@@ -333,6 +333,25 @@ export async function updateLead(
       const dup = await tx.lead.findFirst({ where: { phone: input.phone, NOT: { id: leadId } } });
       if (dup) throw new DomainError("Ya existe otro lead con ese teléfono.");
     }
+    // A lead that already holds a unit (apartado/vendido) keeps the inventory in sync (QA B02).
+    const newUnitId = input.unitId ?? null;
+    let unitNote = "";
+    if (newUnitId !== lead.unitId && (lead.stage === "APARTADO" || lead.stage === "VENDIDO") && lead.unitId) {
+      if (lead.stage === "VENDIDO") {
+        throw new DomainError("La venta ya está registrada sobre esa unidad; no se puede cambiar. Cambia primero la etapa del cliente.");
+      }
+      if (newUnitId) {
+        const target = await tx.unit.findUnique({ where: { id: newUnitId } });
+        if (!target) throw new NotFoundError("Unidad no encontrada.");
+        if (target.status !== "DISPONIBLE") {
+          throw new DomainError(`La unidad ${target.code} ya está ${target.status === "VENDIDO" ? "vendida" : "apartada"}.`);
+        }
+        await tx.unit.update({ where: { id: newUnitId }, data: { status: "APARTADO" } });
+        unitNote = ` Apartado movido a la unidad ${target.code}.`;
+      }
+      await tx.unit.updateMany({ where: { id: lead.unitId }, data: { status: "DISPONIBLE" } });
+      unitNote ||= " Unidad anterior liberada.";
+    }
     const data: Prisma.LeadUncheckedUpdateInput = {
       firstName: input.firstName,
       lastName: input.lastName ?? null,
@@ -361,6 +380,11 @@ export async function updateLead(
           type: "ASIGNACION",
           body: name ? `Asignado a ${name}.` : "Lead sin asignar.",
         },
+      });
+    }
+    if (unitNote) {
+      await tx.activity.create({
+        data: { organizationId: ctx.orgId, leadId, userId: ctx.userId, type: "SISTEMA", body: `Cambio de unidad.${unitNote}` },
       });
     }
     return tx.lead.update({ where: { id: leadId }, data });

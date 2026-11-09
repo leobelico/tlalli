@@ -1,12 +1,18 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import { UNIT_STATUS_LABEL } from "@/lib/labels";
 import { deleteUnitAction, unitStatusAction } from "../actions";
 
 export function UnitStatusSelect({ id, developmentId, status }: { id: string; developmentId: string; status: string }) {
+  const [state, action] = useActionState(unitStatusAction, {});
+  const formRef = useRef<HTMLFormElement>(null);
+  // When the server refuses the change, put the select back to the real status.
+  useEffect(() => {
+    if (state.error) formRef.current?.reset();
+  }, [state]);
   return (
-    <form action={unitStatusAction}>
+    <form action={action} ref={formRef}>
       <input type="hidden" name="id" value={id} />
       <input type="hidden" name="developmentId" value={developmentId} />
       <select
@@ -22,6 +28,7 @@ export function UnitStatusSelect({ id, developmentId, status }: { id: string; de
           </option>
         ))}
       </select>
+      {state.error ? <p role="alert" className="mt-1 max-w-56 text-xs text-red-600">{state.error}</p> : null}
     </form>
   );
 }

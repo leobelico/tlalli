@@ -80,13 +80,15 @@ export async function updateUnitAction(_: ActionState, formData: FormData): Prom
   });
 }
 
-export async function unitStatusAction(formData: FormData) {
+export async function unitStatusAction(_: ActionState, formData: FormData): Promise<ActionState> {
   const { ctx } = await requireCtx("units:write");
-  const id = uuidSchema.parse(formData.get("id"));
-  const devId = uuidSchema.parse(formData.get("developmentId"));
-  const status = unitStatusSchema.parse(formData.get("status"));
-  await setUnitStatus(ctx, id, status);
-  revalidatePath(`/app/desarrollos/${devId}`);
+  const parsed = parseForm(z.object({ id: uuidSchema, developmentId: uuidSchema, status: unitStatusSchema }), formData);
+  if (parsed.error) return parsed.error;
+  return runAction(async () => {
+    await setUnitStatus(ctx, parsed.data.id, parsed.data.status);
+    revalidatePath(`/app/desarrollos/${parsed.data.developmentId}`);
+    return { ok: true };
+  });
 }
 
 export async function deleteUnitAction(_: ActionState, formData: FormData): Promise<ActionState> {

@@ -25,7 +25,7 @@ export async function createQuote(ctx: Ctx, input: CreateQuoteInput) {
     const unit = await tx.unit.findUnique({ where: { id: input.unitId } });
     if (!unit) throw new NotFoundError("Unidad no encontrada.");
     if (unit.status === "VENDIDO") throw new DomainError(`La unidad ${unit.code} ya está vendida.`);
-    if (input.leadId) await requireLead(tx, ctx, input.leadId);
+    const lead = input.leadId ? await requireLead(tx, ctx, input.leadId) : null;
 
     let calc;
     try {
@@ -56,6 +56,10 @@ export async function createQuote(ctx: Ctx, input: CreateQuoteInput) {
         totalPaid: calc.totalPaid,
       },
     });
+    if (lead && lead.unitId !== unit.id && EARLY_STAGES.includes(lead.stage)) {
+      // Link the quoted unit to the lead so apartado/venta later update the inventory (QA B03).
+      await tx.lead.update({ where: { id: lead.id }, data: { unitId: unit.id, developmentId: unit.developmentId } });
+    }
     if (input.leadId) {
       await tx.activity.create({
         data: {
