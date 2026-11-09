@@ -41,6 +41,7 @@ export function Board({ initial, showAssignee }: { initial: BoardColumn[]; showA
   const [over, setOver] = useState<Stage | null>(null);
   const [pending, setPending] = useState<PendingMove | null>(null);
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
   const [, startTransition] = useTransition();
   // Phones show one collapsible list per stage; the first stage with leads starts open (QA B14).
   const [openStages, setOpenStages] = useState<Set<Stage>>(() => new Set(initial.filter((c) => c.cards.length).slice(0, 1).map((c) => c.stage)));
@@ -68,12 +69,17 @@ export function Board({ initial, showAssignee }: { initial: BoardColumn[]; showA
   function commit(id: string, to: Stage, extra: Record<string, string | undefined> = {}) {
     const snapshot = columns;
     setError("");
+    setNotice("");
     applyMove(id, to);
     startTransition(async () => {
       const res = await moveStageAction({ leadId: id, stage: to, ...extra });
       if (res.error) {
         setColumns(snapshot);
         setError(res.error);
+      } else if (res.data?.pending) {
+        // Nothing moved: the request is waiting for an admin (pilot item 5).
+        setColumns(snapshot);
+        setNotice(res.message ?? "");
       } else {
         router.refresh();
       }
@@ -92,6 +98,11 @@ export function Board({ initial, showAssignee }: { initial: BoardColumn[]; showA
       {error ? (
         <p role="alert" className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
           {error}
+        </p>
+      ) : null}
+      {notice ? (
+        <p role="status" className="mb-3 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900">
+          {notice}
         </p>
       ) : null}
       <div className="flex flex-col gap-3 pb-4 md:-mx-8 md:flex-row md:overflow-x-auto md:px-8">

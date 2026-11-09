@@ -20,6 +20,11 @@ const settingsSchema = z.object({
     .int({ error: "Usa horas completas." })
     .min(1, { error: "Mínimo 1 hora." })
     .max(720, { error: "Máximo 720 horas (30 días)." }),
+  maxAsesorDiscountPct: z.coerce
+    .number({ error: "Escribe un porcentaje." })
+    .int({ error: "Usa un número entero." })
+    .min(0, { error: "Entre 0 y 100." })
+    .max(100, { error: "Entre 0 y 100." }),
   waPhoneNumberId: optionalText(64).pipe(
     z.string().regex(/^\d+$/, { error: "Solo dígitos (lo da Meta)." }).optional(),
   ),

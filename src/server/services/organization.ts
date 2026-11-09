@@ -12,15 +12,20 @@ export async function getOrganization(ctx: Ctx) {
 
 export async function updateOrganizationSettings(
   ctx: Ctx,
-  input: { name: string; staleLeadHours: number; waPhoneNumberId?: string; waDisplayPhone?: string },
+  input: { name: string; staleLeadHours: number; maxAsesorDiscountPct?: number; waPhoneNumberId?: string; waDisplayPhone?: string },
 ) {
   assertCan(ctx, "org:settings");
+  const cap = input.maxAsesorDiscountPct;
+  if (cap !== undefined && (!Number.isInteger(cap) || cap < 0 || cap > 100)) {
+    throw new DomainError("El descuento máximo debe ser un número entero entre 0 y 100.");
+  }
   return withOrg(ctx.orgId, (tx) =>
     tx.organization.update({
       where: { id: ctx.orgId },
       data: {
         name: input.name,
         staleLeadHours: input.staleLeadHours,
+        ...(cap === undefined ? {} : { maxAsesorDiscountPct: cap }),
         waPhoneNumberId: input.waPhoneNumberId ?? null,
         waDisplayPhone: input.waDisplayPhone ?? null,
       },

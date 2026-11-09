@@ -121,6 +121,8 @@ model Organization {
   staleLeadHours      Int      @default(24) @map("stale_lead_hours")
   /// Per-stage overrides of the "cold lead" threshold in hours, e.g. {"CONTACTADO": 72} (QA B18).
   staleHoursByStage Json @default("{}") @map("stale_hours_by_stage")
+  /// Largest discount (% of list price) an asesor may give without an admin (pilot item 5).
+  maxAsesorDiscountPct Int @default(5) @map("max_asesor_discount_pct")
   /// Publishable key used by public web forms to post leads to this organization.
   leadFormKey         String   @unique @map("lead_form_key")
   /// Meta WhatsApp Cloud API phone number id that routes incoming messages to this org.
@@ -143,6 +145,7 @@ model Organization {
   consents         ConsentRecord[]
   privacyNotices   PrivacyNotice[]
   aiUsage          AiUsage[]
+  authorizationRequests AuthorizationRequest[]
 
   @@map("organizations")
 }
@@ -460,4 +463,40 @@ model RateLimitBucket {
 
   @@index([resetAt])
   @@map("rate_limit_buckets")
+}
+
+enum AuthorizationKind {
+  DESCUENTO
+  VENTA
+}
+
+enum AuthorizationStatus {
+  PENDIENTE
+  APROBADA
+  RECHAZADA
+}
+
+/// An asesor asked for something above their limit (discount, or a sale below list price) and an
+/// admin has to approve it. `payload` keeps the exact parameters to execute on approval.
+model AuthorizationRequest {
+  id             String              @id @default(uuid(7)) @db.Uuid
+  organizationId String              @map("organization_id") @db.Uuid
+  kind           AuthorizationKind
+  status         AuthorizationStatus @default(PENDIENTE)
+  requestedById  String              @map("requested_by_id") @db.Uuid
+  leadId         String?             @map("lead_id") @db.Uuid
+  unitId         String?             @map("unit_id") @db.Uuid
+  summary        String
+  payload        Json
+  decidedById    String?             @map("decided_by_id") @db.Uuid
+  decidedAt      DateTime?           @map("decided_at")
+  decisionNote   String?             @map("decision_note")
+  resultQuoteId  String?             @map("result_quote_id") @db.Uuid
+  createdAt      DateTime            @default(now()) @map("created_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, status, createdAt])
+  @@index([requestedById])
+  @@map("authorization_requests")
 }

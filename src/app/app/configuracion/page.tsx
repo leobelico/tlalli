@@ -58,6 +58,21 @@ export default async function SettingsPage() {
               />
             </Field>
             <Field
+              label="Descuento máximo de los asesores (%)"
+              name="maxAsesorDiscountPct"
+              hint="Un asesor puede cotizar o vender con hasta este descuento sobre el precio de lista. Arriba de eso, la solicitud llega a un administrador para que la autorice. 0 = ningún descuento sin autorización."
+            >
+              <input
+                id="maxAsesorDiscountPct"
+                name="maxAsesorDiscountPct"
+                type="number"
+                min={0}
+                max={100}
+                defaultValue={org.maxAsesorDiscountPct}
+                className="input"
+              />
+            </Field>
+            <Field
               label="WhatsApp: Phone number ID (Meta)"
               name="waPhoneNumberId"
               hint="Lo encuentras en Meta for Developers → WhatsApp → Configuración de la API."

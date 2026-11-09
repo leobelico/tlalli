@@ -11,14 +11,20 @@ export function StageControl({ leadId, name, stage }: { leadId: string; name: st
   const router = useRouter();
   const [pending, setPending] = useState<PendingMove | null>(null);
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
   const [busy, startTransition] = useTransition();
 
   function commit(to: Stage, extra: Record<string, string | undefined> = {}) {
     setError("");
+    setNotice("");
     startTransition(async () => {
       const res = await moveStageAction({ leadId, stage: to, ...extra });
       if (res.error) setError(res.error);
-      else router.refresh();
+      else {
+        // Above the asesor's limit: nothing changed, an admin got a request (pilot item 5).
+        if (res.data?.pending) setNotice(res.message ?? "");
+        router.refresh();
+      }
     });
   }
 
@@ -45,6 +51,11 @@ export function StageControl({ leadId, name, stage }: { leadId: string; name: st
         ))}
       </select>
       {error ? <span className="text-sm text-red-600">{error}</span> : null}
+      {notice ? (
+        <span role="status" className="w-full rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900">
+          {notice}
+        </span>
+      ) : null}
       <StageDialog
         move={pending}
         onCancel={() => setPending(null)}

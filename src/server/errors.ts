@@ -15,6 +15,17 @@ export class ForbiddenError extends DomainError {
   }
 }
 
+/**
+ * Not a failure: the asesor asked for something above their limit and an admin has to approve it.
+ * The request is already saved; the UI shows this message as an informational notice.
+ */
+export class AuthorizationPendingError extends DomainError {
+  constructor(message: string) {
+    super(message);
+    this.name = "AuthorizationPendingError";
+  }
+}
+
 export class NotFoundError extends DomainError {
   constructor(message = "No encontrado.") {
     super(message);
@@ -27,6 +38,7 @@ export async function runAction(fn: () => Promise<ActionState | void>): Promise<
   try {
     return (await fn()) ?? { ok: true };
   } catch (e) {
+    if (e instanceof AuthorizationPendingError) return { ok: true, message: e.message, data: { pending: "1" } };
     if (e instanceof DomainError) return { error: e.message };
     // Next.js redirect()/notFound() throw special errors that must propagate.
     if (e && typeof e === "object" && "digest" in e) throw e;

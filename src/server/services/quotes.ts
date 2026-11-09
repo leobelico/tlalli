@@ -5,7 +5,7 @@ import { assertCan, can, leadScope, type Ctx } from "@/server/auth/permissions";
 import { DomainError, NotFoundError } from "@/server/errors";
 import { calculateQuote, QuoteInputError } from "@/lib/quote";
 import { formatMoney, toNumber } from "@/lib/format";
-import { ASESOR_MAX_DISCOUNT_PCT } from "@/lib/policy";
+import { requestAuthorization } from "./authorizations";
 import { requireLead } from "./leads";
 import { changeStage } from "./pipeline";
 
@@ -20,19 +20,31 @@ export type CreateQuoteInput = {
 
 const EARLY_STAGES = ["NUEVO", "CONTACTADO", "CITA_AGENDADA", "VISITA_REALIZADA"];
 
-export async function createQuote(ctx: Ctx, input: CreateQuoteInput) {
+/**
+ * `onBehalfOf` / `skipCap` are used only when an admin approves a pending discount request: the quote
+ * is authored by the asesor who asked and the cap is not re-checked.
+ */
+export async function createQuote(ctx: Ctx, input: CreateQuoteInput, opts: { onBehalfOf?: string; skipCap?: boolean } = {}) {
   assertCan(ctx, "quotes:create");
-  const quote = await withOrg(ctx.orgId, async (tx) => {
+  const outcome = await withOrg(ctx.orgId, async (tx) => {
     const unit = await tx.unit.findUnique({ where: { id: input.unitId } });
     if (!unit) throw new NotFoundError("Unidad no encontrada.");
     if (unit.status === "VENDIDO") throw new DomainError(`La unidad ${unit.code} ya está vendida.`);
     const listPrice = toNumber(unit.price);
-    if (!can(ctx.role, "pricing:override") && (input.discount ?? 0) > (listPrice * ASESOR_MAX_DISCOUNT_PCT) / 100) {
-      throw new DomainError(
-        `Descuento máximo para asesores: ${ASESOR_MAX_DISCOUNT_PCT}% (${formatMoney((listPrice * ASESOR_MAX_DISCOUNT_PCT) / 100)}). Pide autorización a un administrador.`,
-      );
-    }
     const lead = input.leadId ? await requireLead(tx, ctx, input.leadId) : null;
+    const org = await tx.organization.findUniqueOrThrow({ where: { id: ctx.orgId }, select: { maxAsesorDiscountPct: true } });
+    const cap = org.maxAsesorDiscountPct;
+    if (!opts.skipCap && !can(ctx.role, "pricing:override") && (input.discount ?? 0) > (listPrice * cap) / 100) {
+      const who = lead ? ` · Cliente: ${[lead.firstName, lead.lastName].filter(Boolean).join(" ")}` : "";
+      const pct = Math.round(((input.discount ?? 0) / listPrice) * 1000) / 10;
+      return {
+        pending: {
+          cap,
+          unitId: unit.id,
+          summary: `Descuento de ${formatMoney(input.discount ?? 0)} (${pct}%) sobre ${formatMoney(listPrice)} en ${unit.code}${who}`,
+        },
+      };
+    }
 
     let calc;
     try {
@@ -52,7 +64,7 @@ export async function createQuote(ctx: Ctx, input: CreateQuoteInput) {
         organizationId: ctx.orgId,
         unitId: unit.id,
         leadId: input.leadId,
-        createdById: ctx.userId,
+        createdById: opts.onBehalfOf ?? ctx.userId,
         price: calc.price,
         discount: calc.discount,
         downPaymentPct: calc.downPaymentPct,
@@ -72,14 +84,27 @@ export async function createQuote(ctx: Ctx, input: CreateQuoteInput) {
         data: {
           organizationId: ctx.orgId,
           leadId: input.leadId,
-          userId: ctx.userId,
+          userId: opts.onBehalfOf ?? ctx.userId,
           type: "SISTEMA",
           body: `Cotización de ${unit.code}: enganche ${calc.downPaymentPct}% y ${calc.months} mensualidades de $${calc.monthlyPayment.toLocaleString("es-MX", { minimumFractionDigits: 2 })}.`,
         },
       });
     }
-    return q;
+    return { quote: q };
   });
+
+  if ("pending" in outcome && outcome.pending) {
+    const { cap, unitId, summary } = outcome.pending;
+    throw await requestAuthorization(ctx, {
+      kind: "DESCUENTO",
+      unitId,
+      leadId: input.leadId,
+      summary,
+      payload: { unitId: input.unitId, leadId: input.leadId, discount: input.discount, downPaymentPct: input.downPaymentPct, months: input.months, annualRatePct: input.annualRatePct },
+      message: `Tu descuento supera el descuento máximo para asesores (${cap}%). Lo enviamos a un administrador para que lo autorice; verás la respuesta en "Autorizaciones" y te avisaremos por correo.`,
+    });
+  }
+  const quote = outcome.quote!;
 
   // Quoting moves an early-stage lead to "Cotización".
   if (input.leadId) {

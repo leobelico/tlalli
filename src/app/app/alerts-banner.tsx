@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { Ctx } from "@/server/auth/permissions";
+import { can } from "@/server/auth/permissions";
 import { getAlerts } from "@/server/services/tasks";
+import { countPendingAuthorizations } from "@/server/services/authorizations";
 
 const since = (h: number) => (h < 48 ? `${h} h` : `${Math.floor(h / 24)} d`);
 
@@ -10,10 +12,12 @@ const since = (h: number) => (h < 48 ? `${h} h` : `${Math.floor(h / 24)} d`);
  */
 export async function AlertsBanner({ ctx }: { ctx: Ctx }) {
   const a = await getAlerts(ctx);
+  const toAuthorize = can(ctx.role, "pricing:override") ? await countPendingAuthorizations(ctx) : 0;
   const extras: { href: string; text: string }[] = [];
   if (a.overdueTasks) {
     extras.push({ href: "/app/tareas", text: `${a.overdueTasks} ${a.overdueTasks === 1 ? "tarea vencida" : "tareas vencidas"}` });
   }
+  if (toAuthorize) extras.push({ href: "/app/autorizaciones", text: `${toAuthorize} ${toAuthorize === 1 ? "solicitud por autorizar" : "solicitudes por autorizar"}` });
   if (a.unassigned) extras.push({ href: "/app/leads?asesor=none", text: `${a.unassigned} sin asignar` });
   if (!a.urgent.length && !extras.length) return null;
   return (

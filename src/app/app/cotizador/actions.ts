@@ -25,7 +25,10 @@ export async function createQuoteAction(_: ActionState, formData: FormData): Pro
   const res = await runAction(async () => {
     id = (await createQuote(ctx, parsed.data)).id;
   });
-  if (res.error) return res;
+  if (res.error || res.data?.pending) {
+    revalidatePath("/app", "layout");
+    return res;
+  }
   revalidatePath("/app", "layout");
   redirect(`/app/cotizador/${id}`);
 }

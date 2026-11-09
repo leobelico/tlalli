@@ -10,6 +10,7 @@ export const NAV_ITEMS = [
   { href: "/app/tareas", label: "Tareas" },
   { href: "/app/desarrollos", label: "Desarrollos" },
   { href: "/app/cotizador", label: "Cotizador" },
+  { href: "/app/autorizaciones", label: "Autorizaciones" },
   { href: "/app/campanas", label: "Campañas", adminOnly: true },
   { href: "/app/equipo", label: "Equipo", adminOnly: true },
   { href: "/app/configuracion", label: "Configuración", adminOnly: true },

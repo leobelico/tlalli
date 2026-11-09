@@ -14,11 +14,14 @@ export function QuoteForm({
   leads,
   initialUnitId,
   initialLeadId,
+  maxDiscountPct,
 }: {
   units: UnitOption[];
   leads: LeadOption[];
   initialUnitId?: string;
   initialLeadId?: string;
+  /** Asesor limit in % of list price (null = no limit, e.g. admins). */
+  maxDiscountPct?: number | null;
 }) {
   const [unitId, setUnitId] = useState(initialUnitId ?? "");
   const [discount, setDiscount] = useState("");
@@ -69,7 +72,17 @@ export function QuoteForm({
           </select>
         </Field>
         <div className="grid gap-3 sm:grid-cols-2">
-          <Field label="Descuento (MXN)" name="discount">
+          <Field
+            label="Descuento (MXN)"
+            name="discount"
+            hint={
+              maxDiscountPct == null
+                ? undefined
+                : unit
+                  ? `Sin autorización puedes dar hasta ${maxDiscountPct}% (${formatMoney((unit.price * maxDiscountPct) / 100)}). Arriba de eso se envía a un administrador.`
+                  : `Sin autorización puedes dar hasta ${maxDiscountPct}%. Arriba de eso se envía a un administrador.`
+            }
+          >
             <input id="discount" name="discount" type="number" min="0" step="0.01" className="input" value={discount} onChange={(e) => setDiscount(e.target.value)} />
           </Field>
           <Field label="Enganche (%)" name="downPaymentPct">

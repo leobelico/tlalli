@@ -3,6 +3,8 @@ import { PageHeader } from "@/components/ui";
 import { requireCtx } from "@/server/auth/session";
 import { listUnitsForSelect } from "@/server/services/inventory";
 import { listLeads } from "@/server/services/leads";
+import { getOrganization } from "@/server/services/organization";
+import { can } from "@/server/auth/permissions";
 import { isUuid } from "@/lib/validation/common";
 import { formatMoney, toNumber } from "@/lib/format";
 import { UNIT_STATUS_LABEL } from "@/lib/labels";
@@ -15,7 +17,7 @@ const str = (v: string | string[] | undefined) => (typeof v === "string" ? v : u
 export default async function QuoterPage({ searchParams }: PageProps<"/app/cotizador">) {
   const { ctx } = await requireCtx("quotes:create");
   const sp = await searchParams;
-  const [units, { leads }] = await Promise.all([listUnitsForSelect(ctx), listLeads(ctx, {})]);
+  const [units, { leads }, org] = await Promise.all([listUnitsForSelect(ctx), listLeads(ctx, {}), getOrganization(ctx)]);
   const quotable = units.filter((u) => u.status !== "VENDIDO");
   return (
     <>
@@ -29,6 +31,7 @@ export default async function QuoterPage({ searchParams }: PageProps<"/app/cotiz
         leads={leads.map((l) => ({ id: l.id, label: [l.firstName, l.lastName].filter(Boolean).join(" ") }))}
         initialUnitId={isUuid(str(sp.unidad)) ? str(sp.unidad) : undefined}
         initialLeadId={isUuid(str(sp.lead)) ? str(sp.lead) : undefined}
+        maxDiscountPct={can(ctx.role, "pricing:override") ? null : org.maxAsesorDiscountPct}
       />
     </>
   );

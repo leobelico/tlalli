@@ -104,3 +104,12 @@ Registro de decisiones tomadas ante ambigüedades. Formato: decisión — motivo
 - Tablas: en pantallas menores a 768 px todas las tablas de la app se muestran como tarjetas (cada fila, una tarjeta con su etiqueta). Es un solo CSS global más un componente que copia el encabezado de cada columna; no se tocó cada página (varias tienen cambios sin commitear de planos).
 - Pipeline: en celular es una lista por etapa, plegable (queda abierta la primera con leads); en escritorio sigue el tablero horizontal. No se arrastran tarjetas en el celular: se usa el selector "Mover a…".
 - Límite conocido: la lista de leads en celular mide ~12,000 px con 50 leads (una tarjeta de 7 líneas por lead). No hay desbordamiento horizontal, pero queda como mejora acortarla.
+
+### D-P5. Tope de descuento por organización y cola de autorización (pilotos, punto 5)
+- El tope vive en `organizations.max_asesor_discount_pct` (entero 0–100, por defecto 5) y se edita en Configuración. 0 significa que ningún descuento se da sin autorización. Solo el administrador lo cambia.
+- Si un asesor excede el tope al cotizar, o intenta registrar una venta por debajo de lista menos el tope, **no hay error**: se crea una solicitud `PENDIENTE`, se avisa por correo a todos los administradores activos y el asesor ve un aviso amarillo (no rojo) que dice dónde seguirla ("Autorizaciones"). La acción original no se ejecuta.
+- Una solicitud idéntica (mismo asesor, tipo, cliente, unidad y montos) no se duplica ni vuelve a mandar correo mientras siga pendiente.
+- Al autorizar, la acción se ejecuta de inmediato con permisos del administrador: la cotización queda **a nombre del asesor** con el descuento pedido (y mueve al cliente a Cotización); la venta se registra como venta del cliente. Se avisa al asesor por correo con el enlace. Si algo cambió mientras tanto (p. ej. el lote ya se vendió), la autorización falla con un mensaje claro y la solicitud sigue pendiente. Al rechazar, el administrador puede escribir una nota que el asesor lee.
+- Una solicitud no se puede resolver dos veces (se "reclama" antes de ejecutar); si la ejecución falla, se libera.
+- Venta de un asesor **sin unidad ligada** sigue siendo un error (no hay precio de lista contra qué comparar), no una solicitud.
+- Fuera de alcance por ahora: escalar solicitudes olvidadas, límites distintos por asesor o por desarrollo, y autorizar cancelaciones/liberación de lotes (siguen siendo solo del administrador).

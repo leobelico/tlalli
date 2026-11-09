@@ -6,7 +6,7 @@ import { can, leadScope, type Ctx } from "@/server/auth/permissions";
 import { DomainError, NotFoundError } from "@/server/errors";
 import { LOST_REASON_LABEL, STAGE_LABEL, STAGES } from "@/lib/labels";
 import { formatMoney, toNumber } from "@/lib/format";
-import { ASESOR_MAX_DISCOUNT_PCT } from "@/lib/policy";
+import { requestAuthorization } from "./authorizations";
 import { requireLead } from "./leads";
 import { stalePolicy } from "@/lib/stale";
 
@@ -21,23 +21,44 @@ export type StageChangeInput = {
  * Sales are money: the amount must be positive, and an asesor may only sell the linked unit at list
  * price or within the discount cap. Anything else needs an administrator (QA B04).
  */
-async function assertSaleAmountAllowed(tx: Prisma.TransactionClient, ctx: Ctx, unitId: string | null, amount?: number) {
+type SaleCheck = { ok: true } | { ok: false; cap: number; floor: number; price: number; unitId: string; unitCode: string; leadName: string };
+
+async function checkSaleAmount(tx: Prisma.TransactionClient, ctx: Ctx, lead: { unitId: string | null; firstName: string; lastName: string | null }, amount?: number): Promise<SaleCheck> {
   if (amount !== undefined && !(amount > 0)) throw new DomainError("El monto de la venta debe ser mayor a 0.");
-  if (can(ctx.role, "pricing:override")) return;
-  const unit = unitId ? await tx.unit.findUnique({ where: { id: unitId } }) : null;
+  if (can(ctx.role, "pricing:override")) return { ok: true };
+  const unit = lead.unitId ? await tx.unit.findUnique({ where: { id: lead.unitId } }) : null;
   if (!unit) {
     throw new DomainError("Para registrar la venta liga primero la unidad al cliente (Editar datos) o pide a un administrador que la registre.");
   }
+  const { maxAsesorDiscountPct: cap } = await tx.organization.findUniqueOrThrow({ where: { id: ctx.orgId }, select: { maxAsesorDiscountPct: true } });
   const price = toNumber(unit.price);
-  const floor = price * (1 - ASESOR_MAX_DISCOUNT_PCT / 100);
+  const floor = price * (1 - cap / 100);
   if (amount !== undefined && amount < floor) {
-    throw new DomainError(
-      `El monto está por debajo del descuento permitido para asesores (${ASESOR_MAX_DISCOUNT_PCT}%, mínimo ${formatMoney(floor)}). Pide a un administrador que registre la venta.`,
-    );
+    return { ok: false, cap, floor, price, unitId: unit.id, unitCode: unit.code, leadName: [lead.firstName, lead.lastName].filter(Boolean).join(" ") };
   }
+  return { ok: true };
 }
 
 export async function changeStage(ctx: Ctx, leadId: string, input: StageChangeInput) {
+  // A sale below what an asesor may give does not fail: it becomes a request for an admin (pilot item 5).
+  // Checked in its own transaction so the request survives (the error below does not roll it back).
+  if (input.stage === "VENDIDO" && !can(ctx.role, "pricing:override")) {
+    const check = await withOrg(ctx.orgId, async (tx) => {
+      const lead = await requireLead(tx, ctx, leadId);
+      if (lead.stage === "VENDIDO") return { ok: true } as SaleCheck;
+      return checkSaleAmount(tx, ctx, lead, input.saleAmount);
+    });
+    if (!check.ok) {
+      throw await requestAuthorization(ctx, {
+        kind: "VENTA",
+        leadId,
+        unitId: check.unitId,
+        summary: `Venta de ${check.unitCode} por ${formatMoney(input.saleAmount!)} (lista ${formatMoney(check.price)}) · Cliente: ${check.leadName}`,
+        payload: { leadId, saleAmount: input.saleAmount! },
+        message: `El monto de la venta está por debajo del mínimo para asesores (${check.cap}% de descuento, ${formatMoney(check.floor)}). Lo enviamos a un administrador para que lo autorice; verás la respuesta en "Autorizaciones" y te avisaremos por correo.`,
+      });
+    }
+  }
   return withOrg(ctx.orgId, async (tx) => {
     const lead = await requireLead(tx, ctx, leadId);
     const to = input.stage;
@@ -50,7 +71,7 @@ export async function changeStage(ctx: Ctx, leadId: string, input: StageChangeIn
       }
     }
 
-    if (to === "VENDIDO") await assertSaleAmountAllowed(tx, ctx, lead.unitId, input.saleAmount);
+    if (to === "VENDIDO") await checkSaleAmount(tx, ctx, lead, input.saleAmount); // errors only; "below the cap" was handled above
 
     const now = new Date();
     const data: Prisma.LeadUpdateInput = { stage: to, stageChangedAt: now };

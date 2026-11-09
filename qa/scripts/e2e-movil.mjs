@@ -4,7 +4,7 @@ import { browser, login, shot, BASE, sql, orgOf } from './lib.mjs';
 import fs from 'fs';
 
 const acc = JSON.parse(fs.readFileSync('accounts.json'));
-const SECTIONS = ['Inicio', 'Pipeline', 'Leads', 'Tareas', 'Desarrollos', 'Cotizador', 'Campañas', 'Equipo', 'Configuración'];
+const SECTIONS = ['Inicio', 'Pipeline', 'Leads', 'Tareas', 'Desarrollos', 'Cotizador', 'Autorizaciones', 'Campañas', 'Equipo', 'Configuración'];
 let failures = 0;
 const fail = (m) => { failures++; console.error('FAIL:', m); };
 const ok = (m) => console.log('ok  :', m);
@@ -16,7 +16,7 @@ const lead = (await sql('select id from leads where organization_id=$1 order by 
 const dev = (await sql('select id from developments where organization_id=$1 order by name limit 1', [orgId]))[0].id;
 const quote = (await sql('select id from quotes where organization_id=$1 limit 1', [orgId]))[0]?.id;
 const pages = ['/app', '/app/leads', '/app/leads/nuevo', '/app/leads/importar', `/app/leads/${lead}`, '/app/pipeline', '/app/tareas',
-  '/app/desarrollos', `/app/desarrollos/${dev}`, '/app/campanas', '/app/cotizador', ...(quote ? [`/app/cotizador/${quote}`] : []),
+  '/app/desarrollos', `/app/desarrollos/${dev}`, '/app/campanas', '/app/cotizador', '/app/autorizaciones', ...(quote ? [`/app/cotizador/${quote}`] : []),
   '/app/equipo', '/app/configuracion'];
 
 for (const path of pages) {
@@ -54,7 +54,7 @@ for (const s of SECTIONS) {
   }
   if (!visible) fail(`la sección "${s}" no se ve en la navegación del celular`);
 }
-if (!failures) ok('las 9 secciones están a la vista en el menú del celular');
+if (!failures) ok('las 10 secciones están a la vista en el menú del celular');
 await shot(p, 'movil-menu-abierto', false);
 
 // The pipeline must be a grouped list (no horizontal board) on a phone.

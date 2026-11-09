@@ -67,3 +67,39 @@ export function digestEmail(i: { name: string; overdueTasks: number; staleLeads:
     }),
   };
 }
+
+export function authorizationRequestedEmail(i: { requester: string; summary: string; link: string }): Body {
+  return {
+    subject: `Por autorizar: ${i.requester} pide tu autorización`,
+    text: `${i.requester} pide tu autorización:
+
+${i.summary}
+
+Apruébalo o recházalo aquí:
+${i.link}
+`,
+    html: layout(`${i.requester} pide tu autorización`, [esc(i.summary), "Mientras no respondas, la solicitud queda pendiente y el cliente espera."], {
+      label: "Revisar la solicitud",
+      href: i.link,
+    }),
+  };
+}
+
+export function authorizationDecidedEmail(i: { approved: boolean; summary: string; note: string | null; link: string }): Body {
+  const verdict = i.approved ? "aprobada" : "rechazada";
+  const note = i.note ? `
+Nota del administrador: ${i.note}` : "";
+  return {
+    subject: `Tu solicitud fue ${verdict}`,
+    text: `Tu solicitud fue ${verdict}:
+
+${i.summary}${note}
+
+Ábrela aquí: ${i.link}
+`,
+    html: layout(`Tu solicitud fue ${verdict}`, [esc(i.summary), ...(i.note ? [`Nota del administrador: ${esc(i.note)}`] : [])], {
+      label: i.approved ? "Abrir" : "Ver detalle",
+      href: i.link,
+    }),
+  };
+}
