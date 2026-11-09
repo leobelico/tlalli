@@ -113,3 +113,9 @@ Registro de decisiones tomadas ante ambigüedades. Formato: decisión — motivo
 - Una solicitud no se puede resolver dos veces (se "reclama" antes de ejecutar); si la ejecución falla, se libera.
 - Venta de un asesor **sin unidad ligada** sigue siendo un error (no hay precio de lista contra qué comparar), no una solicitud.
 - Fuera de alcance por ahora: escalar solicitudes olvidadas, límites distintos por asesor o por desarrollo, y autorizar cancelaciones/liberación de lotes (siguen siendo solo del administrador).
+
+### D-P6. Sin jerga de WhatsApp/Meta para el cliente (pilotos, punto 6)
+- Configuración muestra al cliente: nombre, alerta de frío, descuento máximo, límites por etapa y **"Tu formulario de contacto"** (una liga lista para compartir, `/f/<slug>`, con `?c=CODIGO` para marcar campaña). Todo lo técnico quedó en un solo bloque plegado **"Avanzado: WhatsApp y conexión con tu sitio web"**, escrito en español, que dice que normalmente lo configura el equipo de Pórtico y da el correo de soporte.
+- Los datos del número de WhatsApp se guardan con su propia acción (`updateWhatsAppSettings`); guardar la configuración general ya no puede borrarlos (antes los ponía en nulo si faltaban en el formulario).
+- Mensajes de WhatsApp: "plantilla aprobada" → "mensaje predefinido"; las variables `{{1}} {{2}}` nunca se ven (un campo vacío aparece como `[Nombre del prospecto]` en la vista previa); el estado del encabezado explica en palabras si puede escribirle libremente o solo con un mensaje predefinido.
+- No se tradujeron los textos del código ni de `docs/WHATSAPP.md` (los usa el equipo técnico); "plantilla" sigue apareciendo en los botones "Enviar plantilla".

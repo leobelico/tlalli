@@ -58,8 +58,8 @@ export function WhatsAppPanel({
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <h2 className="font-semibold">WhatsApp</h2>
         <span className="text-xs text-stone-500">
-          {providerName === "mock" ? "Modo simulado (desarrollo)" : "WhatsApp Cloud API"} ·{" "}
-          {windowOpen ? "ventana de 24 h abierta" : "fuera de la ventana de 24 h: solo plantillas"}
+          {providerName === "mock" ? "Modo de prueba: no se envían mensajes reales" : "WhatsApp Business"} ·{" "}
+          {windowOpen ? "te respondió hace menos de 24 h: puedes escribirle libremente" : "pasaron más de 24 h desde su último mensaje: solo mensajes predefinidos"}
         </span>
       </div>
 

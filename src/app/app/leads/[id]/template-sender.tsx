@@ -19,14 +19,15 @@ export function TemplateSender({ leadId, templates, disabledReason }: { leadId: 
   );
   if (!tpl) return null;
   const vals = values[tpl.name];
-  const preview = tpl.body.replace(/\{\{(\d+)\}\}/g, (_, n: string) => vals[Number(n) - 1] || `{{${n}}}`);
+  // Placeholders never reach the screen: an empty field shows its plain name in brackets.
+  const preview = tpl.body.replace(/\{\{(\d+)\}\}/g, (_, n: string) => vals[Number(n) - 1] || `[${tpl.variables[Number(n) - 1]?.label ?? "dato"}]`);
 
   return (
     <ActionForm action={sendTemplateAction} className="space-y-3">
       <input type="hidden" name="leadId" value={leadId} />
       <div>
         <label htmlFor="template" className="label">
-          Plantilla aprobada
+          Mensaje predefinido
         </label>
         <select id="template" name="template" className="input" value={name} onChange={(e) => setName(e.target.value)}>
           {templates.map((t) => (
@@ -40,7 +41,7 @@ export function TemplateSender({ leadId, templates, disabledReason }: { leadId: 
         {tpl.variables.map((v, i) => (
           <div key={`${tpl.name}-${i}`}>
             <label className="mb-0.5 block text-xs text-stone-600" htmlFor={`var-${i}`}>
-              {`{{${i + 1}}}`} {v.label}
+              {v.label}
             </label>
             <input
               id={`var-${i}`}

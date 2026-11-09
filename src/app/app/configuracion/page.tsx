@@ -7,7 +7,8 @@ import { currentPrivacyNotice, getOrganization } from "@/server/services/organiz
 import { getAiStatus } from "@/server/services/ai";
 import { PLANS } from "@/lib/plans";
 import { formatDate } from "@/lib/format";
-import { privacyNoticeAction, regenerateFormKeyAction, settingsAction, stalePolicyAction } from "./actions";
+import { privacyNoticeAction, regenerateFormKeyAction, settingsAction, stalePolicyAction, whatsAppSettingsAction } from "./actions";
+import { BRAND } from "@/lib/brand";
 import { DEFAULT_STAGE_HOURS, stalePolicy } from "@/lib/stale";
 import { STAGE_LABEL } from "@/lib/labels";
 import { TUNABLE_STAGES } from "@/server/services/organization";
@@ -72,16 +73,6 @@ export default async function SettingsPage() {
                 className="input"
               />
             </Field>
-            <Field
-              label="WhatsApp: Phone number ID (Meta)"
-              name="waPhoneNumberId"
-              hint="Lo encuentras en Meta for Developers → WhatsApp → Configuración de la API."
-            >
-              <input id="waPhoneNumberId" name="waPhoneNumberId" defaultValue={org.waPhoneNumberId ?? ""} className="input" inputMode="numeric" />
-            </Field>
-            <Field label="WhatsApp: número visible" name="waDisplayPhone">
-              <input id="waDisplayPhone" name="waDisplayPhone" defaultValue={org.waDisplayPhone ?? ""} className="input" placeholder="+52 444 123 4567" />
-            </Field>
             <SubmitButton>Guardar</SubmitButton>
           </ActionForm>
         </Card>
@@ -113,43 +104,76 @@ export default async function SettingsPage() {
           </ActionForm>
         </Card>
 
-        <Card>
-          <h2 className="mb-2 font-semibold">Formulario web (webhook de leads)</h2>
-          <p className="mb-3 text-sm text-stone-600">
-            Usa esta llave en el formulario de tu sitio web o landing para enviar leads directamente al CRM. Es una
-            llave pública de formulario: solo permite crear leads en tu organización.
-          </p>
-          <code className="block break-all rounded-lg bg-stone-100 p-3 text-xs">{org.leadFormKey}</code>
-          <p className="mt-3 text-xs text-stone-500">
-            Endpoint: <code>POST {appUrl}/api/public/leads</code>. Consulta el README para ver el formato.
-          </p>
-          <form action={regenerateFormKeyAction} className="mt-3">
-            <button className="btn-secondary text-xs">Regenerar llave (la anterior dejará de funcionar)</button>
-          </form>
-        </Card>
-
         <Card className="lg:col-span-2">
-          <h2 className="mb-2 font-semibold">Conexión de WhatsApp</h2>
-          <dl className="grid gap-x-6 gap-y-1 text-sm sm:grid-cols-[auto_1fr]">
-            <dt className="text-stone-500">Proveedor</dt>
-            <dd>{waProvider === "cloud" ? "WhatsApp Cloud API (Meta)" : "Simulado (desarrollo, no envía mensajes reales)"}</dd>
-            <dt className="text-stone-500">URL del webhook</dt>
-            <dd>
-              <code className="break-all">{appUrl}/api/webhooks/whatsapp</code>
-            </dd>
-            <dt className="text-stone-500">Phone number ID</dt>
-            <dd>{org.waPhoneNumberId ?? <span className="text-amber-700">Sin configurar (captúralo arriba)</span>}</dd>
-            <dt className="text-stone-500">Token de verificación / App secret</dt>
-            <dd>
-              {waConfigured ? "Configurados en el servidor" : <span className="text-amber-700">Faltan variables de entorno</span>}
-            </dd>
-          </dl>
-          <p className="mt-3 text-xs text-stone-500">
-            Los pasos para conectar el número están en <code>docs/WHATSAPP.md</code>. Las plantillas deben aprobarse en Meta con el
-            mismo nombre que usa el sistema.
+          <h2 className="mb-1 font-semibold">Tu formulario de contacto</h2>
+          <p className="mb-3 text-sm text-stone-600">
+            Comparte esta liga (en redes, en un código QR o en un espectacular): quien la abra deja sus datos y entra directo a tu
+            lista de leads, con su aviso de privacidad aceptado.
+          </p>
+          <code className="block break-all rounded-lg bg-stone-100 p-3 text-xs">{appUrl}/f/{org.slug}</code>
+          <p className="mt-2 text-xs text-stone-500">
+            Para saber de qué campaña viene cada persona, agrega <code>?c=</code> y el código de la campaña. Ejemplo:{" "}
+            <code>{appUrl}/f/{org.slug}?c=RADIO-EXA</code>
           </p>
         </Card>
       </div>
+
+      <Card className="mt-6">
+        <details>
+          <summary className="cursor-pointer font-semibold">Avanzado: WhatsApp y conexión con tu sitio web</summary>
+          <p className="mt-3 text-sm text-stone-600">
+            Esta parte normalmente la configura nuestro equipo contigo. <strong>No necesitas tocarla para empezar a usar {BRAND.name}.</strong>{" "}
+            Si quieres conectarla tú o necesitas ayuda, escríbenos a {BRAND.supportEmail}.
+          </p>
+
+          <div className="mt-5 grid gap-6 lg:grid-cols-2">
+            <section>
+              <h3 className="mb-2 text-sm font-semibold">WhatsApp Business</h3>
+              <dl className="grid gap-x-4 gap-y-1 text-sm sm:grid-cols-[auto_1fr]">
+                <dt className="text-stone-500">Estado</dt>
+                <dd>
+                  {waProvider === "cloud" && waConfigured ? "Conectado a WhatsApp Business" : <span className="text-amber-700">Modo de prueba: los mensajes no se envían de verdad</span>}
+                </dd>
+                <dt className="text-stone-500">Número</dt>
+                <dd>{org.waPhoneNumberId ? "Registrado" : <span className="text-amber-700">Aún sin registrar</span>}</dd>
+                <dt className="text-stone-500">Claves del servidor</dt>
+                <dd>{waConfigured ? "Configuradas" : <span className="text-amber-700">Faltan (las pone el equipo técnico)</span>}</dd>
+              </dl>
+              <ActionForm action={whatsAppSettingsAction} className="mt-4 space-y-3">
+                <Field
+                  label="Identificador de tu número de WhatsApp Business"
+                  name="waPhoneNumberId"
+                  hint="Es un número largo que aparece en la cuenta de WhatsApp Business de tu empresa. Si no lo tienes, déjalo vacío y escríbenos."
+                >
+                  <input id="waPhoneNumberId" name="waPhoneNumberId" defaultValue={org.waPhoneNumberId ?? ""} className="input" inputMode="numeric" />
+                </Field>
+                <Field label="Teléfono que ven tus clientes" name="waDisplayPhone">
+                  <input id="waDisplayPhone" name="waDisplayPhone" defaultValue={org.waDisplayPhone ?? ""} className="input" placeholder="+52 444 123 4567" />
+                </Field>
+                <SubmitButton>Guardar datos de WhatsApp</SubmitButton>
+              </ActionForm>
+              <p className="mt-3 text-xs text-stone-500">
+                Dirección de recepción de mensajes (para quien conecte el número): <code className="break-all">{appUrl}/api/webhooks/whatsapp</code>
+              </p>
+            </section>
+
+            <section>
+              <h3 className="mb-2 text-sm font-semibold">Conectar el formulario de tu propio sitio web</h3>
+              <p className="mb-3 text-sm text-stone-600">
+                Si tu sitio ya tiene un formulario, tu programador puede enviar los datos a {BRAND.name} con esta llave. Solo sirve para
+                registrar contactos nuevos en tu organización.
+              </p>
+              <code className="block break-all rounded-lg bg-stone-100 p-3 text-xs">{org.leadFormKey}</code>
+              <p className="mt-3 text-xs text-stone-500">
+                Dirección de envío: <code>POST {appUrl}/api/public/leads</code>
+              </p>
+              <form action={regenerateFormKeyAction} className="mt-3">
+                <button className="btn-secondary text-xs">Generar una llave nueva (la anterior dejará de funcionar)</button>
+              </form>
+            </section>
+          </div>
+        </details>
+      </Card>
 
       <Card className="mt-6">
         <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2">

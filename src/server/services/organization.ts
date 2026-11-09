@@ -12,7 +12,7 @@ export async function getOrganization(ctx: Ctx) {
 
 export async function updateOrganizationSettings(
   ctx: Ctx,
-  input: { name: string; staleLeadHours: number; maxAsesorDiscountPct?: number; waPhoneNumberId?: string; waDisplayPhone?: string },
+  input: { name: string; staleLeadHours: number; maxAsesorDiscountPct?: number },
 ) {
   assertCan(ctx, "org:settings");
   const cap = input.maxAsesorDiscountPct;
@@ -26,8 +26,6 @@ export async function updateOrganizationSettings(
         name: input.name,
         staleLeadHours: input.staleLeadHours,
         ...(cap === undefined ? {} : { maxAsesorDiscountPct: cap }),
-        waPhoneNumberId: input.waPhoneNumberId ?? null,
-        waDisplayPhone: input.waDisplayPhone ?? null,
       },
     }),
   );
@@ -124,4 +122,15 @@ export async function updateStalePolicy(ctx: Ctx, byStage: Partial<Record<(typeo
     clean[stage] = v;
   }
   await withOrg(ctx.orgId, (tx) => tx.organization.update({ where: { id: ctx.orgId }, data: { staleHoursByStage: clean } }));
+}
+
+/** WhatsApp Business number data (advanced section). Kept apart so saving the general settings never wipes it. */
+export async function updateWhatsAppSettings(ctx: Ctx, input: { waPhoneNumberId?: string; waDisplayPhone?: string }) {
+  assertCan(ctx, "org:settings");
+  return withOrg(ctx.orgId, (tx) =>
+    tx.organization.update({
+      where: { id: ctx.orgId },
+      data: { waPhoneNumberId: input.waPhoneNumberId ?? null, waDisplayPhone: input.waDisplayPhone ?? null },
+    }),
+  );
 }

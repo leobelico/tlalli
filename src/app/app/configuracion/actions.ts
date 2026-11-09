@@ -11,6 +11,7 @@ import {
   TUNABLE_STAGES,
   updateOrganizationSettings,
   updateStalePolicy,
+  updateWhatsAppSettings,
 } from "@/server/services/organization";
 
 const settingsSchema = z.object({
@@ -25,8 +26,11 @@ const settingsSchema = z.object({
     .int({ error: "Usa un número entero." })
     .min(0, { error: "Entre 0 y 100." })
     .max(100, { error: "Entre 0 y 100." }),
+});
+
+const whatsAppSchema = z.object({
   waPhoneNumberId: optionalText(64).pipe(
-    z.string().regex(/^\d+$/, { error: "Solo dígitos (lo da Meta)." }).optional(),
+    z.string().regex(/^\d+$/, { error: "Solo números (es el identificador que te da WhatsApp)." }).optional(),
   ),
   waDisplayPhone: optionalText(30),
 });
@@ -83,5 +87,16 @@ export async function stalePolicyAction(_: ActionState, formData: FormData): Pro
     await updateStalePolicy(ctx, byStage);
     revalidatePath("/app", "layout");
     return { ok: true, message: "Límites por etapa guardados." };
+  });
+}
+
+export async function whatsAppSettingsAction(_: ActionState, formData: FormData): Promise<ActionState> {
+  const { ctx } = await requireCtx("org:settings");
+  const parsed = parseForm(whatsAppSchema, formData);
+  if (parsed.error) return parsed.error;
+  return runAction(async () => {
+    await updateWhatsAppSettings(ctx, parsed.data);
+    revalidatePath("/app/configuracion");
+    return { ok: true, message: "Datos de WhatsApp guardados." };
   });
 }

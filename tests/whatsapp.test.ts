@@ -178,7 +178,7 @@ describe("WhatsApp webhook route and messaging", () => {
 
   it("validates template variables", async () => {
     const { lead } = await createLeadManual(a.adminCtx, { firstName: "Vars", phone: "+524449990010" });
-    await expect(sendTemplateToLead(a.adminCtx, lead.id, "seguimiento_prospecto", ["solo una"])).rejects.toThrow(/variables/);
-    await expect(sendTemplateToLead(a.adminCtx, lead.id, "no_existe", [])).rejects.toThrow(/desconocida/);
+    await expect(sendTemplateToLead(a.adminCtx, lead.id, "seguimiento_prospecto", ["solo una"])).rejects.toThrow(/Completa todos los datos/);
+    await expect(sendTemplateToLead(a.adminCtx, lead.id, "no_existe", [])).rejects.toThrow(/mensaje predefinido no existe/);
   });
 });

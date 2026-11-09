@@ -24,7 +24,7 @@ async function deliver(
   // 24 h window opened by the lead's own message (answering their request).
   if (msg.templateName && !lead.consentAt) {
     throw new DomainError(
-      "Este lead no tiene consentimiento registrado del aviso de privacidad. Compártele el aviso y registra su aceptación antes de enviar plantillas.",
+      "Este lead no tiene consentimiento registrado del aviso de privacidad. Compártele el aviso y registra su aceptación antes de enviarle mensajes predefinidos.",
     );
   }
   const org = await tx.organization.findUniqueOrThrow({ where: { id: ctx.orgId }, select: { waPhoneNumberId: true } });
@@ -65,7 +65,7 @@ async function deliver(
       leadId: lead.id,
       userId: ctx.userId,
       type: "WHATSAPP_SALIENTE",
-      body: msg.templateName ? `Plantilla "${msg.templateName}": ${msg.body}` : msg.body,
+      body: msg.templateName ? `Mensaje predefinido: ${msg.body}` : msg.body,
     },
   });
   await touchLead(tx, lead, now, ctx.userId);
@@ -74,9 +74,9 @@ async function deliver(
 
 export async function sendTemplateToLead(ctx: Ctx, leadId: string, templateName: string, variables: string[]) {
   const template = findTemplate(templateName);
-  if (!template) throw new DomainError("Plantilla desconocida.");
+  if (!template) throw new DomainError("Ese mensaje predefinido no existe.");
   if (variables.length !== template.variables.length || variables.some((v) => !v.trim())) {
-    throw new DomainError("Completa todas las variables de la plantilla.");
+    throw new DomainError("Completa todos los datos del mensaje.");
   }
   const clean = variables.map((v) => v.trim().slice(0, 200));
   return withOrg(ctx.orgId, async (tx) => {
@@ -98,7 +98,7 @@ export async function sendTextToLead(ctx: Ctx, leadId: string, body: string) {
     const lead = await requireLead(tx, ctx, leadId);
     if (!isWithinServiceWindow(lead.lastInboundAt)) {
       throw new DomainError(
-        "Pasaron más de 24 h desde el último mensaje del cliente. WhatsApp solo permite enviar una plantilla aprobada.",
+        "Pasaron más de 24 h desde el último mensaje del cliente. WhatsApp solo permite enviarle un mensaje predefinido.",
       );
     }
     return deliver(tx, ctx, lead, { body: text });
