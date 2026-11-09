@@ -8,7 +8,9 @@ import { runAction } from "@/server/errors";
 import {
   publishPrivacyNotice,
   regenerateLeadFormKey,
+  TUNABLE_STAGES,
   updateOrganizationSettings,
+  updateStalePolicy,
 } from "@/server/services/organization";
 
 const settingsSchema = z.object({
@@ -59,4 +61,22 @@ export async function regenerateFormKeyAction() {
   const { ctx } = await requireCtx("org:settings");
   await regenerateLeadFormKey(ctx);
   revalidatePath("/app/configuracion");
+}
+
+/** Per-stage "cold lead" thresholds. Empty field = use the default for that stage (QA B18). */
+export async function stalePolicyAction(_: ActionState, formData: FormData): Promise<ActionState> {
+  const { ctx } = await requireCtx("org:settings");
+  const byStage: Record<string, number> = {};
+  for (const stage of TUNABLE_STAGES) {
+    const raw = String(formData.get(stage) ?? "").trim();
+    if (!raw) continue;
+    const n = Number(raw);
+    if (!Number.isInteger(n)) return { error: "Usa horas completas.", fieldErrors: { [stage]: ["Usa horas completas."] } };
+    byStage[stage] = n;
+  }
+  return runAction(async () => {
+    await updateStalePolicy(ctx, byStage);
+    revalidatePath("/app", "layout");
+    return { ok: true, message: "Límites por etapa guardados." };
+  });
 }

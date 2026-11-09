@@ -7,13 +7,17 @@ import { currentPrivacyNotice, getOrganization } from "@/server/services/organiz
 import { getAiStatus } from "@/server/services/ai";
 import { PLANS } from "@/lib/plans";
 import { formatDate } from "@/lib/format";
-import { privacyNoticeAction, regenerateFormKeyAction, settingsAction } from "./actions";
+import { privacyNoticeAction, regenerateFormKeyAction, settingsAction, stalePolicyAction } from "./actions";
+import { DEFAULT_STAGE_HOURS, stalePolicy } from "@/lib/stale";
+import { STAGE_LABEL } from "@/lib/labels";
+import { TUNABLE_STAGES } from "@/server/services/organization";
 
 export const metadata: Metadata = { title: "Configuración" };
 
 export default async function SettingsPage() {
   const { ctx } = await requireCtx("org:settings");
   const [org, notice, ai] = await Promise.all([getOrganization(ctx), currentPrivacyNotice(ctx), getAiStatus(ctx)]);
+  const policy = stalePolicy(org);
   const appUrl = process.env.APP_URL ?? "";
   const waProvider = process.env.WHATSAPP_PROVIDER === "cloud" ? "cloud" : "mock";
   const waConfigured = Boolean(process.env.WHATSAPP_VERIFY_TOKEN && process.env.WHATSAPP_APP_SECRET);
@@ -64,6 +68,33 @@ export default async function SettingsPage() {
               <input id="waDisplayPhone" name="waDisplayPhone" defaultValue={org.waDisplayPhone ?? ""} className="input" placeholder="+52 444 123 4567" />
             </Field>
             <SubmitButton>Guardar</SubmitButton>
+          </ActionForm>
+        </Card>
+
+        <Card>
+          <h2 className="mb-1 font-semibold">Cuándo se considera frío un lead, por etapa</h2>
+          <p className="mb-4 text-sm text-stone-600">
+            Horas sin contacto antes de marcarlo en rojo. Un lead con una tarea o cita próxima nunca se marca como frío.
+            &quot;Nuevo&quot; usa la alerta general de arriba. Deja vacío para usar el valor sugerido.
+          </p>
+          <ActionForm action={stalePolicyAction} className="grid gap-3 sm:grid-cols-2">
+            {TUNABLE_STAGES.map((stage) => (
+              <Field key={stage} label={STAGE_LABEL[stage]} name={stage} hint={`Sugerido: ${DEFAULT_STAGE_HOURS[stage]} h`}>
+                <input
+                  id={stage}
+                  name={stage}
+                  type="number"
+                  min={1}
+                  max={720}
+                  className="input"
+                  placeholder={String(DEFAULT_STAGE_HOURS[stage])}
+                  defaultValue={policy.byStage[stage] ?? ""}
+                />
+              </Field>
+            ))}
+            <div className="sm:col-span-2">
+              <SubmitButton>Guardar límites</SubmitButton>
+            </div>
           </ActionForm>
         </Card>
 

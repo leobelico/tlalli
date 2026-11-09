@@ -5,7 +5,7 @@ import { withOrg } from "@/server/db/tenant";
 import { can, leadScope, type Ctx } from "@/server/auth/permissions";
 import { STAGES } from "@/lib/labels";
 import { toNumber } from "@/lib/format";
-import { OPEN_STAGES, staleCutoff } from "@/lib/stale";
+import { stalePolicy, staleWhere } from "@/lib/stale";
 
 export type DashboardRange = { from: Date; to: Date };
 
@@ -60,7 +60,7 @@ const hoursBetween = (a: Date, b: Date) => Math.max(0, (b.getTime() - a.getTime(
 export async function getDashboard(ctx: Ctx, range: DashboardRange): Promise<Dashboard> {
   const viewAll = can(ctx.role, "dashboard:viewAll");
   return withOrg(ctx.orgId, async (tx) => {
-    const org = await tx.organization.findUniqueOrThrow({ where: { id: ctx.orgId }, select: { staleLeadHours: true } });
+    const org = await tx.organization.findUniqueOrThrow({ where: { id: ctx.orgId }, select: { staleLeadHours: true, staleHoursByStage: true } });
     const scope = leadScope(ctx);
     const cohort: Prisma.LeadWhereInput = { ...scope, createdAt: { gte: range.from, lt: range.to } };
 
@@ -83,14 +83,7 @@ export async function getDashboard(ctx: Ctx, range: DashboardRange): Promise<Das
         select: { assignedToId: true, saleAmount: true, campaignId: true },
       }),
       tx.lead.count({
-        where: {
-          ...scope,
-          stage: { in: OPEN_STAGES },
-          OR: [
-            { lastContactAt: { lt: staleCutoff(org.staleLeadHours) } },
-            { lastContactAt: null, createdAt: { lt: staleCutoff(org.staleLeadHours) } },
-          ],
-        },
+        where: { ...scope, ...staleWhere(stalePolicy(org)) },
       }),
       tx.campaign.findMany({ select: { id: true, name: true, code: true, channel: true, spend: true } }),
       tx.membership.findMany({ include: { user: { select: { id: true, name: true } } } }),

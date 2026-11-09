@@ -2,6 +2,9 @@ import "server-only";
 import { withOrg } from "@/server/db/tenant";
 import { assertCan, type Ctx } from "@/server/auth/permissions";
 import { randomToken } from "@/lib/tokens";
+import { DomainError } from "@/server/errors";
+import { MAX_STALE_HOURS } from "@/lib/stale";
+import type { Stage } from "@/generated/prisma/enums";
 
 export async function getOrganization(ctx: Ctx) {
   return withOrg(ctx.orgId, (tx) => tx.organization.findUniqueOrThrow({ where: { id: ctx.orgId } }));
@@ -98,4 +101,22 @@ export async function openLeadCounts(ctx: Ctx): Promise<Record<string, number>> 
     tx.lead.groupBy({ by: ["assignedToId"], where: { stage: { notIn: ["VENDIDO", "PERDIDO"] } }, _count: { _all: true } }),
   );
   return Object.fromEntries(rows.filter((r) => r.assignedToId).map((r) => [r.assignedToId!, r._count._all]));
+}
+
+/** Stages whose cold-lead threshold can be tuned (NUEVO uses the base "staleLeadHours"). */
+export const TUNABLE_STAGES = ["CONTACTADO", "CITA_AGENDADA", "VISITA_REALIZADA", "COTIZACION"] as const satisfies readonly Stage[];
+
+/** Saves per-stage "cold lead" thresholds (QA B18). Missing stages fall back to the defaults. */
+export async function updateStalePolicy(ctx: Ctx, byStage: Partial<Record<(typeof TUNABLE_STAGES)[number], number>>) {
+  assertCan(ctx, "org:settings");
+  const clean: Record<string, number> = {};
+  for (const stage of TUNABLE_STAGES) {
+    const v = byStage[stage];
+    if (v === undefined) continue;
+    if (!Number.isInteger(v) || v < 1 || v > MAX_STALE_HOURS) {
+      throw new DomainError(`Cada límite debe ser de 1 a ${MAX_STALE_HOURS} horas completas.`);
+    }
+    clean[stage] = v;
+  }
+  await withOrg(ctx.orgId, (tx) => tx.organization.update({ where: { id: ctx.orgId }, data: { staleHoursByStage: clean } }));
 }

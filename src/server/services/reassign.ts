@@ -6,6 +6,7 @@ import { assertCan, type Ctx } from "@/server/auth/permissions";
 import { DomainError } from "@/server/errors";
 import { notifyLeadsAssignedSummary } from "@/server/notify/leads";
 import { leadWhere, type LeadFilters } from "./leads";
+import { stalePolicy } from "@/lib/stale";
 
 /** Closed deals keep their seller: reassigning them would rewrite sales and commission history. */
 export const CLOSED_STAGES: Stage[] = ["VENDIDO", "PERDIDO"];
@@ -51,8 +52,8 @@ export async function reassignLeads(ctx: Ctx, filters: LeadFilters, toUserId: st
   assertCan(ctx, "leads:assign");
   const { ids } = await withOrg(ctx.orgId, async (tx) => {
     if (toUserId) await assertHeir(tx, toUserId);
-    const org = await tx.organization.findUniqueOrThrow({ where: { id: ctx.orgId }, select: { staleLeadHours: true } });
-    return reassignInTx(tx, ctx, leadWhere(ctx, filters, org.staleLeadHours), toUserId, "reasignación masiva");
+    const org = await tx.organization.findUniqueOrThrow({ where: { id: ctx.orgId }, select: { staleLeadHours: true, staleHoursByStage: true } });
+    return reassignInTx(tx, ctx, leadWhere(ctx, filters, stalePolicy(org)), toUserId, "reasignación masiva");
   });
   if (toUserId && ids.length) await notifyLeadsAssignedSummary(ctx.orgId, new Map([[toUserId, ids.length]]), ctx.userId);
   return { count: ids.length };

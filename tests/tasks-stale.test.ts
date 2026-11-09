@@ -89,7 +89,10 @@ describe("tasks and alerts", () => {
       data: { lastContactAt: new Date(Date.now() - 5 * H) },
     });
     expect((await getAlerts(asesor.ctx)).staleLeads).toBe(0);
+    // QA B18: the lead is CONTACTADO, which has its own threshold; the base setting only drives NUEVO.
     await rootPrisma.organization.update({ where: { id: org.org.id }, data: { staleLeadHours: 4 } });
+    expect((await getAlerts(asesor.ctx)).staleLeads).toBe(0);
+    await rootPrisma.organization.update({ where: { id: org.org.id }, data: { staleHoursByStage: { CONTACTADO: 4 } } });
     expect((await getAlerts(asesor.ctx)).staleLeads).toBe(1);
   });
 

@@ -12,7 +12,7 @@ import { leadFormOptions } from "@/server/services/lead-options";
 import { ACTIVITY_LABEL, CHANNEL_LABEL, SOURCE_LABEL, LOST_REASON_LABEL } from "@/lib/labels";
 import { formatDateTime, formatMoney, timeAgo } from "@/lib/format";
 import { formatPhone, waDigits } from "@/lib/phone";
-import { hoursWithoutContact, isStale } from "@/lib/stale";
+import { hoursWithoutContact, isStale, staleHoursFor } from "@/lib/stale";
 import { isUuid } from "@/lib/validation/common";
 import { LeadFields } from "../lead-fields";
 import { StageControl } from "../../pipeline/stage-control";
@@ -40,9 +40,10 @@ export default async function LeadDetailPage({ params, searchParams }: PageProps
     if (e instanceof NotFoundError) notFound();
     throw e;
   }
-  const { lead, users, staleLeadHours } = detail;
+  const { lead, users, stalePolicy } = detail;
   const [options, ai] = await Promise.all([leadFormOptions(ctx), getAiStatus(ctx)]);
-  const stale = isStale(lead, staleLeadHours);
+  const now = new Date();
+  const stale = isStale({ ...lead, hasUpcomingTask: lead.tasks.some((t) => !t.completedAt && t.dueAt > now) }, stalePolicy, now);
   const fullName = [lead.firstName, lead.lastName].filter(Boolean).join(" ");
 
   return (
@@ -82,7 +83,7 @@ export default async function LeadDetailPage({ params, searchParams }: PageProps
         ) : null}
         {stale ? (
           <Badge tone="red">
-            Sin contacto desde hace {Math.floor(hoursWithoutContact(lead))} h (límite {staleLeadHours} h)
+            Sin contacto desde hace {Math.floor(hoursWithoutContact(lead))} h (límite de la etapa: {staleHoursFor(lead.stage, stalePolicy)} h)
           </Badge>
         ) : null}
         <span className="text-sm text-stone-500">

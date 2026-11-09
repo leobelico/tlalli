@@ -5,7 +5,7 @@ import { withOrg, type Tx } from "@/server/db/tenant";
 import { assertCan, can, leadScope, type Ctx } from "@/server/auth/permissions";
 import { DomainError, ForbiddenError, NotFoundError } from "@/server/errors";
 import { CHANNEL_LABEL, SOURCE_LABEL } from "@/lib/labels";
-import { staleCutoff, OPEN_STAGES } from "@/lib/stale";
+import { OPEN_STAGES, stalePolicy, staleWhere, upcomingTaskInclude, type StalePolicy } from "@/lib/stale";
 import { notifyLeadAssigned } from "@/server/notify/leads";
 
 export type LeadCreateInput = {
@@ -239,7 +239,7 @@ export type LeadFilters = {
 export const PAGE_SIZE = 50;
 
 /** The Prisma filter behind the leads list; also used by bulk reassignment so both always agree. */
-export function leadWhere(ctx: Ctx, f: LeadFilters, staleLeadHours: number): Prisma.LeadWhereInput {
+export function leadWhere(ctx: Ctx, f: LeadFilters, policy: StalePolicy): Prisma.LeadWhereInput {
   const where: Prisma.LeadWhereInput = { ...leadScope(ctx) };
   if (f.stage) where.stage = f.stage;
   if (f.campaignId) where.campaignId = f.campaignId;
@@ -258,37 +258,28 @@ export function leadWhere(ctx: Ctx, f: LeadFilters, staleLeadHours: number): Pri
       ...(digits.length >= 3 ? [{ phone: { contains: digits } }] : []),
     ];
   }
-  if (f.staleOnly) {
-    const cutoff = staleCutoff(staleLeadHours);
-    where.stage = f.stage && OPEN_STAGES.includes(f.stage) ? f.stage : { in: OPEN_STAGES };
-    where.AND = [
-      {
-        OR: [
-          { lastContactAt: { lt: cutoff } },
-          { lastContactAt: null, createdAt: { lt: cutoff } },
-        ],
-      },
-    ];
-  }
+  // Same rule as the "Frío" badge: per-stage threshold, ignoring leads with an upcoming task (QA B18).
+  if (f.staleOnly) where.AND = [staleWhere(policy)];
   return where;
 }
 
 export async function listLeads(ctx: Ctx, f: LeadFilters) {
   return withOrg(ctx.orgId, async (tx) => {
     const org = await tx.organization.findUniqueOrThrow({ where: { id: ctx.orgId } });
-    const where = leadWhere(ctx, f, org.staleLeadHours);
+    const policy = stalePolicy(org);
+    const where = leadWhere(ctx, f, policy);
     const page = Math.max(1, f.page ?? 1);
     const [total, leads] = await Promise.all([
       tx.lead.count({ where }),
       tx.lead.findMany({
         where,
-        include: { campaign: { select: { code: true, name: true } }, development: { select: { name: true } } },
+        include: { campaign: { select: { code: true, name: true } }, development: { select: { name: true } }, ...upcomingTaskInclude() },
         orderBy: { createdAt: "desc" },
         skip: (page - 1) * PAGE_SIZE,
         take: PAGE_SIZE,
       }),
     ]);
-    return { total, leads, page, pages: Math.max(1, Math.ceil(total / PAGE_SIZE)), staleLeadHours: org.staleLeadHours };
+    return { total, leads, page, pages: Math.max(1, Math.ceil(total / PAGE_SIZE)), staleLeadHours: org.staleLeadHours, stalePolicy: policy };
   });
 }
 
@@ -310,7 +301,7 @@ export async function getLeadDetail(ctx: Ctx, leadId: string) {
     });
     const org = await tx.organization.findUniqueOrThrow({
       where: { id: ctx.orgId },
-      select: { staleLeadHours: true },
+      select: { staleLeadHours: true, staleHoursByStage: true },
     });
     const userIds = [
       ...new Set(
@@ -320,7 +311,7 @@ export async function getLeadDetail(ctx: Ctx, leadId: string) {
       ),
     ];
     const users = await tx.user.findMany({ where: { id: { in: userIds } }, select: { id: true, name: true } });
-    return { lead, users: Object.fromEntries(users.map((u) => [u.id, u.name])), staleLeadHours: org.staleLeadHours };
+    return { lead, users: Object.fromEntries(users.map((u) => [u.id, u.name])), staleLeadHours: org.staleLeadHours, stalePolicy: stalePolicy(org) };
   });
 }
 

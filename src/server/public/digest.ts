@@ -1,7 +1,7 @@
 import "server-only";
 import { rootPrisma } from "@/server/db/root";
 import { withOrg } from "@/server/db/tenant";
-import { OPEN_STAGES, staleCutoff } from "@/lib/stale";
+import { stalePolicy, staleWhere } from "@/lib/stale";
 import { sendEmail } from "@/server/notify/email";
 import { digestEmail } from "@/server/notify/templates";
 
@@ -17,8 +17,8 @@ export async function runDailyDigest(now: Date = new Date()): Promise<{ sent: nu
   for (const { id: orgId } of orgs) {
     try {
       const people = await withOrg(orgId, async (tx) => {
-        const org = await tx.organization.findUniqueOrThrow({ where: { id: orgId }, select: { staleLeadHours: true } });
-        const cutoff = staleCutoff(org.staleLeadHours, now);
+        const org = await tx.organization.findUniqueOrThrow({ where: { id: orgId }, select: { staleLeadHours: true, staleHoursByStage: true } });
+        const cold = staleWhere(stalePolicy(org), now);
         const members = await tx.membership.findMany({
           where: { active: true },
           select: { user: { select: { id: true, email: true, name: true } } },
@@ -28,11 +28,7 @@ export async function runDailyDigest(now: Date = new Date()): Promise<{ sent: nu
           const [overdueTasks, staleLeads] = await Promise.all([
             tx.task.count({ where: { assignedToId: user.id, completedAt: null, dueAt: { lt: now } } }),
             tx.lead.count({
-              where: {
-                assignedToId: user.id,
-                stage: { in: OPEN_STAGES },
-                OR: [{ lastContactAt: { lt: cutoff } }, { lastContactAt: null, createdAt: { lt: cutoff } }],
-              },
+              where: { assignedToId: user.id, ...cold },
             }),
           ]);
           if (overdueTasks > 0 || staleLeads > 0) out.push({ email: user.email, name: user.name.split(" ")[0], overdueTasks, staleLeads });

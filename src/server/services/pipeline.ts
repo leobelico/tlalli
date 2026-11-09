@@ -8,6 +8,7 @@ import { LOST_REASON_LABEL, STAGE_LABEL, STAGES } from "@/lib/labels";
 import { formatMoney, toNumber } from "@/lib/format";
 import { ASESOR_MAX_DISCOUNT_PCT } from "@/lib/policy";
 import { requireLead } from "./leads";
+import { stalePolicy } from "@/lib/stale";
 
 export type StageChangeInput = {
   stage: Stage;
@@ -124,7 +125,11 @@ const MAX_PER_COLUMN = 150;
 
 export async function getPipeline(ctx: Ctx, f: PipelineFilters) {
   return withOrg(ctx.orgId, async (tx) => {
-    const org = await tx.organization.findUniqueOrThrow({ where: { id: ctx.orgId }, select: { staleLeadHours: true } });
+    const org = await tx.organization.findUniqueOrThrow({
+      where: { id: ctx.orgId },
+      select: { staleLeadHours: true, staleHoursByStage: true },
+    });
+    const now = new Date();
     const base: Prisma.LeadWhereInput = { ...leadScope(ctx) };
     if (f.developmentId) base.developmentId = f.developmentId;
     if (f.campaignId) base.campaignId = f.campaignId;
@@ -161,6 +166,7 @@ export async function getPipeline(ctx: Ctx, f: PipelineFilters) {
               campaign: { select: { code: true } },
               development: { select: { name: true } },
               unit: { select: { code: true } },
+              tasks: { where: { completedAt: null, dueAt: { gt: now } }, select: { id: true }, take: 1 },
             },
             orderBy: { stageChangedAt: "desc" },
             take: MAX_PER_COLUMN,
@@ -169,7 +175,7 @@ export async function getPipeline(ctx: Ctx, f: PipelineFilters) {
         return { stage, count, leads };
       }),
     );
-    return { columns, staleLeadHours: org.staleLeadHours, closedWindowDays: CLOSED_WINDOW_DAYS };
+    return { columns, staleLeadHours: org.staleLeadHours, stalePolicy: stalePolicy(org), closedWindowDays: CLOSED_WINDOW_DAYS };
   });
 }
 

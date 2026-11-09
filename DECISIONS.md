@@ -92,3 +92,9 @@ Registro de decisiones tomadas ante ambigüedades. Formato: decisión — motivo
 - Vendidos y perdidos **no** se reasignan (ni en la baja ni en la reasignación masiva): conservan a su asesor para historial y comisiones.
 - La reasignación masiva aplica exactamente a los leads que muestran los filtros actuales (mismo `leadWhere` que la lista). El filtro "asesor" ahora incluye a los inactivos, para poder rescatar leads huérfanos de bajas anteriores.
 - El acceso termina en la siguiente petición (cada página relee las membresías activas). No se cierran las sesiones de Supabase: la persona puede entrar a la app, pero solo ve el aviso de que fue desactivada y la opción de crear su propia organización.
+
+### D-P3. Alerta de lead frío por etapa (QA B18)
+- Un lead con una tarea pendiente cuya fecha aún no llega (cita, llamada agendada) **no** es frío; con una tarea vencida sí. No existe un modelo de "cita" aparte: las citas se registran como tareas.
+- Límites sugeridos: Nuevo = la alerta general de la organización (24 h por defecto, velocidad de respuesta); Contactado 72 h; Cita agendada 168 h; Visita realizada 72 h; Cotización 120 h. Cada organización puede cambiarlos en Configuración; vacío = sugerido. Aplicarlos por defecto cambia el conteo de inmediato (en la demo de 5,000 leads pasó de 2,973 a 2,472), y lo preferimos a seguir saturando.
+- "Los 5 más urgentes": primero los que nunca se contactaron (más antiguos primero), luego los de último contacto más viejo. El admin ve los de toda la organización; el asesor, solo los suyos.
+- Una sola regla (`staleWhere`/`isStale`) para lista, pipeline, ficha, banner, dashboard y resumen diario.

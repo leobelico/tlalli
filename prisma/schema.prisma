@@ -119,6 +119,8 @@ model Organization {
   slug                String   @unique
   plan                Plan     @default(BASICO)
   staleLeadHours      Int      @default(24) @map("stale_lead_hours")
+  /// Per-stage overrides of the "cold lead" threshold in hours, e.g. {"CONTACTADO": 72} (QA B18).
+  staleHoursByStage Json @default("{}") @map("stale_hours_by_stage")
   /// Publishable key used by public web forms to post leads to this organization.
   leadFormKey         String   @unique @map("lead_form_key")
   /// Meta WhatsApp Cloud API phone number id that routes incoming messages to this org.

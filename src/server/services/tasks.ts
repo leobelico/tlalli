@@ -3,7 +3,7 @@ import type { Prisma } from "@/generated/prisma/client";
 import { withOrg } from "@/server/db/tenant";
 import { can, leadScope, type Ctx } from "@/server/auth/permissions";
 import { DomainError, ForbiddenError, NotFoundError } from "@/server/errors";
-import { OPEN_STAGES, staleCutoff } from "@/lib/stale";
+import { OPEN_STAGES, hoursWithoutContact, stalePolicy, staleWhere } from "@/lib/stale";
 import { requireLead } from "./leads";
 
 export type TaskInput = { title: string; dueAt: Date; assignedToId?: string };
@@ -75,21 +75,31 @@ export async function listTasks(ctx: Ctx, opts: { scope: "mine" | "all"; include
 /** Counts shown as reminders across the app (banner, sidebar, home). */
 export async function getAlerts(ctx: Ctx, now: Date = new Date()) {
   return withOrg(ctx.orgId, async (tx) => {
-    const org = await tx.organization.findUniqueOrThrow({ where: { id: ctx.orgId }, select: { staleLeadHours: true } });
-    const cutoff = staleCutoff(org.staleLeadHours, now);
+    const org = await tx.organization.findUniqueOrThrow({
+      where: { id: ctx.orgId },
+      select: { staleLeadHours: true, staleHoursByStage: true },
+    });
+    const staleFilter = { ...leadScope(ctx), ...staleWhere(stalePolicy(org), now) };
     const endOfDay = new Date(now.getTime() + 24 * 3_600_000);
-    const [overdueTasks, dueSoonTasks, staleLeads, unassigned] = await Promise.all([
+    const [overdueTasks, dueSoonTasks, staleLeads, unassigned, urgentRows] = await Promise.all([
       tx.task.count({ where: { assignedToId: ctx.userId, completedAt: null, dueAt: { lt: now } } }),
       tx.task.count({ where: { assignedToId: ctx.userId, completedAt: null, dueAt: { gte: now, lt: endOfDay } } }),
-      tx.lead.count({
-        where: {
-          ...leadScope(ctx),
-          stage: { in: OPEN_STAGES },
-          OR: [{ lastContactAt: { lt: cutoff } }, { lastContactAt: null, createdAt: { lt: cutoff } }],
-        },
-      }),
+      tx.lead.count({ where: staleFilter }),
       can(ctx.role, "leads:assign") ? tx.lead.count({ where: { assignedToId: null, stage: { in: OPEN_STAGES } } }) : 0,
+      // "Tus 5 más urgentes": never-contacted first (speed to lead), then the longest without contact.
+      tx.lead.findMany({
+        where: staleFilter,
+        orderBy: [{ lastContactAt: { sort: "asc", nulls: "first" } }, { createdAt: "asc" }],
+        take: 5,
+        select: { id: true, firstName: true, lastName: true, lastContactAt: true, createdAt: true, assignedToId: true },
+      }),
     ]);
-    return { overdueTasks, dueSoonTasks, staleLeads, unassigned, staleLeadHours: org.staleLeadHours };
+    const urgent = urgentRows.map((l) => ({
+      id: l.id,
+      name: [l.firstName, l.lastName].filter(Boolean).join(" "),
+      hours: Math.floor(hoursWithoutContact(l, now)),
+      assignedToId: l.assignedToId,
+    }));
+    return { overdueTasks, dueSoonTasks, staleLeads, unassigned, urgent, staleLeadHours: org.staleLeadHours };
   });
 }

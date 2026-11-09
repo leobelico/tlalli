@@ -26,7 +26,7 @@ export default async function LeadsPage({ searchParams }: PageProps<"/app/leads"
   const filters = parseLeadFilters(sp);
   const stage = filters.stage;
   const asesor = filters.assignedToId;
-  const [{ leads, total, page, pages, staleLeadHours }, campaigns, agents] = await Promise.all([
+  const [{ leads, total, page, pages, stalePolicy }, campaigns, agents] = await Promise.all([
     listLeads(ctx, filters),
     listCampaignsForSelect(ctx),
     listAllAgents(ctx),
@@ -130,7 +130,7 @@ export default async function LeadsPage({ searchParams }: PageProps<"/app/leads"
             </thead>
             <tbody>
               {leads.map((l) => {
-                const stale = isStale(l, staleLeadHours);
+                const stale = isStale({ ...l, hasUpcomingTask: l.tasks.length > 0 }, stalePolicy);
                 return (
                   <tr key={l.id} className={stale ? "bg-red-50/50" : undefined}>
                     <td>

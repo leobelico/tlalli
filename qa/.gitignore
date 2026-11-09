@@ -7,3 +7,4 @@ tour.json
 .formkey
 *.pdf
 run-all.log
+dev-server.log

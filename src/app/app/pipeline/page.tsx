@@ -25,7 +25,7 @@ export default async function PipelinePage({ searchParams }: PageProps<"/app/pip
     assignedToId: isAdmin && isUuid(str(sp.asesor)) ? str(sp.asesor) : undefined,
     q: str(sp.q)?.slice(0, 80),
   };
-  const [{ columns, staleLeadHours, closedWindowDays }, devs, campaigns, agents] = await Promise.all([
+  const [{ columns, stalePolicy, closedWindowDays }, devs, campaigns, agents] = await Promise.all([
     getPipeline(ctx, filters),
     listDevelopments(ctx),
     listCampaignsForSelect(ctx),
@@ -44,7 +44,7 @@ export default async function PipelinePage({ searchParams }: PageProps<"/app/pip
       unit: l.unit?.code ?? null,
       assignee: l.assignedToId ? (agentName[l.assignedToId] ?? null) : null,
       lastTouchLabel: l.lastContactAt ? `contacto ${timeAgo(l.lastContactAt, now)}` : `alta ${timeAgo(l.createdAt, now)}`,
-      stale: isStale(l, staleLeadHours, now),
+      stale: isStale({ ...l, hasUpcomingTask: l.tasks.length > 0 }, stalePolicy, now),
       stage: l.stage,
     })),
   }));
@@ -53,7 +53,7 @@ export default async function PipelinePage({ searchParams }: PageProps<"/app/pip
     <>
       <PageHeader
         title="Pipeline"
-        description={`Arrastra las tarjetas entre etapas. Vendidos y perdidos de los últimos ${closedWindowDays} días. Frío = más de ${staleLeadHours} h sin contacto.`}
+        description={`Arrastra las tarjetas entre etapas. Vendidos y perdidos de los últimos ${closedWindowDays} días. Frío = pasó el límite sin contacto de su etapa y no tiene tarea próxima (se ajusta en Configuración).`}
       />
       <form method="get" className="mb-4 flex flex-wrap gap-2">
         <input name="q" defaultValue={filters.q} placeholder="Buscar nombre" className="input w-48" />
