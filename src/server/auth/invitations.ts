@@ -5,6 +5,8 @@ import { withOrg } from "@/server/db/tenant";
 import { PLANS } from "@/lib/plans";
 import { randomToken, sha256 } from "@/lib/tokens";
 import { DomainError } from "@/server/errors";
+import { sendEmail } from "@/server/notify/email";
+import { invitationEmail } from "@/server/notify/templates";
 import { assertCan, ForbiddenError, type Ctx } from "./permissions";
 
 const INVITATION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
@@ -41,7 +43,7 @@ export async function createInvitation(ctx: Ctx, input: { email: string; role: R
     );
   }
   const token = randomToken(32);
-  await withOrg(ctx.orgId, async (tx) => {
+  const sender = await withOrg(ctx.orgId, async (tx) => {
     const alreadyMember = await tx.membership.findFirst({
       where: { active: true, user: { email } },
     });
@@ -60,6 +62,16 @@ export async function createInvitation(ctx: Ctx, input: { email: string; role: R
         expiresAt: new Date(Date.now() + INVITATION_TTL_MS),
       },
     });
+    const [org, inviter] = await Promise.all([
+      tx.organization.findUniqueOrThrow({ where: { id: ctx.orgId }, select: { name: true } }),
+      tx.user.findUnique({ where: { id: ctx.userId }, select: { name: true } }),
+    ]);
+    return { orgName: org.name, inviterName: inviter?.name ?? "Tu administrador" };
+  });
+  // Best effort: the admin can still copy the link by hand if the email does not go out.
+  await sendEmail({
+    to: email,
+    ...invitationEmail({ ...sender, role: input.role, link: `${(process.env.APP_URL ?? "").replace(/\/$/, "")}/invitacion/${token}` }),
   });
   return token;
 }

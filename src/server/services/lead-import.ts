@@ -8,6 +8,7 @@ import { normalizePhone } from "@/lib/phone";
 import { CHANNELS } from "@/lib/validation/leads";
 import { CHANNEL_LABEL } from "@/lib/labels";
 import { createLeadTx, type LeadCreateInput } from "./leads";
+import { notifyLeadsAssignedSummary } from "@/server/notify/leads";
 
 export const MAX_IMPORT_ROWS = 2000;
 export const MAX_IMPORT_BYTES = 2 * 1024 * 1024;
@@ -183,6 +184,7 @@ export async function importLeadsCsv(
   const { rows, errors, warnings, unknownHeaders } = parseLeadsCsv(text);
   let created = 0;
   let duplicates = 0;
+  const assignedCounts = new Map<string, number>();
   const assignTo = opts.assign === "auto" ? "auto" : opts.assign === "me" ? ctx.userId : undefined;
 
   for (let i = 0; i < rows.length; i += 100) {
@@ -197,10 +199,14 @@ export async function importLeadsCsv(
           assignTo,
           consent: { granted: true },
         });
-        if (res.created) created++;
+        if (res.created) {
+          created++;
+          if (res.lead.assignedToId) assignedCounts.set(res.lead.assignedToId, (assignedCounts.get(res.lead.assignedToId) ?? 0) + 1);
+        }
         else duplicates++;
       }
     });
   }
+  await notifyLeadsAssignedSummary(ctx.orgId, assignedCounts, ctx.userId);
   return { created, duplicates, errors, warnings, unknownHeaders, total: rows.length + errors.length };
 }

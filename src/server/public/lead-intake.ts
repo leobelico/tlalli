@@ -2,6 +2,7 @@ import "server-only";
 import { rootPrisma } from "@/server/db/root";
 import { withOrg } from "@/server/db/tenant";
 import { createLeadTx } from "@/server/services/leads";
+import { notifyLeadAssigned } from "@/server/notify/leads";
 import { webhookLeadSchema, WEBHOOK_ALIASES } from "@/lib/validation/leads";
 import type { z } from "zod";
 
@@ -84,5 +85,6 @@ export async function intakeWebLead(
       },
     ),
   );
+  if (created && lead.assignedToId) await notifyLeadAssigned(orgId, lead.id, lead.assignedToId);
   return { ok: true, created, leadId: lead.id };
 }

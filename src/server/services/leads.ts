@@ -6,6 +6,7 @@ import { assertCan, can, leadScope, type Ctx } from "@/server/auth/permissions";
 import { DomainError, ForbiddenError, NotFoundError } from "@/server/errors";
 import { CHANNEL_LABEL, SOURCE_LABEL } from "@/lib/labels";
 import { staleCutoff, OPEN_STAGES } from "@/lib/stale";
+import { notifyLeadAssigned } from "@/server/notify/leads";
 
 export type LeadCreateInput = {
   firstName: string;
@@ -213,6 +214,7 @@ export async function createLeadManual(
   );
   // An asesor who re-captures a phone that belongs to someone else's lead cannot open it (QA B10).
   const accessible = can(ctx.role, "leads:viewAll") || res.lead.assignedToId === ctx.userId;
+  if (res.created && res.lead.assignedToId) await notifyLeadAssigned(ctx.orgId, res.lead.id, res.lead.assignedToId, ctx.userId);
   return { ...res, accessible };
 }
 
@@ -321,7 +323,8 @@ export async function updateLead(
   leadId: string,
   input: Omit<LeadCreateInput, "campaignCode" | "developmentName"> & { assignedToId?: string },
 ) {
-  return withOrg(ctx.orgId, async (tx) => {
+  let reassignedTo: string | null = null;
+  const updated = await withOrg(ctx.orgId, async (tx) => {
     const lead = await requireLead(tx, ctx, leadId);
     if (input.campaignId && !(await tx.campaign.findUnique({ where: { id: input.campaignId } }))) {
       throw new NotFoundError("Campaña no encontrada.");
@@ -372,6 +375,7 @@ export async function updateLead(
       if (!can(ctx.role, "leads:assign")) throw new ForbiddenError("Solo un administrador puede reasignar leads.");
       if (newAssignee) await requireActiveMember(tx, newAssignee);
       data.assignedToId = newAssignee;
+      reassignedTo = newAssignee;
       const name = newAssignee
         ? (await tx.user.findUnique({ where: { id: newAssignee }, select: { name: true } }))?.name
         : null;
@@ -392,6 +396,8 @@ export async function updateLead(
     }
     return tx.lead.update({ where: { id: leadId }, data });
   });
+  if (reassignedTo) await notifyLeadAssigned(ctx.orgId, leadId, reassignedTo, ctx.userId);
+  return updated;
 }
 
 export async function addActivity(ctx: Ctx, leadId: string, type: ActivityType, body: string) {
