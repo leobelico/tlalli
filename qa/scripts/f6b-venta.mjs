@@ -1,0 +1,18 @@
+import { browser, login, shot, BASE } from './lib.mjs';
+import fs from 'fs';
+const acc = JSON.parse(fs.readFileSync('accounts.json'));
+const b = await browser();
+const { p } = await login(b, acc.ASESOR.email, { password: acc.ASESOR.password, width: 390, height: 844 });
+const leadPath = '/app/leads/ab47804b-8a26-4879-8174-02d3266921ae';
+await p.goto(BASE + leadPath);
+await p.selectOption('#stage-control', 'VENDIDO');
+await p.waitForTimeout(800);
+console.log('botones dialogo', await p.locator('dialog button').allInnerTexts());
+await p.fill('#saleAmount', '1');
+await shot(p, 'f6-dialogo-venta-cel', false);
+await p.locator('dialog button').last().click();
+await p.waitForTimeout(2500);
+console.log('etapa', await p.locator('#stage-control').inputValue());
+await shot(p, 'f6-vendido-por-1-peso');
+fs.writeFileSync('asesor.json', JSON.stringify({ leadPath, quoteId: '792307d8-d33f-45c7-bd4c-dcc9d3299aee' }));
+await b.close();

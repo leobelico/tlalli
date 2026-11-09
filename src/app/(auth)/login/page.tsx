@@ -18,6 +18,9 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
         </Field>
         <Field label="Contraseña" name="password">
           <input id="password" name="password" type="password" autoComplete="current-password" required className="input" />
+          <Link href="/recuperar" className="mt-1.5 inline-block text-xs text-brand-700 hover:underline">
+            ¿Olvidaste tu contraseña?
+          </Link>
         </Field>
         <SubmitButton pendingText="Entrando…" className="btn-primary w-full">
           Entrar

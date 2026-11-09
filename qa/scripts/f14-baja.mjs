@@ -1,0 +1,17 @@
+import { browser, login, shot, BASE } from './lib.mjs';
+import fs from 'fs';
+const acc = JSON.parse(fs.readFileSync('accounts.json'));
+const b = await browser();
+const log = (...a) => console.log('===', ...a);
+const as = await login(b, acc.ASESOR.email, { password: acc.ASESOR.password });
+const { p } = await login(b, acc.A.email, { password: acc.A.password });
+p.on('dialog', d => d.accept());
+await p.goto(BASE + '/app/equipo');
+const row = p.locator('tr, li, div.flex').filter({ hasText: 'Carla Asesora QA' }).last();
+await row.getByRole('button', { name: /desactivar/i }).click(); await p.waitForTimeout(2000);
+log('equipo tras baja', (await p.innerText('main')).replace(/\s+/g, ' ').slice(0, 600));
+await shot(p, 'f14-baja-asesor');
+await as.p.goto(BASE + '/app/leads');
+log('asesor dado de baja ve', as.p.url().replace(BASE, ''), (await as.p.innerText('body')).replace(/\s+/g, ' ').slice(0, 200));
+await shot(as.p, 'f14-asesor-dado-de-baja');
+await b.close();

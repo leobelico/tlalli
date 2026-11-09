@@ -15,6 +15,7 @@ import { ACTIVE_ORG_COOKIE, ensureUserProfile, getAuthUser, getSession } from "@
 import { createOrganization } from "@/server/auth/organizations";
 import { acceptInvitation, findValidInvitation, InvitationError } from "@/server/auth/invitations";
 import { ForbiddenError } from "@/server/auth/permissions";
+import { rateLimit } from "@/lib/rate-limit";
 
 const COOKIE_OPTS = { httpOnly: true, sameSite: "lax" as const, secure: process.env.NODE_ENV === "production", path: "/" };
 
@@ -42,6 +43,49 @@ export async function loginAction(_: ActionState, formData: FormData): Promise<A
     return { error: "Correo o contraseña incorrectos." };
   }
   redirect(safeNext(parsed.data.next));
+}
+
+const RESET_SENT_MESSAGE =
+  "Si ese correo tiene una cuenta, te enviamos un enlace para crear una contraseña nueva. Revisa tu bandeja de entrada (y el spam). El enlace vence en una hora.";
+
+/** Same answer whether or not the account exists, so the form cannot be used to enumerate users. */
+export async function requestPasswordResetAction(_: ActionState, formData: FormData): Promise<ActionState> {
+  const parsed = parseForm(z.object({ email: emailSchema }), formData);
+  if (parsed.error) return parsed.error;
+  const { email } = parsed.data;
+  if (rateLimit(`reset:${email}`, 3, 15 * 60_000).ok) {
+    const supabase = await createSupabaseServerClient();
+    // No redirectTo: the email template links to /restablecer with a token hash (works from any browser).
+    const { error } = await supabase.auth.resetPasswordForEmail(email);
+    if (error) console.error("resetPasswordForEmail:", error.code ?? error.message);
+  }
+  return { ok: true, message: RESET_SENT_MESSAGE };
+}
+
+/** Exchanges the emailed one-time token for a session, then asks for the new password. */
+export async function confirmRecoveryAction(_: ActionState, formData: FormData): Promise<ActionState> {
+  const parsed = parseForm(z.object({ token_hash: z.string().regex(/^[\w-]{10,200}$/) }), formData);
+  if (parsed.error) redirect("/recuperar?error=enlace");
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.auth.verifyOtp({ type: "recovery", token_hash: parsed.data.token_hash });
+  if (error) redirect("/recuperar?error=enlace");
+  redirect("/nueva-contrasena");
+}
+
+export async function setNewPasswordAction(_: ActionState, formData: FormData): Promise<ActionState> {
+  const authUser = await getAuthUser();
+  if (!authUser) return { error: "El enlace venció. Pide uno nuevo desde la pantalla de inicio de sesión." };
+  const parsed = parseForm(z.object({ password: passwordSchema }), formData);
+  if (parsed.error) return parsed.error;
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.auth.updateUser({ password: parsed.data.password });
+  if (error) {
+    if (error.code === "same_password") return { error: "Elige una contraseña distinta a la anterior." };
+    if (error.code === "weak_password") return { error: "La contraseña es demasiado débil." };
+    return { error: "No pudimos guardar la contraseña. Pide un enlace nuevo e inténtalo de nuevo." };
+  }
+  await supabase.auth.signOut({ scope: "others" });
+  redirect("/app");
 }
 
 const signupSchema = z.object({

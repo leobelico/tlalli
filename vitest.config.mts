@@ -13,6 +13,8 @@ export default defineConfig({
   },
   test: {
     environment: "node",
+    // Tests must never send real email, whatever the developer has in .env.local.
+    env: { EMAIL_PROVIDER: "mock" },
     include: ["tests/**/*.test.ts"],
     fileParallelism: false,
     testTimeout: 30_000,
