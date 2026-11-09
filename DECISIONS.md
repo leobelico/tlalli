@@ -98,3 +98,9 @@ Registro de decisiones tomadas ante ambigüedades. Formato: decisión — motivo
 - Límites sugeridos: Nuevo = la alerta general de la organización (24 h por defecto, velocidad de respuesta); Contactado 72 h; Cita agendada 168 h; Visita realizada 72 h; Cotización 120 h. Cada organización puede cambiarlos en Configuración; vacío = sugerido. Aplicarlos por defecto cambia el conteo de inmediato (en la demo de 5,000 leads pasó de 2,973 a 2,472), y lo preferimos a seguir saturando.
 - "Los 5 más urgentes": primero los que nunca se contactaron (más antiguos primero), luego los de último contacto más viejo. El admin ve los de toda la organización; el asesor, solo los suyos.
 - Una sola regla (`staleWhere`/`isStale`) para lista, pipeline, ficha, banner, dashboard y resumen diario.
+
+### D-P4. Celular completo (QA B14)
+- Menú: botón "Menú" que despliega las 9 secciones en una cuadrícula de 2 columnas y muestra en qué sección estás. Preferimos esto a una barra inferior: con 9 secciones una barra inferior no cabe, y la hamburguesa deja la pantalla libre.
+- Tablas: en pantallas menores a 768 px todas las tablas de la app se muestran como tarjetas (cada fila, una tarjeta con su etiqueta). Es un solo CSS global más un componente que copia el encabezado de cada columna; no se tocó cada página (varias tienen cambios sin commitear de planos).
+- Pipeline: en celular es una lista por etapa, plegable (queda abierta la primera con leads); en escritorio sigue el tablero horizontal. No se arrastran tarjetas en el celular: se usa el selector "Mover a…".
+- Límite conocido: la lista de leads en celular mide ~12,000 px con 50 leads (una tarjeta de 7 líneas por lead). No hay desbordamiento horizontal, pero queda como mejora acortarla.

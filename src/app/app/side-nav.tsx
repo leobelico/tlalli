@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const ITEMS = [
+export const NAV_ITEMS = [
   { href: "/app", label: "Inicio", exact: true },
   { href: "/app/pipeline", label: "Pipeline" },
   { href: "/app/leads", label: "Leads" },
@@ -17,7 +17,7 @@ const ITEMS = [
 
 export function SideNav({ isAdmin, horizontal = false }: { isAdmin: boolean; horizontal?: boolean }) {
   const pathname = usePathname();
-  const items = ITEMS.filter((i) => isAdmin || !i.adminOnly);
+  const items = NAV_ITEMS.filter((i) => isAdmin || !i.adminOnly);
   return (
     <nav className={horizontal ? "flex gap-1 overflow-x-auto px-2 py-2" : "mt-6 flex flex-col gap-0.5"}>
       {items.map((item) => {

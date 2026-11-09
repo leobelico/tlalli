@@ -54,7 +54,7 @@ if (!mail) { fail('no llegó el correo de recuperación a Mailpit'); await b.clo
 ok('correo recibido: ' + mail.Subject);
 if (!/contraseña/i.test(mail.Subject) || /reset|password/i.test(mail.Subject)) fail('el asunto del correo no está en español: ' + mail.Subject);
 if (/reset your password|follow this link/i.test(mail.Text + mail.HTML)) fail('el cuerpo del correo sigue en inglés');
-const url = (mail.HTML.match(/href="([^"]+)"/) ?? [])[1]?.replace(/&amp;/g, '&');
+const url = (mail.HTML.match(/href="([^"]+)"/) ?? [])[1]?.replace(/&amp;/g, '&').replace('http://localhost:3010', BASE);
 if (!url) { fail('el correo no trae enlace'); await b.close(); process.exit(1); }
 
 const ctx2 = await b.newContext({ viewport: { width: 390, height: 844 } });

@@ -2,6 +2,8 @@ import { requireCtx } from "@/server/auth/session";
 import { Logo } from "@/components/ui";
 import { can } from "@/server/auth/permissions";
 import { SideNav } from "./side-nav";
+import { MobileNav } from "./mobile-nav";
+import { ResponsiveTables } from "@/components/responsive-tables";
 import { AlertsBanner } from "./alerts-banner";
 import { logoutAction, switchOrgAction } from "../(auth)/actions";
 
@@ -48,17 +50,15 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
         </div>
       </aside>
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center justify-between border-b border-stone-200 bg-white px-4 py-3 md:hidden">
-          <Logo />
-          <form action={logoutAction}>
-            <button className="text-xs text-stone-500">Salir</button>
-          </form>
-        </header>
-        <div className="border-b border-stone-200 bg-white md:hidden">
-          <SideNav isAdmin={isAdmin} horizontal />
-        </div>
+        <MobileNav
+          isAdmin={isAdmin}
+          orgName={session.active!.organization.name}
+          userName={session.user.name}
+          logout={logoutAction}
+        />
         <AlertsBanner ctx={ctx} />
-        <main className="flex-1 px-4 py-6 sm:px-8">{children}</main>
+        <main className="app-main flex-1 px-4 py-6 sm:px-8">{children}</main>
+        <ResponsiveTables />
       </div>
     </div>
   );

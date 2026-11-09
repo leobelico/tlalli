@@ -99,3 +99,62 @@ body {
     animation: none;
   }
 }
+
+/* Phones: tables inside the app become stacked cards, one per row, so nothing scrolls sideways (QA B14). */
+@media (max-width: 767px) {
+  .app-main .table-base thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .app-main .table-base,
+  .app-main .table-base tbody,
+  .app-main .table-base tr,
+  .app-main .table-base td {
+    display: block;
+    width: 100%;
+  }
+  .app-main .table-base tr {
+    margin: 0.5rem 0;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--color-stone-200);
+    border-radius: 0.75rem;
+    background: white;
+  }
+  .app-main .table-base td {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    border: 0;
+    padding: 0.25rem 0;
+    text-align: right;
+    overflow-wrap: anywhere;
+  }
+  .app-main .table-base td::before {
+    content: attr(data-label);
+    flex-shrink: 0;
+    max-width: 45%;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-align: left;
+    text-transform: uppercase;
+    color: var(--color-stone-500);
+  }
+  .app-main .table-base td[data-label=""]::before {
+    display: none;
+  }
+  .app-main .table-base td:empty {
+    display: none;
+  }
+  /* Cards that only wrap a table don't need their own padding or scrolling. */
+  .app-main .card:has(> .table-base) {
+    padding: 0;
+    overflow: visible;
+    border: 0;
+    background: transparent;
+  }
+}

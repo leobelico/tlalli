@@ -1,6 +1,7 @@
 import { chromium } from 'playwright';
 import pg from 'pg';
-export const BASE = 'http://localhost:3010';
+// QA_BASE lets the suite run on another port when Windows reserves 3010 (Hyper-V excluded range).
+export const BASE = process.env.QA_BASE || 'http://localhost:3010';
 import { fileURLToPath } from 'url';
 export const SHOTS = fileURLToPath(new URL('../capturas/', import.meta.url));
 export async function browser() { return chromium.launch(); }

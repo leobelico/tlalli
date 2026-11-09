@@ -42,6 +42,8 @@ export function Board({ initial, showAssignee }: { initial: BoardColumn[]; showA
   const [pending, setPending] = useState<PendingMove | null>(null);
   const [error, setError] = useState("");
   const [, startTransition] = useTransition();
+  // Phones show one collapsible list per stage; the first stage with leads starts open (QA B14).
+  const [openStages, setOpenStages] = useState<Set<Stage>>(() => new Set(initial.filter((c) => c.cards.length).slice(0, 1).map((c) => c.stage)));
 
   // Sync with fresh server data after router.refresh().
   if (initial !== prevInitial) {
@@ -92,7 +94,7 @@ export function Board({ initial, showAssignee }: { initial: BoardColumn[]; showA
           {error}
         </p>
       ) : null}
-      <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-4 sm:-mx-8 sm:px-8">
+      <div className="flex flex-col gap-3 pb-4 md:-mx-8 md:flex-row md:overflow-x-auto md:px-8">
         {columns.map((col) => (
           <section
             key={col.stage}
@@ -109,15 +111,35 @@ export function Board({ initial, showAssignee }: { initial: BoardColumn[]; showA
               if (id) requestMove(id, col.stage);
               setDragId(null);
             }}
-            className={`flex w-64 shrink-0 flex-col rounded-xl border border-t-4 border-stone-200 bg-stone-100/70 ${COLUMN_ACCENT[col.stage]} ${
+            className={`flex w-full shrink-0 flex-col rounded-xl border md:w-64 border-t-4 border-stone-200 bg-stone-100/70 ${COLUMN_ACCENT[col.stage]} ${
               over === col.stage ? "ring-2 ring-brand-400" : ""
             }`}
           >
-            <header className="flex items-center justify-between px-3 py-2">
-              <h2 className="text-sm font-semibold">{STAGE_LABEL[col.stage]}</h2>
-              <span className="rounded-full bg-white px-2 text-xs font-medium text-stone-600 tabular-nums">{col.count}</span>
+            <header>
+              <button
+                type="button"
+                aria-expanded={openStages.has(col.stage)}
+                onClick={() =>
+                  setOpenStages((s) => {
+                    const next = new Set(s);
+                    if (!next.delete(col.stage)) next.add(col.stage);
+                    return next;
+                  })
+                }
+                className="flex w-full items-center justify-between px-3 py-2.5 text-left md:pointer-events-none md:py-2"
+              >
+                <h2 className="text-sm font-semibold">{STAGE_LABEL[col.stage]}</h2>
+                <span className="flex items-center gap-2">
+                  <span className="rounded-full bg-white px-2 text-xs font-medium text-stone-600 tabular-nums">{col.count}</span>
+                  <span aria-hidden className="text-xs text-stone-500 md:hidden">{openStages.has(col.stage) ? "▲" : "▼"}</span>
+                </span>
+              </button>
             </header>
-            <div className="flex min-h-24 flex-1 flex-col gap-2 overflow-y-auto px-2 pb-2" style={{ maxHeight: "calc(100vh - 230px)" }}>
+            <div
+              className={`flex flex-1 flex-col gap-2 overflow-y-auto px-2 pb-2 md:min-h-24 md:max-h-[calc(100vh-230px)] ${
+                openStages.has(col.stage) ? "" : "max-md:hidden"
+              }`}
+            >
               {col.cards.map((card) => (
                 <article
                   key={card.id}
