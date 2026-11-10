@@ -128,7 +128,7 @@ Las migraciones crean las tablas, los permisos y la **seguridad por organizació
    | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | del proyecto (la anon key es pública por diseño) |
    | `DATABASE_URL` | pooler 6543 + `?pgbouncer=true` |
    | `APP_URL` | `https://TU-DOMINIO` (sin diagonal final) |
-   | `TRUSTED_PROXY` | `vercel` en Vercel, `cloudflare` tras Cloudflare, o `xff:N` si tienes N proxies. **Sin esto no hay límite por IP** |
+   | `TRUSTED_PROXY` | `vercel` en Vercel (si no la defines y el hosting es Vercel, se usa sola), `cloudflare` tras Cloudflare, o `xff:N` si tienes N proxies. **Con otro hosting y sin esto no hay límite por IP**: el formulario público se protege solo con límites por carril (ver abajo), que un solo origen puede agotar para los demás scripts, nunca para quien usa el formulario alojado |
    | `CRON_SECRET` | 16+ caracteres aleatorios |
    | `FORM_TOKEN_SECRET` | 32+ caracteres aleatorios |
    | `EMAIL_PROVIDER`, `EMAIL_FROM`, `RESEND_API_KEY` | ver paso 4 |
@@ -139,7 +139,7 @@ Las migraciones crean las tablas, los permisos y la **seguridad por organizació
    ```bash
    DIRECT_URL="postgresql://postgres:CONTRASEÑA@db.XXXX.supabase.co:5432/postgres" npx prisma migrate deploy
    ```
-   Debe terminar con `All migrations have been successfully applied.` (hoy son 9 migraciones).
+   Debe terminar con `All migrations have been successfully applied.` (hoy son 11 migraciones).
 5. **Verifica** en el editor SQL de Supabase:
    ```sql
    select rolname from pg_roles where rolname = 'app_rls';                       -- debe devolver 1 fila
@@ -150,6 +150,12 @@ Las migraciones crean las tablas, los permisos y la **seguridad por organizació
 6. **Construye y publica:** el hosting ejecuta `npm run build` y luego `npm start`. Si lo haces tú: `npm ci && npm run build && npm start` (puerto 3010 por defecto; el hosting suele fijar el suyo).
 7. **Cada actualización futura:** primero `migrate deploy`, luego publicar el código. Nunca al revés si la versión nueva usa columnas nuevas.
 8. Continúa en la parte 2 (pasos 2 a 8).
+
+**Cabeceras de seguridad (QA2 B39).** La aplicación ya manda `Content-Security-Policy` (sin permitir que la metan en un marco, sin `<object>`, formularios y conexiones solo al mismo sitio), `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy` y `Permissions-Policy`. **`Strict-Transport-Security` (HSTS) lo debe poner el hosting o el proxy**, porque solo tiene sentido detrás de HTTPS real: en Vercel actívalo en *Settings → Security* o con un bloque `headers` en `vercel.json` (`max-age=31536000; includeSubDomains`); tras Cloudflare, en *SSL/TLS → Edge Certificates → HSTS*. Verifícalo con `curl -sI https://TU-DOMINIO/login | grep -i strict-transport`. Limitación conocida: `script-src` conserva `'unsafe-inline'` porque Next.js inyecta scripts de arranque y aún no usamos nonces; el resto de la política es lo que corta los ataques prácticos.
+
+**Formulario incrustado en otra página.** Por defecto nadie puede mostrar `/f/TU-ORGANIZACION` dentro de su sitio. El administrador agrega los sitios permitidos en *Configuración → Avanzado → Mostrar tu formulario dentro de otra página* (uno por línea, con `https://`); la respuesta del formulario trae entonces `frame-ancestors` con solo esos sitios. El cambio puede tardar hasta 30 segundos en verse.
+
+**Límites del formulario público.** Por IP: 20 por minuto si el hosting identifica al visitante. Por organización, dos carriles separados: quien usa el formulario alojado (con su marca firmada) 200 por minuto; todo lo demás (sitios propios con la llave, scripts) 60 por minuto. Cada marca del formulario sirve máximo 3 envíos. Por teléfono: 5 por hora. Un script que sature el carril "todo lo demás" no deja sin formulario a las personas reales.
 
 **Dónde se cae con más frecuencia:** (a) `APP_URL` con diagonal final o distinto del dominio real: los enlaces de invitación salen mal; (b) `DATABASE_URL` sin `?pgbouncer=true`: errores de "prepared statement" bajo carga; (c) `CRON_SECRET` corto: el resumen diario responde 401 siempre (en la máquina de desarrollo mide 15 caracteres: necesita uno nuevo).
 

@@ -3,7 +3,7 @@
  * X-Forwarded-For, so reading it blindly lets an attacker pick a new "IP" per request.
  *
  * TRUSTED_PROXY:
- *  - unset / "none": no forwarded header is trusted -> null (callers skip per-IP limits and rely
+ *  - unset (and not on Vercel) / "none": no forwarded header is trusted -> null (callers skip per-IP limits and rely
  *    on per-organization and per-phone limits instead).
  *  - "vercel":       x-vercel-forwarded-for (set by Vercel's edge, not by the client).
  *  - "cloudflare":   cf-connecting-ip.
@@ -11,7 +11,11 @@
  */
 const IP_RE = /^(?:\d{1,3}(?:\.\d{1,3}){3}|[0-9a-f:]{2,45})$/i;
 
-export function clientIp(headers: Headers, mode: string | undefined = process.env.TRUSTED_PROXY): string | null {
+/**
+ * Without TRUSTED_PROXY, a deployment on Vercel (which sets VERCEL=1) trusts Vercel's own header: that
+ * is the platform the deploy guide documents, and the header is set by its edge, not by the visitor.
+ */
+export function clientIp(headers: Headers, mode: string | undefined = process.env.TRUSTED_PROXY ?? (process.env.VERCEL ? "vercel" : undefined)): string | null {
   const pick = (v: string | null | undefined) => {
     const ip = v?.trim();
     return ip && IP_RE.test(ip) ? ip : null;

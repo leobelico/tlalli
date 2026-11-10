@@ -7,7 +7,7 @@ import { currentPrivacyNotice, getOrganization } from "@/server/services/organiz
 import { getAiStatus } from "@/server/services/ai";
 import { PLANS } from "@/lib/plans";
 import { formatDate } from "@/lib/format";
-import { privacyNoticeAction, regenerateFormKeyAction, settingsAction, stalePolicyAction, whatsAppSettingsAction } from "./actions";
+import { embedOriginsAction, privacyNoticeAction, regenerateFormKeyAction, settingsAction, stalePolicyAction, whatsAppSettingsAction } from "./actions";
 import { BRAND } from "@/lib/brand";
 import { DEFAULT_STAGE_HOURS, stalePolicy } from "@/lib/stale";
 import { STAGE_LABEL } from "@/lib/labels";
@@ -186,6 +186,20 @@ export default async function SettingsPage() {
               <form action={regenerateFormKeyAction} className="mt-3">
                 <button className="btn-secondary text-xs">Generar una llave nueva (la anterior dejará de funcionar)</button>
               </form>
+            </section>
+
+            <section>
+              <h3 className="mb-2 text-sm font-semibold">Mostrar tu formulario dentro de otra página</h3>
+              <p className="mb-3 text-sm text-stone-600">
+                Por seguridad, tu formulario ({appUrl}/f/{org.slug}) no puede aparecer dentro de otros sitios. Si quieres mostrarlo en tu propia
+                página, escribe aquí el sitio (uno por línea, con https://). Solo esos sitios podrán hacerlo.
+              </p>
+              <ActionForm action={embedOriginsAction} className="space-y-3">
+                <Field label="Sitios permitidos" name="origins" hint="Ejemplo: https://midesarrolladora.mx. Déjalo vacío para que nadie pueda.">
+                  <textarea id="origins" name="origins" rows={3} className="input" defaultValue={org.formEmbedOrigins.join(", ")} />
+                </Field>
+                <SubmitButton>Guardar sitios</SubmitButton>
+              </ActionForm>
             </section>
           </div>
         </details>

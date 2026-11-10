@@ -4,6 +4,8 @@ import { assertCan, type Ctx } from "@/server/auth/permissions";
 import { randomToken } from "@/lib/tokens";
 import { DomainError } from "@/server/errors";
 import { MAX_STALE_HOURS } from "@/lib/stale";
+import { parseEmbedOrigins } from "@/lib/csp";
+import { clearEmbedCache } from "@/server/public/embed";
 import type { Stage } from "@/generated/prisma/enums";
 
 export async function getOrganization(ctx: Ctx) {
@@ -153,4 +155,18 @@ export async function updateWhatsAppSettings(ctx: Ctx, input: { waPhoneNumberId?
       data: { waPhoneNumberId: input.waPhoneNumberId ?? null, waDisplayPhone: input.waDisplayPhone ?? null },
     }),
   );
+}
+
+/** Sites allowed to embed the hosted form in an iframe (one per line). Empty = nobody. */
+export async function updateFormEmbedOrigins(ctx: Ctx, text: string) {
+  assertCan(ctx, "org:settings");
+  let origins: string[];
+  try {
+    origins = parseEmbedOrigins(text);
+  } catch (e) {
+    throw new DomainError((e as Error).message);
+  }
+  const org = await withOrg(ctx.orgId, (tx) => tx.organization.update({ where: { id: ctx.orgId }, data: { formEmbedOrigins: origins } }));
+  clearEmbedCache();
+  return org.formEmbedOrigins;
 }

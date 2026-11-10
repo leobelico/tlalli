@@ -11,6 +11,7 @@ import {
   TUNABLE_STAGES,
   updateOrganizationSettings,
   updateStalePolicy,
+  updateFormEmbedOrigins,
   updateWhatsAppSettings,
 } from "@/server/services/organization";
 
@@ -102,5 +103,16 @@ export async function whatsAppSettingsAction(_: ActionState, formData: FormData)
     await updateWhatsAppSettings(ctx, parsed.data);
     revalidatePath("/app/configuracion");
     return { ok: true, message: "Datos de WhatsApp guardados." };
+  });
+}
+
+/** Sites allowed to show the hosted form inside their own page (QA2 B39). */
+export async function embedOriginsAction(_: ActionState, formData: FormData): Promise<ActionState> {
+  const { ctx } = await requireCtx("org:settings");
+  const text = String(formData.get("origins") ?? "").slice(0, 2000);
+  return runAction(async () => {
+    const saved = await updateFormEmbedOrigins(ctx, text);
+    revalidatePath("/app/configuracion");
+    return { ok: true, message: saved.length ? `Guardado: ${saved.join(", ")}.` : "Nadie puede mostrar tu formulario en su sitio." };
   });
 }

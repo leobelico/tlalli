@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import { canonicalizePayload, findOrgByFormKey, intakeWebLead } from "@/server/public/lead-intake";
 import { hitRateLimit } from "@/server/public/rate-limit";
@@ -24,7 +25,15 @@ const MAX_BODY_BYTES = 16 * 1024;
 const LIMITS = {
   /** Only when TRUSTED_PROXY tells us how to read the real client IP. */
   perIp: { limit: 20, windowMs: 60_000 },
-  perOrg: { limit: 300, windowMs: 60_000 },
+  /**
+   * Per-organization budgets are split in two lanes so that one origin can never lock the form for
+   * everybody (QA2 B34): people using the hosted form (valid signed token) and everything else
+   * (third-party sites, scripts, bots). Flooding the second lane leaves the first untouched.
+   */
+  orgHosted: { limit: 200, windowMs: 60_000 },
+  orgOther: { limit: 60, windowMs: 60_000 },
+  /** A form token can be used a few times (typos, resubmits), not replayed forever. */
+  perToken: { limit: 3, windowMs: 24 * 3_600_000 },
   /** Caps how often the same phone can touch a lead's history. */
   perPhone: { limit: 5, windowMs: 3_600_000 },
 };
@@ -90,14 +99,21 @@ export async function POST(req: NextRequest) {
   const org = await findOrgByFormKey(key);
   if (!org) return json({ ok: false, error: "Llave de formulario inválida." }, 401);
 
-  const orgLimit = await hitRateLimit(`lead-org:${org.id}`, LIMITS.perOrg.limit, LIMITS.perOrg.windowMs);
+  const hasToken = payload._t !== undefined;
+  const tokenOk = hasToken && verifyFormToken(payload._t);
+  const lane = tokenOk ? LIMITS.orgHosted : LIMITS.orgOther;
+  const orgLimit = await hitRateLimit(`lead-org:${tokenOk ? "hosted" : "other"}:${org.id}`, lane.limit, lane.windowMs);
   if (!orgLimit.ok) return json({ ok: false, error: "Demasiadas solicitudes." }, 429, { "Retry-After": String(orgLimit.retryAfterSec) });
 
   const redirectTo = isFormPost ? safeRedirect(payload.redirect) : null;
   const accepted = () => (redirectTo ? NextResponse.redirect(redirectTo, { status: 303, headers: CORS }) : json({ ok: true }, 200));
 
   // Hosted form: a missing-in-time or forged token means a script, not a person. Drop it quietly.
-  if (payload._t !== undefined && !verifyFormToken(payload._t)) return accepted();
+  if (hasToken && !tokenOk) return accepted();
+  if (tokenOk) {
+    const tokenKey = createHash("sha256").update(String(payload._t)).digest("hex").slice(0, 32);
+    if (!(await hitRateLimit(`lead-token:${tokenKey}`, LIMITS.perToken.limit, LIMITS.perToken.windowMs)).ok) return accepted();
+  }
 
   // Per-phone cap, checked before touching the database so a flood can't spam one lead's history.
   const phone = normalizePhone(String(canonicalizePayload(payload).telefono ?? ""));
