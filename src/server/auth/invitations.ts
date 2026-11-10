@@ -9,6 +9,7 @@ import { sendEmail } from "@/server/notify/email";
 import { invitationEmail } from "@/server/notify/templates";
 import { notifyLeadsAssignedSummary } from "@/server/notify/leads";
 import { assertHeir, CLOSED_STAGES, reassignInTx } from "@/server/services/reassign";
+import { settleRequestsOnDeactivation } from "@/server/services/authorizations";
 import { assertCan, ForbiddenError, type Ctx } from "./permissions";
 
 const INVITATION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
@@ -171,8 +172,9 @@ export async function deactivateMember(ctx: Ctx, membershipId: string, opts: { r
       where: { assignedToId: m.userId, completedAt: null },
       data: { assignedToId: opts.reassignTo ?? ctx.userId },
     });
+    const requests = await settleRequestsOnDeactivation(tx, ctx, m.userId, opts.reassignTo, m.user.name);
     await tx.membership.update({ where: { id: membershipId }, data: { active: false } });
-    return { leads: ids.length, tasks: tasks.count };
+    return { leads: ids.length, tasks: tasks.count, requests };
   });
   if (opts.reassignTo && res.leads) {
     await notifyLeadsAssignedSummary(ctx.orgId, new Map([[opts.reassignTo, res.leads]]), ctx.userId);

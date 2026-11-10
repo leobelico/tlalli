@@ -145,3 +145,7 @@ Registro de decisiones tomadas ante ambigüedades. Formato: decisión — motivo
 - Quien exceda cualquiera de los límites no recibe un error: la cotización se convierte en una solicitud pendiente (misma cola que el descuento) con el motivo escrito. Los administradores no tienen estos límites. Las ventas siguen usando el tope sobre el monto.
 - Consecuencia asumida: una cotización con descuento justo en el tope y mensualidades sin intereses ya necesita autorización (el financiamiento gratis vale extra). Dos pruebas viejas que fijaban "descuento exacto en el tope pasa" se corrigieron para cotizar con intereses a la tasa de referencia.
 - El formulario del cotizador avisa en vivo "Necesita autorización de un administrador: …" con la misma función que usa el servidor.
+
+### D-Q3. Solicitudes pendientes al dar de baja a un asesor (QA2 B36)
+- Con heredero: las solicitudes de autorización pendientes pasan a su nombre (igual que los leads y las tareas). Sin heredero ("Dejar sin asignar"): se cierran como **Rechazada** con la nota "Cancelada automáticamente: … fue dado de baja", y el mensaje de la baja dice cuántas se cancelaron. No agregué un estado "Cancelada" para no migrar el enum por un caso raro; la nota lo distingue.
+- Al aprobar cualquier solicitud, la cotización queda a nombre de quien la pidió **si sigue activo**; si no, del dueño actual del lead; si tampoco hay, del administrador que aprueba. El correo de respuesta va a esa misma persona.

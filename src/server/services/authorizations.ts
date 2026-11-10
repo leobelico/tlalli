@@ -1,6 +1,6 @@
 import "server-only";
 import type { AuthorizationKind, AuthorizationStatus } from "@/generated/prisma/enums";
-import { withOrg } from "@/server/db/tenant";
+import { withOrg, type Tx } from "@/server/db/tenant";
 import { assertCan, can, type Ctx } from "@/server/auth/permissions";
 import { AuthorizationPendingError, DomainError, NotFoundError } from "@/server/errors";
 import { sendEmail } from "@/server/notify/email";
@@ -118,12 +118,13 @@ export async function decideAuthorization(ctx: Ctx, id: string, d: { approve: bo
   if (claimed.count === 0) throw new DomainError("Esa solicitud ya fue resuelta.");
 
   let quoteId: string | null = null;
+  const author = await currentResponsible(ctx, req);
   try {
     if (d.approve) {
       // Imported lazily: quotes/pipeline import this module to create requests.
       if (req.kind === "DESCUENTO") {
         const { createQuote } = await import("./quotes");
-        quoteId = (await createQuote(ctx, req.payload as QuotePayload, { onBehalfOf: req.requestedById, skipCap: true })).id;
+        quoteId = (await createQuote(ctx, req.payload as QuotePayload, { onBehalfOf: author, skipCap: true })).id;
       } else {
         const { changeStage } = await import("./pipeline");
         const p = req.payload as SalePayload;
@@ -151,7 +152,7 @@ export async function decideAuthorization(ctx: Ctx, id: string, d: { approve: bo
       });
     }
   });
-  await notifyRequester(ctx, req.requestedById, req.summary, d.approve, note, quoteId, req.leadId);
+  await notifyRequester(ctx, author, req.summary, d.approve, note, quoteId, req.leadId);
   return { status, quoteId };
 }
 
@@ -164,4 +165,36 @@ async function notifyRequester(ctx: Ctx, requesterId: string, summary: string, a
   } catch (e) {
     console.error("notifyRequester:", e instanceof Error ? e.message : e);
   }
+}
+
+/**
+ * When an asesor is deactivated their pending requests must not stay in their name (QA2 B36): they
+ * pass to the heir, or, with no heir, are closed as cancelled with the reason written on them.
+ */
+export async function settleRequestsOnDeactivation(tx: Tx, ctx: Ctx, userId: string, heirId: string | null, name: string) {
+  const where = { requestedById: userId, status: "PENDIENTE" as const };
+  if (heirId) return (await tx.authorizationRequest.updateMany({ where, data: { requestedById: heirId } })).count;
+  return (
+    await tx.authorizationRequest.updateMany({
+      where,
+      data: {
+        status: "RECHAZADA",
+        decidedById: ctx.userId,
+        decidedAt: new Date(),
+        decisionNote: `Cancelada automáticamente: ${name} fue dado de baja y no hay a quién pasarle la solicitud.`,
+      },
+    })
+  ).count;
+}
+
+/** Who should appear as the author of an approved request: the asker if still active, else the lead's owner, else the approver. */
+async function currentResponsible(ctx: Ctx, req: { requestedById: string; leadId: string | null }) {
+  return withOrg(ctx.orgId, async (tx) => {
+    const active = async (userId: string | null | undefined) =>
+      userId ? (await tx.membership.findFirst({ where: { userId, active: true }, select: { id: true } })) !== null : false;
+    if (await active(req.requestedById)) return req.requestedById;
+    const lead = req.leadId ? await tx.lead.findUnique({ where: { id: req.leadId }, select: { assignedToId: true } }) : null;
+    if (await active(lead?.assignedToId)) return lead!.assignedToId!;
+    return ctx.userId;
+  });
 }

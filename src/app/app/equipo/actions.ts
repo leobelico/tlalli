@@ -58,7 +58,7 @@ export async function memberAction(_: ActionState, formData: FormData): Promise<
       const r = await deactivateMember(ctx, id, { reassignTo: reassignTo === "none" ? null : reassignTo });
       revalidatePath("/app/equipo");
       revalidatePath("/app/leads");
-      return { ok: true, message: `Desactivado. Se reasignaron ${r.leads} leads y ${r.tasks} tareas.` };
+      return { ok: true, message: `Desactivado. Se reasignaron ${r.leads} leads y ${r.tasks} tareas.${r.requests ? ` ${r.requests} ${r.requests === 1 ? "solicitud de autorización" : "solicitudes de autorización"} ${reassignTo === "none" ? "se cancelaron (no había a quién pasarlas)" : "pasaron a la persona elegida"}.` : ""}` };
     } else await setMemberActive(ctx, id, true);
     revalidatePath("/app/equipo");
     return { ok: true };
