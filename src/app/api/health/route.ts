@@ -1,6 +1,6 @@
 import { timingSafeEqual } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
-import { rootPrisma } from "@/server/db/root";
+import { checkDatabase, describeDatabaseUrl } from "@/server/public/health";
 
 /**
  * Deployment check: GET /api/health with `Authorization: Bearer <CRON_SECRET>`.
@@ -15,16 +15,6 @@ function authorized(req: NextRequest): boolean {
   return given.length === expected.length && timingSafeEqual(given, expected);
 }
 
-function describeDatabaseUrl(raw: string | undefined) {
-  if (!raw) return { set: false };
-  try {
-    const u = new URL(raw);
-    return { set: true, host: u.hostname, port: u.port || "(default)", user: decodeURIComponent(u.username), database: u.pathname.slice(1), params: [...u.searchParams.keys()] };
-  } catch {
-    return { set: true, parsable: false, hint: "DATABASE_URL no es una URL válida: revisa símbolos sin codificar en la contraseña (? @ # /)." };
-  }
-}
-
 export async function GET(req: NextRequest) {
   if (!authorized(req)) return NextResponse.json({ ok: false, error: "No autorizado." }, { status: 401 });
   const env = {
@@ -36,12 +26,6 @@ export async function GET(req: NextRequest) {
     formTokenSecretSet: Boolean(process.env.FORM_TOKEN_SECRET),
   };
   const database = describeDatabaseUrl(process.env.DATABASE_URL);
-  try {
-    const rows = await rootPrisma.$queryRaw<{ ok: number }[]>`SELECT 1 AS ok`;
-    const tables = await rootPrisma.$queryRaw<{ n: number }[]>`SELECT count(*)::int AS n FROM organizations`;
-    return NextResponse.json({ ok: rows[0]?.ok === 1, db: "responde", organizaciones: tables[0]?.n, database, env });
-  } catch (e) {
-    const message = (e instanceof Error ? e.message : String(e)).replace(/postgres(ql)?:\/\/\S+/gi, "[url]").split("\n").filter(Boolean).slice(-2).join(" | ").slice(0, 300);
-    return NextResponse.json({ ok: false, db: "no responde", error: message, database, env }, { status: 500 });
-  }
+  const result = await checkDatabase();
+  return NextResponse.json(result.ok ? { ok: true, db: "responde", organizaciones: result.organizaciones, database, env } : { ok: false, db: "no responde", error: result.error, database, env }, { status: result.ok ? 200 : 500 });
 }
