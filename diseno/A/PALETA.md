@@ -1,6 +1,6 @@
-# Tlalli · Cimiento — paleta y tipografía
+# Tlalli · Cimiento · 1 Cianotipo — paleta y tipografía
 
-Plano de ingeniería, cálido. Modo por defecto: claro (con variante oscura).
+Azul de plano y arcilla. Modo por defecto: claro (con variante oscura).
 
 ## Tipografías (Google Fonts)
 
@@ -26,6 +26,7 @@ Enlace: `https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@
 | `onPrimary` | `#FFFFFF` | Texto e íconos sobre el color primario |
 | `accent` | `#A94E1F` | Acento propio de Tlalli: etiquetas, avisos, botón de llamado |
 | `onAccent` | `#FFFFFF` | Texto sobre el acento |
+| `accentInk` | `#A94E1F` | Acento cuando se usa como texto (palabra destacada) |
 | `ok` | `#17694A` | Lote disponible · todo bien |
 | `warn` | `#835400` | Lote apartado · atención |
 | `sold` | `#3B4A5A` | Lote vendido |
@@ -46,6 +47,7 @@ Enlace: `https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@
 | Texto sobre color primario (botón) | `#FFFFFF` / `#1B4B82` | 8.8:1 | 4.5:1 | Pasa |
 | Color primario como texto/enlace sobre fondo | `#1B4B82` / `#F3F1EC` | 7.8:1 | 4.5:1 | Pasa |
 | Texto sobre acento (etiqueta, botón secundario) | `#FFFFFF` / `#A94E1F` | 5.5:1 | 4.5:1 | Pasa |
+| Acento usado como texto (palabra destacada) sobre fondo | `#A94E1F` / `#F3F1EC` | 4.9:1 | 4.5:1 | Pasa |
 | Disponible (texto) sobre su fondo | `#17694A` / `#DDF0E7` | 5.6:1 | 4.5:1 | Pasa |
 | Apartado (texto) sobre su fondo | `#835400` / `#F7E7C4` | 5.3:1 | 4.5:1 | Pasa |
 | Vendido (texto) sobre su fondo | `#3B4A5A` / `#DCE2E8` | 7.0:1 | 4.5:1 | Pasa |
@@ -72,6 +74,7 @@ Enlace: `https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@
 | `onPrimary` | `#0B1620` | Texto e íconos sobre el color primario |
 | `accent` | `#E58A5B` | Acento propio de Tlalli: etiquetas, avisos, botón de llamado |
 | `onAccent` | `#1A0E07` | Texto sobre el acento |
+| `accentInk` | `#E58A5B` | Acento cuando se usa como texto (palabra destacada) |
 | `ok` | `#58C79B` | Lote disponible · todo bien |
 | `warn` | `#E8B04A` | Lote apartado · atención |
 | `sold` | `#9FB0C0` | Lote vendido |
@@ -92,6 +95,7 @@ Enlace: `https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@
 | Texto sobre color primario (botón) | `#0B1620` / `#7FB0EE` | 8.1:1 | 4.5:1 | Pasa |
 | Color primario como texto/enlace sobre fondo | `#7FB0EE` / `#0F1720` | 8.0:1 | 4.5:1 | Pasa |
 | Texto sobre acento (etiqueta, botón secundario) | `#1A0E07` / `#E58A5B` | 7.3:1 | 4.5:1 | Pasa |
+| Acento usado como texto (palabra destacada) sobre fondo | `#E58A5B` / `#0F1720` | 7.0:1 | 4.5:1 | Pasa |
 | Disponible (texto) sobre su fondo | `#58C79B` / `#12372B` | 6.3:1 | 4.5:1 | Pasa |
 | Apartado (texto) sobre su fondo | `#E8B04A` / `#3A2B0B` | 7.0:1 | 4.5:1 | Pasa |
 | Vendido (texto) sobre su fondo | `#9FB0C0` / `#27323E` | 5.9:1 | 4.5:1 | Pasa |

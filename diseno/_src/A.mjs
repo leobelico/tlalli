@@ -4,8 +4,11 @@ import { doc, plano, statusLegend, logoAuto } from './common.mjs';
 import { logos } from './logos.mjs';
 import { cols, seguimiento, org, esc, initials } from './lib.mjs';
 
-const L = logos('A');
-const t = DIR.A.light;
+let K = 'A';
+let L = logos('A');
+let t = DIR.A.light;
+/** Cambia la variante de color (A, A2, A3): mismo diseño, otra paleta y logotipo. */
+export function setVariant(k) { K = k; L = logos(k); t = DIR[k].light; }
 
 const base = `
 body { font-family: 'Geist', system-ui, sans-serif; font-size: 15px; line-height: 1.5; }
@@ -31,7 +34,7 @@ nav.top ul { display: flex; gap: 28px; list-style: none; margin: 0; padding: 0; 
 nav.top a { text-decoration: none; }
 .hero { display: grid; grid-template-columns: 1.02fr 1fr; gap: 56px; align-items: center; padding: 56px 0 72px; }
 h1 { font-size: 68px; line-height: .98; font-weight: 800; margin: 14px 0 20px; }
-h1 em { font-style: normal; color: var(--accent); }
+h1 em { font-style: normal; color: var(--accent-ink); }
 .lead { font-size: 19px; color: var(--muted); max-width: 30em; margin: 0 0 28px; }
 .cta { display: flex; gap: 12px; flex-wrap: wrap; }
 .proof { display: flex; gap: 22px; margin-top: 30px; }
@@ -87,11 +90,11 @@ footer { padding: 22px 0; display: flex; justify-content: space-between; flex-wr
 </div></div>
 <div class="band"><div class="wrap"><h2 class="disp">Empieza con tu primer fraccionamiento esta semana.</h2><a class="btn" href="#">Hablar con nosotros</a></div></div>
 <div class="wrap"><footer><span class="mono">© Tlalli · KoatlCyber</span><span class="mono">San Luis Potosí, México</span></footer></div>`;
-  return doc({ dir: 'A', title: 'Tlalli · Cimiento · Landing', css, body });
+  return doc({ dir: K, title: `Tlalli · ${DIR[K].name} · Landing`, css, body });
 }
 
 const navItems = ['Inicio', 'Pipeline', 'Leads', 'Tareas', 'Desarrollos', 'Cotizador', 'Autorizaciones', 'Campañas', 'Equipo', 'Configuración'];
-const stageTone = ['#5A8BC7', '#3A6FB0', '#1F4E8C', '#B7791F', '#A94E1F'];
+const stageTone = (tk) => ({ A: ['#5A8BC7', '#3A6FB0', '#1F4E8C', '#B7791F', '#A94E1F'], A2: ['#7FA38F', '#4F8A6C', '#1F5C45', '#B7791F', '#8A5A00'], A3: ['#C9A27C', '#B8744A', '#8A3F1E', '#0F766E', '#B0243A'] })[tk];
 
 export function app() {
   const css = base + `
@@ -127,7 +130,7 @@ main { padding: 22px 28px 28px; overflow: hidden; }
 .toast b { background: var(--bg); color: var(--ink); border-radius: 3px; padding: 6px 12px; min-height: 32px; display: inline-flex; align-items: center; }
 `;
   const colsHtml = cols.map((c, i) => `
-<section class="col" style="--tone:${stageTone[i]}" aria-label="${c.name}">
+<section class="col" style="--tone:${stageTone(K)[i]}" aria-label="${c.name}">
   <header><h2>${c.name}</h2><span class="n">${c.n}</span></header>
   ${c.cards.map((k) => `
   <article class="card ${k.stale ? 'cold' : ''}">
@@ -152,7 +155,7 @@ main { padding: 22px 28px 28px; overflow: hidden; }
     <div class="toast" role="status">Moviste a Pedro Alvarado a Apartado. <b>Deshacer (8 s)</b></div>
   </main>
 </div>`;
-  return doc({ dir: 'A', title: 'Tlalli · Cimiento · App', css, body });
+  return doc({ dir: K, title: `Tlalli · ${DIR[K].name} · App`, css, body });
 }
 
 export function mobile() {
@@ -201,5 +204,5 @@ h1 { margin: 2px 0 0; font-size: 36px; font-weight: 800; line-height: 1; }
 <nav class="tabs" aria-label="Secciones">
   <a href="#" class="on">${ico('M3 11l9-8 9 8M5 10v10h14V10')}Hoy</a><a href="#">${ico('M4 5h4v14H4zM10 5h4v10h-4zM16 5h4v7h-4z')}Pipeline</a><a href="#">${ico('M4 6h16M4 12h16M4 18h16')}Leads</a><a href="#">${ico('M5 12l4 4L19 6')}Tareas</a><a href="#">${ico('M4 7h16M4 12h16M4 17h16')}Menú</a>
 </nav>`;
-  return doc({ dir: 'A', title: 'Tlalli · Cimiento · Celular', css, body });
+  return doc({ dir: K, title: `Tlalli · ${DIR[K].name} · Celular`, css, body });
 }

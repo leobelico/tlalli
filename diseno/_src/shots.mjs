@@ -9,7 +9,8 @@ const dirs = process.argv.slice(2).length ? process.argv.slice(2) : ['A', 'B', '
 fs.mkdirSync(path.join(ROOT, 'capturas'), { recursive: true });
 const browser = await chromium.launch();
 for (const k of dirs) {
-  const mod = await import(`./${k}.mjs`);
+  const mod = await import(`./${k.startsWith('A') ? 'A' : k}.mjs`);
+  if (mod.setVariant) mod.setVariant(k);
   fs.mkdirSync(path.join(ROOT, k), { recursive: true });
   const screens = [
     ['landing', mod.landing, [[1280, 800], [390, 844]], true],

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="es-MX" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tlalli · Cimiento · 3 Tierra · Celular</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root, :root[data-theme="light"] { --bg:#F6F0E7;--surface:#FFFFFF;--surface2:#ECE3D5;--ink:#25190F;--muted:#5E4E41;--line:#D6C9B6;--primary:#8A3F1E;--on-primary:#FFFFFF;--accent:#0F766E;--on-accent:#FFFFFF;--accent-ink:#0F766E;--ok:#17694A;--warn:#835400;--sold:#5A4B3E;--danger:#B0243A;--ok-bg:#DDF0E7;--warn-bg:#F7E7C4;--sold-bg:#E6DDD2;--danger-bg:#F9DDE1; color-scheme: light; }
+:root[data-theme="dark"] { --bg:#1A130F;--surface:#241B15;--surface2:#2F241C;--ink:#F2E9E0;--muted:#BBAA9C;--line:#43332A;--primary:#E58A5B;--on-primary:#1A0E07;--accent:#4FD1C5;--on-accent:#04201D;--accent-ink:#4FD1C5;--ok:#58C79B;--warn:#E8B04A;--sold:#B3A59A;--danger:#FF8A9A;--ok-bg:#12372B;--warn-bg:#3A2B0B;--sold-bg:#3A2E26;--danger-bg:#40181F; color-scheme: dark; }
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+.lg-d { display: none; } .lg-l, .lg-d { line-height: 0; display: inline-flex; }
+:root[data-theme="dark"] .lg-l { display: none; } :root:not([data-theme="dark"]) .lg-d { display: none; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+
+body { font-family: 'Geist', system-ui, sans-serif; font-size: 15px; line-height: 1.5; }
+h1, h2, h3, .disp { font-family: 'Bricolage Grotesque', 'Geist', sans-serif; letter-spacing: -0.02em; }
+.mono { font-family: 'Geist Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: 4px; font-weight: 600; text-decoration: none; border: 1.5px solid var(--primary); background: var(--primary); color: var(--on-primary); font-family: inherit; font-size: 15px; }
+.btn.sec { background: transparent; color: var(--primary); }
+.btn.acc { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.lg { display: flex; gap: 16px; list-style: none; margin: 0; padding: 0; font-size: 12.5px; color: var(--muted); }
+.lg li { display: inline-flex; align-items: center; gap: 6px; }
+.sw { display: inline-block; width: 14px; height: 14px; border-radius: 2px; border: 1.5px solid; }
+.sw.d { background: var(--ok-bg); border-color: var(--ok); }
+.sw.a { background: repeating-linear-gradient(45deg, var(--warn-bg) 0 3px, var(--warn) 3px 5px); border-color: var(--warn); }
+.sw.v { background: var(--sold); border-color: var(--sold); }
+
+body { font-size: 16px; padding-bottom: 76px; }
+header.top { position: sticky; top: 0; z-index: 3; background: var(--surface); border-bottom: 1.5px solid var(--ink); display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; }
+.menu { min-height: 44px; padding: 0 16px; border: 1.5px solid var(--ink); border-radius: 4px; background: transparent; font: 600 15px 'Geist'; color: var(--ink); display: inline-flex; align-items: center; }
+.pad { padding: 18px 16px 0; }
+h1 { margin: 2px 0 0; font-size: 36px; font-weight: 800; line-height: 1; }
+.sub { color: var(--muted); margin: 6px 0 14px; }
+.alert { background: var(--danger-bg); color: var(--danger); border: 1.5px solid var(--danger); border-radius: 4px; padding: 10px 12px; font-size: 14.5px; margin-bottom: 14px; }
+.alert b { color: var(--ink); }
+.prog { display: flex; align-items: center; gap: 10px; margin: 0 0 16px; }
+.bar { flex: 1; height: 8px; background: var(--surface2); border-radius: 2px; overflow: hidden; border: 1px solid var(--line); } .bar i { display: block; width: 40%; height: 100%; background: var(--primary); }
+.item { background: var(--surface); border: 1.5px solid var(--line); border-left: 6px solid var(--tone); border-radius: 4px; padding: 14px 14px 12px; margin-bottom: 12px; }
+.item.frio { --tone: var(--danger); } .item.hoy { --tone: var(--primary); } .item.tarea { --tone: var(--accent); } .item.luego { --tone: var(--line); }
+.item h2 { margin: 0; font-size: 20px; font-weight: 700; }
+.why { font-weight: 600; margin-top: 4px; } .item.frio .why, .item.tarea .why { color: var(--danger); } .item.hoy .why { color: var(--primary); }
+.det { color: var(--muted); font-size: 14px; margin-top: 2px; }
+.acts { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 8px; margin-top: 12px; }
+.acts a { min-height: 48px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; font-weight: 600; text-decoration: none; border: 1.5px solid var(--ink); color: var(--ink); background: var(--surface); font-size: 15px; }
+.acts a.wa { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+.tabs { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); border-top: 1.5px solid var(--ink); display: grid; grid-template-columns: repeat(5, 1fr); }
+.tabs a { min-height: 64px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; font-size: 12px; color: var(--muted); font-weight: 500; }
+.tabs a.on { color: var(--primary); font-weight: 700; box-shadow: inset 0 3px 0 var(--primary); }
+.tabs svg { width: 22px; height: 22px; }
+.toast { position: fixed; left: 12px; right: 12px; bottom: 76px; background: var(--ink); color: var(--bg); border-radius: 4px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 14px; }
+.toast b { background: var(--bg); color: var(--ink); border-radius: 3px; min-height: 44px; padding: 0 14px; display: inline-flex; align-items: center; }
+
+</style>
+</head>
+<body>
+
+<header class="top"><a href="#" aria-label="Tlalli"><span class="lg-l"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 211 64" height="30" role="img" aria-label="Tlalli"><g transform="translate(4,4) scale(0.875)"><rect width="64" height="64" rx="7" fill="#8A3F1E"/><rect x="10" y="10" width="12" height="12" fill="#FFFFFF"/><rect x="26" y="10" width="12" height="12" fill="#FFFFFF"/><rect x="42" y="10" width="12" height="12" fill="#FFFFFF"/><rect x="26" y="26" width="12" height="12" fill="#FFFFFF"/><rect x="26" y="42" width="12" height="12" fill="#FFFFFF"/><rect x="42" y="42" width="12" height="12" fill="#0F766E"/></g><g transform="translate(74,8)"><path d="M12,8V44M5,18H20M32,4V44M69,18V44M69,31A13,13 0 1 0 69,31.01M84,4V44M100,4V44M116,18V44M116,6V8" fill="none" stroke="#25190F" stroke-width="6" stroke-linecap="square" stroke-linejoin="miter"/></g></svg></span><span class="lg-d"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 211 64" height="30" role="img" aria-label="Tlalli"><g transform="translate(4,4) scale(0.875)"><rect width="64" height="64" rx="7" fill="#E58A5B"/><rect x="10" y="10" width="12" height="12" fill="#1A130F"/><rect x="26" y="10" width="12" height="12" fill="#1A130F"/><rect x="42" y="10" width="12" height="12" fill="#1A130F"/><rect x="26" y="26" width="12" height="12" fill="#1A130F"/><rect x="26" y="42" width="12" height="12" fill="#1A130F"/><rect x="42" y="42" width="12" height="12" fill="#4FD1C5"/></g><g transform="translate(74,8)"><path d="M12,8V44M5,18H20M32,4V44M69,18V44M69,31A13,13 0 1 0 69,31.01M84,4V44M100,4V44M116,18V44M116,6V8" fill="none" stroke="#F2E9E0" stroke-width="6" stroke-linecap="square" stroke-linejoin="miter"/></g></svg></span></a><button class="menu">Menú</button></header>
+<div class="pad">
+  <span class="mono">Lunes 9 de noviembre</span>
+  <h1>Hoy te toca</h1>
+  <p class="sub">5 seguimientos · Hola, Beto</p>
+  <div class="alert" role="status"><b>Contacta primero:</b> Sergio Medina (4 d) · Daniela Cuéllar (29 h)</div>
+  <div class="prog"><span class="mono">2 de 5 listos</span><span class="bar"><i></i></span></div>
+  
+  <article class="item hoy">
+    <h2>Familia Treviño</h2><div class="why">Cita hoy a las 5:30 pm</div><div class="det">Los Álamos · Lote 6</div>
+    <div class="acts"><a class="wa" href="#">WhatsApp</a><a href="#">Llamar</a><a href="#">Mover</a></div>
+  </article>
+  <article class="item frio">
+    <h2>Sergio Medina Fuentes</h2><div class="why">Sin respuesta desde hace 4 días</div><div class="det">Los Álamos · Lote 21</div>
+    <div class="acts"><a class="wa" href="#">WhatsApp</a><a href="#">Llamar</a><a href="#">Mover</a></div>
+  </article>
+  <article class="item frio">
+    <h2>Daniela Cuéllar</h2><div class="why">Nuevo lead sin contactar: 29 h</div><div class="det">Los Álamos · Lote 9</div>
+    <div class="acts"><a class="wa" href="#">WhatsApp</a><a href="#">Llamar</a><a href="#">Mover</a></div>
+  </article>
+  <article class="item tarea">
+    <h2>Regina Treviño</h2><div class="why">Mandar cotización (tarea vencida)</div><div class="det">Vista Real · Casa 2</div>
+    <div class="acts"><a class="wa" href="#">WhatsApp</a><a href="#">Llamar</a><a href="#">Mover</a></div>
+  </article>
+  <article class="item luego">
+    <h2>Jorge Ramírez Ibarra</h2><div class="why">Llamar mañana 10:00</div><div class="det">Los Álamos · Lote 14</div>
+    <div class="acts"><a class="wa" href="#">WhatsApp</a><a href="#">Llamar</a><a href="#">Mover</a></div>
+  </article>
+</div>
+<div class="toast" role="status"><span>Moviste a Jorge a Contactado.</span><b>Deshacer (7 s)</b></div>
+<nav class="tabs" aria-label="Secciones">
+  <a href="#" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg>Hoy</a><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><path d="M4 5h4v14H4zM10 5h4v10h-4zM16 5h4v7h-4z"/></svg>Pipeline</a><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><path d="M4 6h16M4 12h16M4 18h16"/></svg>Leads</a><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><path d="M5 12l4 4L19 6"/></svg>Tareas</a><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Menú</a>
+</nav>
+<script>
+  var t = new URLSearchParams(location.search).get('tema');
+  if (t === 'oscuro' || t === 'claro') document.documentElement.setAttribute('data-theme', t === 'oscuro' ? 'dark' : 'light');
+</script>
+</body>
+</html>

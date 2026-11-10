@@ -171,3 +171,13 @@ Registro de decisiones tomadas ante ambigüedades. Formato: decisión — motivo
 
 ### D-Q6. Tiempo de respuesta del formulario público (QA2 B43)
 - Toda respuesta aceptada (lead nuevo, teléfono que ya existía, envío descartado por bot o por límite) espera hasta un piso de 150 ms (más 0–20 ms al azar) antes de salir. La diferencia que se medía (8–11 ms) quedaba por debajo de ese piso. Cuesta 150 ms a quien llena el formulario, que no lo nota; las respuestas de error (400/401/413/429) no esperan.
+
+### D-Q7. Cambio de nombre a Tlalli y tema "Tierra" (después de QA2)
+- **Nombre.** La app pasa de "Pórtico" a **Tlalli** (náhuatl: tierra, terreno), un producto de **KoatlCyber**. Todo sale de `src/lib/brand.ts` (nombre, fabricante, correo, WhatsApp). Datos de contacto dados por KoatlCyber: **ventas@koatlcyber.com** y **WhatsApp 442 435 8301** (`https://wa.me/524424358301`); salen en el pie de la landing y en el botón "Pedir demo por WhatsApp". El correo remitente queda `Tlalli <ventas@koatlcyber.com>` (el dominio koatlcyber.com hay que verificarlo en Resend). **Sigue pendiente la búsqueda de marca en el IMPI y registrar el dominio propio.**
+- **Tema.** Se aplicó la variante 3 "Tierra" de Cimiento (`diseno/A3`): terracota `#8A3F1E` como color de marca (escala `brand-50…900`), verde turquesa `#0F766E` como acento, papel arena `#F6F0E7`, tinta `#25190F`, neutros cálidos. El naranja de estaca (frío) y el ocre (apartado) no cambian. Para que los grises de texto sigan cumpliendo 4.5:1 sobre el papel arena se oscurecieron `stone-500` (`#6B5F55`, 5.5:1) y `stone-600`.
+- **Logotipo e íconos.** El `Logo` es la "T" hecha de lotes con un lote marcado en turquesa más el wordmark dibujado a trazos (misma geometría que `diseno/A3/logo`). `src/app/icon.svg`, `apple-icon.png` y `favicon.ico` salen de ese ícono (`diseno/_src/icons.mjs`).
+- **Plano.** "Vendido" deja de ser azul (no existe ya en la paleta) y pasa a grafito cálido `#5A4B3E`, en la ilustración de la landing y en el plano de lotes de la app; el estatus sigue distinguiéndose por relleno, rayado y color.
+- **Columnas del pipeline.** Del azul/violeta a tonos tierra; "Cotización" usa el acento turquesa.
+- **PDF de cotización.** Barra y títulos en terracota.
+- **No se tocó:** los reportes de QA anteriores (conservan "Pórtico" como historia), los nombres de archivos ni el nombre del repositorio. Las insignias de estatus semánticas (frío en azul claro, etc.) no se rediseñaron.
+- **Límite de esta pasada:** no hay modo oscuro en la app (solo en los diseños); Google Fonts no se usa (la app ya usa `next/font`, autoalojado, compatible con el CSP).

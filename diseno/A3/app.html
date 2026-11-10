@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="es-MX" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tlalli · Cimiento · 3 Tierra · App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root, :root[data-theme="light"] { --bg:#F6F0E7;--surface:#FFFFFF;--surface2:#ECE3D5;--ink:#25190F;--muted:#5E4E41;--line:#D6C9B6;--primary:#8A3F1E;--on-primary:#FFFFFF;--accent:#0F766E;--on-accent:#FFFFFF;--accent-ink:#0F766E;--ok:#17694A;--warn:#835400;--sold:#5A4B3E;--danger:#B0243A;--ok-bg:#DDF0E7;--warn-bg:#F7E7C4;--sold-bg:#E6DDD2;--danger-bg:#F9DDE1; color-scheme: light; }
+:root[data-theme="dark"] { --bg:#1A130F;--surface:#241B15;--surface2:#2F241C;--ink:#F2E9E0;--muted:#BBAA9C;--line:#43332A;--primary:#E58A5B;--on-primary:#1A0E07;--accent:#4FD1C5;--on-accent:#04201D;--accent-ink:#4FD1C5;--ok:#58C79B;--warn:#E8B04A;--sold:#B3A59A;--danger:#FF8A9A;--ok-bg:#12372B;--warn-bg:#3A2B0B;--sold-bg:#3A2E26;--danger-bg:#40181F; color-scheme: dark; }
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+.lg-d { display: none; } .lg-l, .lg-d { line-height: 0; display: inline-flex; }
+:root[data-theme="dark"] .lg-l { display: none; } :root:not([data-theme="dark"]) .lg-d { display: none; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+
+body { font-family: 'Geist', system-ui, sans-serif; font-size: 15px; line-height: 1.5; }
+h1, h2, h3, .disp { font-family: 'Bricolage Grotesque', 'Geist', sans-serif; letter-spacing: -0.02em; }
+.mono { font-family: 'Geist Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: 4px; font-weight: 600; text-decoration: none; border: 1.5px solid var(--primary); background: var(--primary); color: var(--on-primary); font-family: inherit; font-size: 15px; }
+.btn.sec { background: transparent; color: var(--primary); }
+.btn.acc { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.lg { display: flex; gap: 16px; list-style: none; margin: 0; padding: 0; font-size: 12.5px; color: var(--muted); }
+.lg li { display: inline-flex; align-items: center; gap: 6px; }
+.sw { display: inline-block; width: 14px; height: 14px; border-radius: 2px; border: 1.5px solid; }
+.sw.d { background: var(--ok-bg); border-color: var(--ok); }
+.sw.a { background: repeating-linear-gradient(45deg, var(--warn-bg) 0 3px, var(--warn) 3px 5px); border-color: var(--warn); }
+.sw.v { background: var(--sold); border-color: var(--sold); }
+
+.shell { display: grid; grid-template-columns: 224px 1fr; min-height: 100vh; }
+aside { background: var(--surface); border-right: 1.5px solid var(--ink); padding: 18px 14px; display: flex; flex-direction: column; }
+aside nav { margin-top: 22px; display: flex; flex-direction: column; gap: 2px; }
+aside nav a { text-decoration: none; padding: 9px 12px; border-radius: 4px; font-weight: 500; color: var(--muted); display: flex; justify-content: space-between; align-items: center; }
+aside nav a.on { background: var(--primary); color: var(--on-primary); }
+aside nav a .ct { font-family: 'Geist Mono'; font-size: 11px; background: var(--accent); color: var(--on-accent); border-radius: 3px; padding: 0 6px; }
+aside .who { margin-top: auto; border-top: 1px solid var(--line); padding-top: 14px; font-size: 13px; }
+main { padding: 22px 28px 28px; overflow: hidden; }
+.head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; }
+.head h1 { margin: 2px 0 0; font-size: 34px; font-weight: 800; }
+.filters { display: flex; gap: 8px; }
+.field { background: var(--surface); border: 1.5px solid var(--line); border-radius: 4px; padding: 0 12px; height: 40px; display: inline-flex; align-items: center; color: var(--muted); font-size: 14px; min-width: 150px; }
+.alert { margin: 16px 0; background: var(--danger-bg); color: var(--danger); border: 1.5px solid var(--danger); border-radius: 4px; padding: 10px 14px; font-size: 14px; }
+.alert b { color: var(--ink); } .alert a { color: var(--danger); font-weight: 600; }
+.board { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; align-items: start; }
+.col { background: var(--surface2); border-radius: 4px; border-top: 5px solid var(--tone); padding-bottom: 8px; }
+.col header { display: flex; justify-content: space-between; align-items: center; padding: 11px 12px 9px; }
+.col h2 { margin: 0; font-size: 16px; font-weight: 700; }
+.col .n { font-family: 'Geist Mono'; font-size: 12px; background: var(--surface); border-radius: 3px; padding: 1px 8px; }
+.card { background: var(--surface); border: 1.5px solid var(--line); border-radius: 4px; margin: 0 8px 8px; padding: 11px 12px; }
+.card.cold { border-color: var(--danger); }
+.card .nm { font-weight: 600; font-size: 14.5px; }
+.card .dv { color: var(--muted); font-size: 12.5px; margin-top: 1px; }
+.card .meta { display: flex; justify-content: space-between; align-items: center; margin-top: 9px; font-size: 12px; gap: 6px; }
+.tag { font-family: 'Geist Mono'; font-size: 10.5px; background: var(--surface2); border-radius: 3px; padding: 1px 6px; }
+.cold-t { color: var(--danger); font-weight: 600; } .ok-t { color: var(--muted); }
+.mv { margin-top: 9px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--muted); }
+.mv span.sel { border: 1.5px solid var(--line); border-radius: 3px; padding: 1px 8px; }
+.toast { position: fixed; left: 252px; bottom: 22px; background: var(--ink); color: var(--bg); border-radius: 4px; padding: 11px 14px; display: flex; gap: 18px; align-items: center; font-size: 14px; }
+.toast b { background: var(--bg); color: var(--ink); border-radius: 3px; padding: 6px 12px; min-height: 32px; display: inline-flex; align-items: center; }
+
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <aside>
+    <a href="#" aria-label="Tlalli"><span class="lg-l"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 211 64" height="32" role="img" aria-label="Tlalli"><g transform="translate(4,4) scale(0.875)"><rect width="64" height="64" rx="7" fill="#8A3F1E"/><rect x="10" y="10" width="12" height="12" fill="#FFFFFF"/><rect x="26" y="10" width="12" height="12" fill="#FFFFFF"/><rect x="42" y="10" width="12" height="12" fill="#FFFFFF"/><rect x="26" y="26" width="12" height="12" fill="#FFFFFF"/><rect x="26" y="42" width="12" height="12" fill="#FFFFFF"/><rect x="42" y="42" width="12" height="12" fill="#0F766E"/></g><g transform="translate(74,8)"><path d="M12,8V44M5,18H20M32,4V44M69,18V44M69,31A13,13 0 1 0 69,31.01M84,4V44M100,4V44M116,18V44M116,6V8" fill="none" stroke="#25190F" stroke-width="6" stroke-linecap="square" stroke-linejoin="miter"/></g></svg></span><span class="lg-d"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 211 64" height="32" role="img" aria-label="Tlalli"><g transform="translate(4,4) scale(0.875)"><rect width="64" height="64" rx="7" fill="#E58A5B"/><rect x="10" y="10" width="12" height="12" fill="#1A130F"/><rect x="26" y="10" width="12" height="12" fill="#1A130F"/><rect x="42" y="10" width="12" height="12" fill="#1A130F"/><rect x="26" y="26" width="12" height="12" fill="#1A130F"/><rect x="26" y="42" width="12" height="12" fill="#1A130F"/><rect x="42" y="42" width="12" height="12" fill="#4FD1C5"/></g><g transform="translate(74,8)"><path d="M12,8V44M5,18H20M32,4V44M69,18V44M69,31A13,13 0 1 0 69,31.01M84,4V44M100,4V44M116,18V44M116,6V8" fill="none" stroke="#F2E9E0" stroke-width="6" stroke-linecap="square" stroke-linejoin="miter"/></g></svg></span></a>
+    <nav aria-label="Secciones"><a href="#" class="">Inicio</a><a href="#" class="on">Pipeline</a><a href="#" class="">Leads</a><a href="#" class="">Tareas</a><a href="#" class="">Desarrollos</a><a href="#" class="">Cotizador</a><a href="#" class="">Autorizaciones<span class="ct">2</span></a><a href="#" class="">Campañas</a><a href="#" class="">Equipo</a><a href="#" class="">Configuración</a></nav>
+    <div class="who"><b>Mariana Ortega</b><br><span class="mono">Directora comercial</span><br><span style="color:var(--muted)">Desarrollos Lomas del Altiplano</span></div>
+  </aside>
+  <main>
+    <div class="alert" role="status"><b>Contacta primero:</b> <a href="#">Sergio Medina (4 d)</a> · <a href="#">Daniela Cuéllar (29 h)</a> · <a href="#">Regina Treviño (6 d)</a> · <a href="#">ver los 8 fríos</a> · 2 solicitudes por autorizar</div>
+    <div class="head"><div><span class="mono">Ventas · 12 abiertos esta semana</span><h1>Pipeline</h1></div>
+      <div class="filters"><span class="field">Buscar lead o teléfono</span><span class="field">Todos los desarrollos</span><span class="field">Todos los asesores</span></div></div>
+    <div style="height:14px"></div>
+    <div class="board">
+<section class="col" style="--tone:#C9A27C" aria-label="Nuevo">
+  <header><h2>Nuevo</h2><span class="n">7</span></header>
+  
+  <article class="card ">
+    <div class="nm">Jorge Ramírez Ibarra</div><div class="dv">Los Álamos · Lote 14</div>
+    <div class="meta"><span class="tag">RADIO-EXA</span><span class="ok-t">hace 2 h</span></div>
+    <div class="mv"><span>Beto</span><span class="sel">Mover a…</span></div>
+  </article>
+  <article class="card cold">
+    <div class="nm">Daniela Cuéllar</div><div class="dv">Los Álamos · Lote 9</div>
+    <div class="meta"><span class="tag">FB-LOMAS</span><span class="cold-t">Frío · 29 h</span></div>
+    <div class="mv"><span>Lupita</span><span class="sel">Mover a…</span></div>
+  </article>
+  <article class="card ">
+    <div class="nm">Héctor Salazar</div><div class="dv">Sin desarrollo</div>
+    <div class="meta"><span class="tag">ESPECTACULAR</span><span class="ok-t">hace 1 h</span></div>
+    <div class="mv"><span>Beto</span><span class="sel">Mover a…</span></div>
+  </article>
+</section>
+<section class="col" style="--tone:#B8744A" aria-label="Contactado">
+  <header><h2>Contactado</h2><span class="n">5</span></header>
+  
+  <article class="card ">
+    <div class="nm">Ana Karen Montoya</div><div class="dv">Vista Real · Casa 3</div>
+    <div class="meta"><span class="tag">IG-VISTA</span><span class="ok-t">ayer</span></div>
+    <div class="mv"><span>Lupita</span><span class="sel">Mover a…</span></div>
+  </article>
+  <article class="card cold">
+    <div class="nm">Sergio Medina Fuentes</div><div class="dv">Los Álamos · Lote 21</div>
+    <div class="meta"><span class="tag">RADIO-EXA</span><span class="cold-t">Frío · 4 d</span></div>
+    <div class="mv"><span>Beto</span><span class="sel">Mover a…</span></div>
+  </article>
+</section>
+<section class="col" style="--tone:#8A3F1E" aria-label="Cita agendada">
+  <header><h2>Cita agendada</h2><span class="n">4</span></header>
+  
+  <article class="card ">
+    <div class="nm">Familia Treviño</div><div class="dv">Los Álamos · Lote 6</div>
+    <div class="meta"><span class="tag">FB-LOMAS</span><span class="ok-t">hoy 5:30 pm</span></div>
+    <div class="mv"><span>Lupita</span><span class="sel">Mover a…</span></div>
+  </article>
+  <article class="card ">
+    <div class="nm">Elena Ortega Salazar</div><div class="dv">Vista Real · Casa 8</div>
+    <div class="meta"><span class="tag">WEB</span><span class="ok-t">mañana 11:00</span></div>
+    <div class="mv"><span>Beto</span><span class="sel">Mover a…</span></div>
+  </article>
+</section>
+<section class="col" style="--tone:#0F766E" aria-label="Cotización">
+  <header><h2>Cotización</h2><span class="n">3</span></header>
+  
+  <article class="card ">
+    <div class="nm">Ulises Galván</div><div class="dv">Los Álamos · Lote 18</div>
+    <div class="meta"><span class="tag">RADIO-EXA</span><span class="ok-t">hace 3 d</span></div>
+    <div class="mv"><span>Beto</span><span class="sel">Mover a…</span></div>
+  </article>
+  <article class="card cold">
+    <div class="nm">Regina Treviño</div><div class="dv">Vista Real · Casa 2</div>
+    <div class="meta"><span class="tag">WEB</span><span class="cold-t">Frío · 6 d</span></div>
+    <div class="mv"><span>Lupita</span><span class="sel">Mover a…</span></div>
+  </article>
+</section>
+<section class="col" style="--tone:#B0243A" aria-label="Apartado">
+  <header><h2>Apartado</h2><span class="n">2</span></header>
+  
+  <article class="card ">
+    <div class="nm">Pedro Alvarado</div><div class="dv">Los Álamos · Lote 12</div>
+    <div class="meta"><span class="tag">FB-LOMAS</span><span class="ok-t">hace 1 d</span></div>
+    <div class="mv"><span>Lupita</span><span class="sel">Mover a…</span></div>
+  </article>
+</section></div>
+    <div class="toast" role="status">Moviste a Pedro Alvarado a Apartado. <b>Deshacer (8 s)</b></div>
+  </main>
+</div>
+<script>
+  var t = new URLSearchParams(location.search).get('tema');
+  if (t === 'oscuro' || t === 'claro') document.documentElement.setAttribute('data-theme', t === 'oscuro' ? 'dark' : 'light');
+</script>
+</body>
+</html>

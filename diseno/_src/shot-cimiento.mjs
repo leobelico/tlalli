@@ -1,0 +1,10 @@
+import path from 'path';
+import { pathToFileURL } from 'url';
+import { chromium } from '../../qa/node_modules/playwright/index.mjs';
+const b = await chromium.launch();
+const ctx = await b.newContext({ viewport: { width: 1500, height: 900 }, deviceScaleFactor: 2 });
+const p = await ctx.newPage();
+await p.goto(pathToFileURL(path.resolve('cimiento.html')).href, { waitUntil: 'networkidle' });
+await p.screenshot({ path: 'capturas/cimiento-comparacion.png', fullPage: true });
+console.log('overflow', await p.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth));
+await b.close();

@@ -40,6 +40,14 @@ const furrow = (y, col) => `<path d="M11,${y} Q21.5,${y - 11} 32,${y} T53,${y}" 
 const iconC = (c) => `<rect width="64" height="64" rx="18" fill="${c.bg}"/>` + furrow(22, c.b) + furrow(35, c.a) + furrow(48, c.a);
 
 const SPEC = {
+  A2: { icon: iconA, mark: (sw) => glyphsLower(sw), sw: 6, cap: 'square', join: 'miter', gap: 14,
+    light: { bg: '#1F5C45', a: '#FFFFFF', b: '#E0A526', word: '#14241C' },
+    dark: { bg: '#6FCB9F', a: '#0F1A15', b: '#E6B33F', word: '#E7EEE9' },
+    mono: '#14241C', monoDark: '#E7EEE9', surfaceDark: '#0F1A15' },
+  A3: { icon: iconA, mark: (sw) => glyphsLower(sw), sw: 6, cap: 'square', join: 'miter', gap: 14,
+    light: { bg: '#8A3F1E', a: '#FFFFFF', b: '#0F766E', word: '#25190F' },
+    dark: { bg: '#E58A5B', a: '#1A130F', b: '#4FD1C5', word: '#F2E9E0' },
+    mono: '#25190F', monoDark: '#F2E9E0', surfaceDark: '#1A130F' },
   A: { icon: iconA, mark: (sw) => glyphsLower(sw), sw: 6, cap: 'square', join: 'miter', gap: 14,
     light: { bg: '#1B4B82', a: '#FFFFFF', b: '#E58A5B', word: '#14202B' },
     dark: { bg: '#7FB0EE', a: '#0F1720', b: '#E58A5B', word: '#E8EDF2' },
@@ -74,7 +82,7 @@ export function logos(k) {
   const monoIcon = (col, bgc) => {
     // monocromo: una sola tinta, el acento se vuelve hueco
     const c = { bg: col, a: bgc, b: bgc };
-    return k === 'A' ? s.icon(c).replace(/fill="[^"]*"\/>$/, `fill="${bgc}" opacity="0.55"/>`) : s.icon(c);
+    return k.startsWith('A') ? s.icon(c).replace(/fill="[^"]*"\/>$/, `fill="${bgc}" opacity="0.55"/>`) : s.icon(c);
   };
   const g = s.mark(s.sw);
   const mono = (col, bgc) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${Math.ceil(56 + s.gap + g.w + 8)} 64" width="${Math.ceil((56 + s.gap + g.w + 8) * 1.6)}" height="102" role="img" aria-label="Tlalli (una tinta)">`

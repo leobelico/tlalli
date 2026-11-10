@@ -4,10 +4,22 @@ import { ratio } from './lib.mjs';
 // "no texto" (bordes de lote, contornos de control) a 3:1.
 export const DIR = {
   A: {
-    id: 'A', name: 'Cimiento', tag: 'Plano de ingeniería, cálido', fonts: ['Bricolage Grotesque', 'Geist', 'Geist Mono'],
+    id: 'A', name: 'Cimiento · 1 Cianotipo', tag: 'Azul de plano y arcilla', fonts: ['Bricolage Grotesque', 'Geist', 'Geist Mono'],
     gf: 'family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600',
-    light: { bg: '#F3F1EC', surface: '#FFFFFF', surface2: '#E9E6DE', ink: '#14202B', muted: '#4C5964', line: '#CFCABD', primary: '#1B4B82', onPrimary: '#FFFFFF', accent: '#A94E1F', onAccent: '#FFFFFF', ok: '#17694A', warn: '#835400', sold: '#3B4A5A', danger: '#B3361A', okBg: '#DDF0E7', warnBg: '#F7E7C4', soldBg: '#DCE2E8', dangerBg: '#FBE3DC' },
-    dark: { bg: '#0F1720', surface: '#17212C', surface2: '#1F2C39', ink: '#E8EDF2', muted: '#A3B1BE', line: '#2F3E4D', primary: '#7FB0EE', onPrimary: '#0B1620', accent: '#E58A5B', onAccent: '#1A0E07', ok: '#58C79B', warn: '#E8B04A', sold: '#9FB0C0', danger: '#FF8A68', okBg: '#12372B', warnBg: '#3A2B0B', soldBg: '#27323E', dangerBg: '#40201A' },
+    light: { bg: '#F3F1EC', surface: '#FFFFFF', surface2: '#E9E6DE', ink: '#14202B', muted: '#4C5964', line: '#CFCABD', primary: '#1B4B82', onPrimary: '#FFFFFF', accent: '#A94E1F', onAccent: '#FFFFFF', accentInk: '#A94E1F', ok: '#17694A', warn: '#835400', sold: '#3B4A5A', danger: '#B3361A', okBg: '#DDF0E7', warnBg: '#F7E7C4', soldBg: '#DCE2E8', dangerBg: '#FBE3DC' },
+    dark: { bg: '#0F1720', surface: '#17212C', surface2: '#1F2C39', ink: '#E8EDF2', muted: '#A3B1BE', line: '#2F3E4D', primary: '#7FB0EE', onPrimary: '#0B1620', accent: '#E58A5B', onAccent: '#1A0E07', accentInk: '#E58A5B', ok: '#58C79B', warn: '#E8B04A', sold: '#9FB0C0', danger: '#FF8A68', okBg: '#12372B', warnBg: '#3A2B0B', soldBg: '#27323E', dangerBg: '#40201A' },
+  },
+  A2: {
+    id: 'A2', name: 'Cimiento · 2 Pino', tag: 'Verde de pino y ocre', fonts: ['Bricolage Grotesque', 'Geist', 'Geist Mono'],
+    gf: 'family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600',
+    light: { bg: '#F1F2EA', surface: '#FFFFFF', surface2: '#E4E7DA', ink: '#14241C', muted: '#4A5B50', line: '#C9CDB9', primary: '#1F5C45', onPrimary: '#FFFFFF', accent: '#E0A526', onAccent: '#1F1400', accentInk: '#8A5A00', ok: '#17694A', warn: '#835400', sold: '#3F4C45', danger: '#B3361A', okBg: '#DCEFE3', warnBg: '#F7E7C4', soldBg: '#DEE3DC', dangerBg: '#FBE3DC' },
+    dark: { bg: '#0F1A15', surface: '#17261F', surface2: '#1F3329', ink: '#E7EEE9', muted: '#A2B5AA', line: '#2E4639', primary: '#6FCB9F', onPrimary: '#07180F', accent: '#E6B33F', onAccent: '#1F1400', accentInk: '#E6B33F', ok: '#58C79B', warn: '#E8B04A', sold: '#9DB0A5', danger: '#FF8A68', okBg: '#12372B', warnBg: '#3A2B0B', soldBg: '#26332C', dangerBg: '#40201A' },
+  },
+  A3: {
+    id: 'A3', name: 'Cimiento · 3 Tierra', tag: 'Terracota y verde turquesa', fonts: ['Bricolage Grotesque', 'Geist', 'Geist Mono'],
+    gf: 'family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600',
+    light: { bg: '#F6F0E7', surface: '#FFFFFF', surface2: '#ECE3D5', ink: '#25190F', muted: '#5E4E41', line: '#D6C9B6', primary: '#8A3F1E', onPrimary: '#FFFFFF', accent: '#0F766E', onAccent: '#FFFFFF', accentInk: '#0F766E', ok: '#17694A', warn: '#835400', sold: '#5A4B3E', danger: '#B0243A', okBg: '#DDF0E7', warnBg: '#F7E7C4', soldBg: '#E6DDD2', dangerBg: '#F9DDE1' },
+    dark: { bg: '#1A130F', surface: '#241B15', surface2: '#2F241C', ink: '#F2E9E0', muted: '#BBAA9C', line: '#43332A', primary: '#E58A5B', onPrimary: '#1A0E07', accent: '#4FD1C5', onAccent: '#04201D', accentInk: '#4FD1C5', ok: '#58C79B', warn: '#E8B04A', sold: '#B3A59A', danger: '#FF8A9A', okBg: '#12372B', warnBg: '#3A2B0B', soldBg: '#3A2E26', dangerBg: '#40181F' },
   },
   B: {
     id: 'B', name: 'Obsidiana', tag: 'Oscuro, técnico, de noche', fonts: ['Space Grotesk', 'Space Mono'],
@@ -32,6 +44,7 @@ export const PAIRS = [
   ['Texto sobre color primario (botón)', 'onPrimary', 'primary', 4.5],
   ['Color primario como texto/enlace sobre fondo', 'primary', 'bg', 4.5],
   ['Texto sobre acento (etiqueta, botón secundario)', 'onAccent', 'accent', 4.5],
+  ['Acento usado como texto (palabra destacada) sobre fondo', 'accentInk', 'bg', 4.5],
   ['Disponible (texto) sobre su fondo', 'ok', 'okBg', 4.5],
   ['Apartado (texto) sobre su fondo', 'warn', 'warnBg', 4.5],
   ['Vendido (texto) sobre su fondo', 'sold', 'soldBg', 4.5],
@@ -51,6 +64,7 @@ export function verify() {
   for (const k of Object.keys(DIR)) for (const mode of ['light', 'dark']) {
     const t = withSold(DIR[k][mode]);
     for (const [label, a, b, min] of PAIRS) {
+      if (!t[a] || !t[b]) continue;
       const r = ratio(t[a], t[b]);
       rows.push({ dir: k, mode, label, a, b, fg: t[a], bg: t[b], r, min, pass: r >= min });
     }

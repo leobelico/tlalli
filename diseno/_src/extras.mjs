@@ -16,11 +16,12 @@ const shoot = async (file, query, w, h, out, full) => {
   console.log(out, 'desborde:', overflow);
   await ctx.close();
 };
-for (const k of ['A', 'B', 'C']) {
+const KEYS = process.argv.slice(2).length ? process.argv.slice(2) : ['A', 'B', 'C'];
+for (const k of KEYS) {
   await shoot(`${k}/logos.html`, '', 1200, 800, `${k}-logos.png`, true);
   const alt = k === 'B' ? ['?tema=claro', 'claro'] : ['?tema=oscuro', 'oscuro'];
   await shoot(`${k}/app.html`, alt[0], 1280, 900, `${k}-app-1280-${alt[1]}.png`, false);
   await shoot(`${k}/celular.html`, alt[0], 390, 844, `${k}-celular-390-${alt[1]}.png`, false);
 }
-await shoot('index.html', '', 1500, 900, 'indice.png', true);
+if (!process.argv.slice(2).length) await shoot('index.html', '', 1500, 900, 'indice.png', true);
 await browser.close();

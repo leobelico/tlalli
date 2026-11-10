@@ -9,7 +9,7 @@ const ROOT = path.resolve('.');
 const w = (f, s) => { fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, s); };
 
 const USE = {
-  bg: 'Fondo de la app y de la landing', surface: 'Tarjetas, paneles y barras', surface2: 'Columnas del pipeline, fondo del plano, controles suaves',
+  accentInk: 'Acento cuando se usa como texto (palabra destacada)', bg: 'Fondo de la app y de la landing', surface: 'Tarjetas, paneles y barras', surface2: 'Columnas del pipeline, fondo del plano, controles suaves',
   ink: 'Texto principal', muted: 'Texto secundario y etiquetas', line: 'Bordes y divisores (decorativos, no cuentan como texto)',
   primary: 'Acción principal, enlaces, selección activa', onPrimary: 'Texto e íconos sobre el color primario', accent: 'Acento propio de Tlalli: etiquetas, avisos, botón de llamado',
   onAccent: 'Texto sobre el acento', ok: 'Lote disponible · todo bien', warn: 'Lote apartado · atención', sold: 'Lote vendido', danger: 'Lead frío · urgente · error',
@@ -33,7 +33,9 @@ const WHY = {
 const fmt = (n) => n.toFixed(1) + ':1';
 const rows = verify();
 
-for (const k of ['A', 'B', 'C']) {
+const KEYS = process.env.KEYS ? process.env.KEYS.split(',') : ['A', 'B', 'C'];
+const SOLO_VARIANTES = Boolean(process.env.KEYS);
+for (const k of KEYS) {
   const d = DIR[k]; const L = logos(k);
   // ---- logos
   const dirOut = path.join(ROOT, k, 'logo');
@@ -86,6 +88,7 @@ ${modes.map((mode) => `<h3>Contraste · ${names[mode]}</h3><table><tr><th>Par</t
 </main></body></html>`);
 }
 
+if (SOLO_VARIANTES) { console.log('listo (solo variantes)'); process.exit(0); }
 // ---------- SUPUESTOS ----------
 w(path.join(ROOT, 'SUPUESTOS.md'), `# Supuestos (no hubo preguntas; esto es lo que di por cierto)
 
