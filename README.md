@@ -6,7 +6,7 @@ SaaS multi-tenant para inmobiliarias y desarrolladoras de México: saber qué ca
 
 ## Qué incluye
 
-Auth y organizaciones con roles (admin/asesor) e invitaciones · desarrollos e inventario · leads (manual, CSV, webhook público, formulario hospedado) con campaña de origen y consentimiento LFPDPPP · pipeline kanban con motivo de pérdida · tareas y alerta de lead frío configurable · WhatsApp (adaptador simulado + Cloud API de Meta) · cotizador con PDF · dashboard · landing y precios · **plan Élite IA** (asistente por lead con resumen, temperatura, siguiente paso y borrador de WhatsApp; análisis de métricas; cuota de 500 consultas al mes).
+Auth y organizaciones con roles (admin/asesor) e invitaciones · desarrollos e inventario con **plano interactivo** (subes la imagen del plano y marcas cada lote; se pinta según su estatus) · leads (manual, CSV, webhook público, formulario hospedado) con campaña de origen y consentimiento LFPDPPP · pipeline kanban con motivo de pérdida · tareas y alerta de lead frío configurable · WhatsApp (adaptador simulado + Cloud API de Meta) · cotizador con PDF · dashboard · landing y precios · **plan Élite IA** (asistente por lead con resumen, temperatura, siguiente paso y borrador de WhatsApp; análisis de métricas; cuota de 500 consultas al mes).
 
 Bitácora por fase, pendientes y cómo probar cada cosa: [PROGRESS.md](PROGRESS.md). Decisiones tomadas ante ambigüedades: [DECISIONS.md](DECISIONS.md). Conectar WhatsApp real: [docs/WHATSAPP.md](docs/WHATSAPP.md).
 
@@ -60,7 +60,7 @@ Ver [.env.example](.env.example) (comentado). Solo `NEXT_PUBLIC_SUPABASE_URL` y 
 
 ## Pruebas
 
-133 pruebas de integración y unitarias (`tests/`): aislamiento RLS entre organizaciones, permisos por rol e invitaciones, webhook de leads, CSV, pipeline, tareas/alertas, WhatsApp (firma, idempotencia, ventana de 24 h), cálculo del cotizador, PDF, dashboard y el asistente de IA (con un proveedor simulado: cuota, plan, privacidad del prompt, permisos). Además verifiqué cada fase de punta a punta en un navegador headless con scripts desechables (no incluidos en el repo; ver riesgo 9).
+141 pruebas de integración y unitarias (`tests/`): aislamiento RLS entre organizaciones, permisos por rol e invitaciones, webhook de leads, CSV, pipeline, tareas/alertas, WhatsApp (firma, idempotencia, ventana de 24 h), planos de desarrollo (subida, marcado de lotes, aislamiento), cálculo del cotizador, PDF, dashboard y el asistente de IA (con un proveedor simulado: cuota, plan, privacidad del prompt, permisos). Además verifiqué cada fase de punta a punta en un navegador headless con scripts desechables (no incluidos en el repo; ver riesgo 9).
 
 ## Riesgos y pendientes antes de vender a un cliente real
 

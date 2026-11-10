@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="es-MX" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tlalli · Obsidiana · Celular</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root, :root[data-theme="light"] { --bg:#F4F6F2;--surface:#FFFFFF;--surface2:#E7ECE6;--ink:#0F1A17;--muted:#475852;--line:#CBD5CE;--primary:#1F3B33;--on-primary:#FFFFFF;--accent:#0B6B55;--on-accent:#FFFFFF;--ok:#0B6B55;--warn:#7A5200;--sold:#4A5A54;--danger:#B23A1E;--ok-bg:#D8F0E8;--warn-bg:#F6E5BE;--sold-bg:#DDE4E0;--danger-bg:#FBE2DB; color-scheme: light; }
+:root[data-theme="dark"] { --bg:#0C1110;--surface:#151C1A;--surface2:#1D2623;--ink:#ECF2EE;--muted:#9DB0A7;--line:#2A3631;--primary:#D9F24F;--on-primary:#0C1110;--accent:#3DDBB0;--on-accent:#04130E;--ok:#3DDBB0;--warn:#F5B83D;--sold:#8FA19A;--sold-fill:#55645E;--sold-text:#ECF2EE;--danger:#FF7A59;--ok-bg:#0F3329;--warn-bg:#3A2C0A;--sold-bg:#242E2A;--danger-bg:#3F1E16; color-scheme: dark; }
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+.lg-d { display: none; } .lg-l, .lg-d { line-height: 0; display: inline-flex; }
+:root[data-theme="dark"] .lg-l { display: none; } :root:not([data-theme="dark"]) .lg-d { display: none; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+
+body { font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 15px; line-height: 1.5; }
+h1, h2, h3 { font-weight: 700; letter-spacing: -0.035em; margin: 0; }
+.mono { font-family: 'Space Mono', ui-monospace, monospace; font-size: 11.5px; letter-spacing: .04em; color: var(--muted); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 22px; border-radius: 999px; font-weight: 700; text-decoration: none; background: var(--primary); color: var(--on-primary); border: 0; font-family: inherit; font-size: 15px; }
+.btn.ghost { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--line); }
+.lg { display: flex; gap: 16px; list-style: none; margin: 0; padding: 0; font-size: 12.5px; color: var(--muted); font-family: 'Space Mono'; }
+.lg li { display: inline-flex; align-items: center; gap: 6px; }
+.sw { display: inline-block; width: 14px; height: 14px; border-radius: 3px; border: 1.5px solid; }
+.sw.d { background: var(--ok-bg); border-color: var(--ok); }
+.sw.a { background: repeating-linear-gradient(45deg, var(--warn-bg) 0 3px, var(--warn) 3px 5px); border-color: var(--warn); }
+.sw.v { background: var(--sold); border-color: var(--sold); }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 3px var(--ok-bg); }
+
+body { font-size: 16px; padding-bottom: 92px; }
+header.top { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--line); background: var(--surface); position: sticky; top: 0; z-index: 3; }
+.menu { min-height: 44px; min-width: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--ink); font: 600 15px 'Space Grotesk'; display: inline-flex; align-items: center; }
+.pad { padding: 20px 16px 0; }
+h1 { font-size: 48px; line-height: .95; margin-top: 8px; }
+.sum { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 16px 0; }
+.sum div { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; } .sum b { display: block; font-size: 28px; letter-spacing: -.03em; } .sum b.r { color: var(--danger); } .sum b.p { color: var(--primary); }
+.alert { border: 1px solid var(--danger); background: var(--danger-bg); border-radius: 12px; padding: 10px 12px; font-size: 14.5px; margin-bottom: 14px; } .alert b { color: var(--danger); font-family: 'Space Mono'; font-size: 11.5px; }
+.item { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 16px; margin-bottom: 12px; position: relative; }
+.item::before { content: ''; position: absolute; left: 0; top: 18px; bottom: 18px; width: 4px; border-radius: 0 4px 4px 0; background: var(--tone); }
+.item.frio { --tone: var(--danger); } .item.hoy { --tone: var(--primary); } .item.tarea { --tone: var(--warn); } .item.luego { --tone: var(--line); }
+.item h2 { font-size: 22px; letter-spacing: -.02em; } .why { font-family: 'Space Mono'; font-size: 12.5px; margin-top: 6px; color: var(--ink); } .item.frio .why { color: var(--danger); } .item.hoy .why { color: var(--primary); } .item.tarea .why { color: var(--warn); }
+.det { color: var(--muted); font-size: 14px; margin-top: 4px; }
+.acts { display: grid; grid-template-columns: 1fr 56px 56px; gap: 8px; margin-top: 14px; }
+.acts a { min-height: 52px; border-radius: 14px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; font-weight: 700; background: var(--surface2); color: var(--ink); }
+.acts a.wa { background: var(--primary); color: var(--on-primary); font-size: 16px; }
+.acts svg { width: 22px; height: 22px; }
+.tabs { position: fixed; left: 12px; right: 12px; bottom: 12px; background: var(--surface2); border: 1px solid var(--line); border-radius: 20px; display: grid; grid-template-columns: repeat(4, 1fr); padding: 6px; }
+.tabs a { min-height: 56px; border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; text-decoration: none; color: var(--muted); font-size: 12px; font-weight: 500; }
+.tabs a.on { background: var(--primary); color: var(--on-primary); font-weight: 700; } .tabs svg { width: 22px; height: 22px; }
+.toast { position: fixed; left: 12px; right: 12px; bottom: 96px; background: var(--ink); color: var(--bg); border-radius: 16px; padding: 8px 8px 8px 16px; display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 14px; }
+.toast b { background: var(--primary); color: var(--on-primary); border-radius: 12px; min-height: 44px; padding: 0 14px; display: inline-flex; align-items: center; }
+
+</style>
+</head>
+<body>
+
+<header class="top"><a href="#" aria-label="Tlalli"><span class="lg-l"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 310 64" height="28" role="img" aria-label="Tlalli"><g transform="translate(4,4) scale(0.875)"><rect width="64" height="64" rx="10" fill="#0C1110"/><polygon points="32,6 58,32 32,58 6,32" fill="#D9F24F"/><path d="M32,32H58L32,58Z" fill="#3DDBB0"/><path d="M32,6V58M6,32H58" stroke="#0C1110" stroke-width="2.4"/></g><g transform="translate(76,8)"><path d="M4.5,6H38.5M21.5,6V44M51.5,6V44H76.5M86.5,44L103.5,6L120.5,44M93.5,30H113.5M135.5,6V44H160.5M173.5,6V44H198.5M211.5,6V44" fill="none" stroke="#0C1110" stroke-width="5" stroke-linecap="butt" stroke-linejoin="miter"/></g></svg></span><span class="lg-d"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 310 64" height="28" role="img" aria-label="Tlalli"><g transform="translate(4,4) scale(0.875)"><rect width="64" height="64" rx="10" fill="#D9F24F"/><polygon points="32,6 58,32 32,58 6,32" fill="#0C1110"/><path d="M32,32H58L32,58Z" fill="#0C1110"/><path d="M32,6V58M6,32H58" stroke="#D9F24F" stroke-width="2.4"/></g><g transform="translate(76,8)"><path d="M4.5,6H38.5M21.5,6V44M51.5,6V44H76.5M86.5,44L103.5,6L120.5,44M93.5,30H113.5M135.5,6V44H160.5M173.5,6V44H198.5M211.5,6V44" fill="none" stroke="#ECF2EE" stroke-width="5" stroke-linecap="butt" stroke-linejoin="miter"/></g></svg></span></a><button class="menu">Menú</button></header>
+<div class="pad">
+  <span class="mono">LUN 9 NOV · BETO</span>
+  <h1>Hoy te toca</h1>
+  <div class="sum"><div><b class="r">3</b><span class="mono">FRÍOS</span></div><div><b class="p">1</b><span class="mono">CITA HOY</span></div><div><b>2</b><span class="mono">LISTOS</span></div></div>
+  <div class="alert" role="status"><b>CONTACTA PRIMERO</b><br>Sergio Medina · 4 d &nbsp;·&nbsp; Daniela Cuéllar · 29 h</div>
+  
+  <article class="item hoy"><h2>Familia Treviño</h2><div class="why">Cita hoy a las 5:30 pm</div><div class="det">Los Álamos · Lote 6</div>
+    <div class="acts"><a class="wa" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.8 7L4 20l1.1-4.9A8 8 0 1 1 21 12z"/></svg>&nbsp;WhatsApp</a><a href="#" aria-label="Llamar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg></a><a href="#" aria-label="Mover de etapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div></article>
+  <article class="item frio"><h2>Sergio Medina Fuentes</h2><div class="why">Sin respuesta desde hace 4 días</div><div class="det">Los Álamos · Lote 21</div>
+    <div class="acts"><a class="wa" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.8 7L4 20l1.1-4.9A8 8 0 1 1 21 12z"/></svg>&nbsp;WhatsApp</a><a href="#" aria-label="Llamar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg></a><a href="#" aria-label="Mover de etapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div></article>
+  <article class="item frio"><h2>Daniela Cuéllar</h2><div class="why">Nuevo lead sin contactar: 29 h</div><div class="det">Los Álamos · Lote 9</div>
+    <div class="acts"><a class="wa" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.8 7L4 20l1.1-4.9A8 8 0 1 1 21 12z"/></svg>&nbsp;WhatsApp</a><a href="#" aria-label="Llamar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg></a><a href="#" aria-label="Mover de etapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div></article>
+  <article class="item tarea"><h2>Regina Treviño</h2><div class="why">Mandar cotización (tarea vencida)</div><div class="det">Vista Real · Casa 2</div>
+    <div class="acts"><a class="wa" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.8 7L4 20l1.1-4.9A8 8 0 1 1 21 12z"/></svg>&nbsp;WhatsApp</a><a href="#" aria-label="Llamar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg></a><a href="#" aria-label="Mover de etapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div></article>
+  <article class="item luego"><h2>Jorge Ramírez Ibarra</h2><div class="why">Llamar mañana 10:00</div><div class="det">Los Álamos · Lote 14</div>
+    <div class="acts"><a class="wa" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.8 7L4 20l1.1-4.9A8 8 0 1 1 21 12z"/></svg>&nbsp;WhatsApp</a><a href="#" aria-label="Llamar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg></a><a href="#" aria-label="Mover de etapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div></article>
+</div>
+<div class="toast" role="status"><span>Moviste a Jorge a Contactado</span><b>Deshacer · 7 s</b></div>
+<nav class="tabs" aria-label="Secciones"><a href="#" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg>Hoy</a><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h4v14H4zM10 5h4v10h-4zM16 5h4v7h-4z"/></svg>Pipeline</a><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>Leads</a><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4L19 6"/></svg>Tareas</a></nav>
+<script>
+  var t = new URLSearchParams(location.search).get('tema');
+  if (t === 'oscuro' || t === 'claro') document.documentElement.setAttribute('data-theme', t === 'oscuro' ? 'dark' : 'light');
+</script>
+</body>
+</html>

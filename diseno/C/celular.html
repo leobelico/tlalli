@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="es-MX" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tlalli · Milpa · Celular</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root, :root[data-theme="light"] { --bg:#FBF6EC;--surface:#FFFFFF;--surface2:#F2E9D8;--ink:#1F2A26;--muted:#55625C;--line:#E0D4BC;--primary:#0E5A4E;--on-primary:#FFFFFF;--accent:#F4A300;--on-accent:#1F1500;--ok:#176B45;--warn:#7A4F00;--sold:#4A5568;--danger:#B8301F;--ok-bg:#DDF0E4;--warn-bg:#FBE8BE;--sold-bg:#E4E7EC;--danger-bg:#FADDD7; color-scheme: light; }
+:root[data-theme="dark"] { --bg:#0F1A17;--surface:#172421;--surface2:#20312D;--ink:#F3EDE0;--muted:#A9B8B0;--line:#2D4039;--primary:#5FD0B8;--on-primary:#06201A;--accent:#F7B733;--on-accent:#1F1500;--ok:#5FD0A0;--warn:#F0BD4F;--sold:#A8B4C2;--danger:#FF8D78;--ok-bg:#12372B;--warn-bg:#3A2B0B;--sold-bg:#28333D;--danger-bg:#40201A; color-scheme: dark; }
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+.lg-d { display: none; } .lg-l, .lg-d { line-height: 0; display: inline-flex; }
+:root[data-theme="dark"] .lg-l { display: none; } :root:not([data-theme="dark"]) .lg-d { display: none; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+
+body { font-family: 'DM Sans', system-ui, sans-serif; font-size: 16px; line-height: 1.5; }
+h1, h2, h3, .serif { font-family: 'Fraunces', Georgia, serif; font-weight: 600; letter-spacing: -0.02em; margin: 0; font-optical-sizing: auto; }
+.mono { font-family: 'DM Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: .02em; color: var(--muted); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; padding: 0 24px; border-radius: 16px; font-weight: 700; text-decoration: none; background: var(--primary); color: var(--on-primary); font-family: inherit; font-size: 16px; border: 0; }
+.btn.acc { background: var(--accent); color: var(--on-accent); }
+.btn.soft { background: var(--surface2); color: var(--ink); }
+.lg { display: flex; gap: 16px; list-style: none; margin: 0; padding: 0; font-size: 13.5px; color: var(--muted); flex-wrap: wrap; }
+.lg li { display: inline-flex; align-items: center; gap: 7px; }
+.sw { display: inline-block; width: 16px; height: 16px; border-radius: 6px; border: 2px solid; }
+.sw.d { background: var(--ok-bg); border-color: var(--ok); }
+.sw.a { background: repeating-linear-gradient(45deg, var(--warn-bg) 0 3px, var(--warn) 3px 5px); border-color: var(--warn); }
+.sw.v { background: var(--sold); border-color: var(--sold); }
+
+body { padding-bottom: 92px; }
+header.top { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; }
+.menu { min-height: 44px; padding: 0 18px; border-radius: 14px; border: 0; background: var(--surface2); color: var(--ink); font: 700 15px 'DM Sans'; }
+.pad { padding: 4px 16px 0; }
+h1 { font-size: 36px; line-height: 1.05; margin: 4px 0 4px; }
+.hello { color: var(--muted); margin: 0 0 16px; }
+.ring { display: flex; align-items: center; gap: 16px; background: var(--primary); color: var(--on-primary); border-radius: 24px; padding: 16px 18px; margin-bottom: 14px; }
+.ring svg { flex: none; } .ring b { font: 600 20px/1.2 'Fraunces'; display: block; } .ring span { font-size: 14px; opacity: .92; }
+.alert { background: var(--danger-bg); border-radius: 18px; padding: 11px 14px; font-size: 15px; margin-bottom: 18px; } .alert b { color: var(--danger); }
+.sec { font: 700 13px 'DM Sans'; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 6px 4px 10px; }
+.item { background: var(--surface); border-radius: 24px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 0 var(--line); }
+.item .top2 { display: flex; gap: 12px; align-items: center; }
+.av { flex: none; width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; font: 600 18px 'Fraunces'; background: var(--surface2); color: var(--ink); }
+.item.frio .av, .item.tarea .av { background: var(--danger-bg); color: var(--danger); } .item.hoy .av { background: var(--accent); color: var(--on-accent); }
+.item h2 { font-size: 20px; } .why { font-weight: 700; font-size: 15px; margin-top: 1px; } .item.frio .why, .item.tarea .why { color: var(--danger); } .item.hoy .why { color: var(--primary); }
+.det { color: var(--muted); font-size: 14px; margin: 10px 0 0 58px; }
+.acts { display: grid; grid-template-columns: 1.5fr 1fr; gap: 10px; margin-top: 14px; }
+.acts a { min-height: 54px; border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; font-weight: 700; background: var(--surface2); color: var(--ink); font-size: 16px; }
+.acts a.wa { background: var(--primary); color: var(--on-primary); }
+.acts svg { width: 22px; height: 22px; flex: none; }
+.tabs { position: fixed; left: 0; right: 0; bottom: 0; background: var(--surface); border-radius: 24px 24px 0 0; box-shadow: 0 -8px 24px -12px rgba(31,42,38,.3); display: grid; grid-template-columns: repeat(4, 1fr); padding: 6px 8px 10px; }
+.tabs a { min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; text-decoration: none; font-size: 12px; font-weight: 600; color: var(--muted); border-radius: 16px; }
+.tabs a.on { color: var(--primary); background: var(--surface2); } .tabs svg { width: 24px; height: 24px; }
+.toast { position: fixed; left: 12px; right: 12px; bottom: 90px; background: var(--ink); color: var(--bg); border-radius: 18px; padding: 8px 8px 8px 16px; display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 14.5px; }
+.toast b { background: var(--accent); color: var(--on-accent); border-radius: 12px; min-height: 44px; padding: 0 14px; display: inline-flex; align-items: center; white-space: nowrap; }
+
+</style>
+</head>
+<body>
+
+<header class="top"><a href="#" aria-label="Tlalli"><span class="lg-l"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 211 64" height="32" role="img" aria-label="Tlalli"><g transform="translate(4,4) scale(0.875)"><rect width="64" height="64" rx="18" fill="#0E5A4E"/><path d="M11,22 Q21.5,11 32,22 T53,22" fill="none" stroke="#F4A300" stroke-width="6.5" stroke-linecap="round"/><path d="M11,35 Q21.5,24 32,35 T53,35" fill="none" stroke="#FBF6EC" stroke-width="6.5" stroke-linecap="round"/><path d="M11,48 Q21.5,37 32,48 T53,48" fill="none" stroke="#FBF6EC" stroke-width="6.5" stroke-linecap="round"/></g><g transform="translate(72,8)"><path d="M12.5,8V44M5.5,18H20.5M32.5,4V44M69.5,18V44M69.5,31A13,13 0 1 0 69.5,31.01M84.5,4V44M100.5,4V44M116.5,18V44M116.5,6V8" fill="none" stroke="#0E5A4E" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g></svg></span><span class="lg-d"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 211 64" height="32" role="img" aria-label="Tlalli"><g transform="translate(4,4) scale(0.875)"><rect width="64" height="64" rx="18" fill="#5FD0B8"/><path d="M11,22 Q21.5,11 32,22 T53,22" fill="none" stroke="#F7B733" stroke-width="6.5" stroke-linecap="round"/><path d="M11,35 Q21.5,24 32,35 T53,35" fill="none" stroke="#0F1A17" stroke-width="6.5" stroke-linecap="round"/><path d="M11,48 Q21.5,37 32,48 T53,48" fill="none" stroke="#0F1A17" stroke-width="6.5" stroke-linecap="round"/></g><g transform="translate(72,8)"><path d="M12.5,8V44M5.5,18H20.5M32.5,4V44M69.5,18V44M69.5,31A13,13 0 1 0 69.5,31.01M84.5,4V44M100.5,4V44M116.5,18V44M116.5,6V8" fill="none" stroke="#F3EDE0" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g></svg></span></a><button class="menu">Menú</button></header>
+<div class="pad">
+  <h1>Hola, Beto</h1><p class="hello">Lunes 9 de noviembre · tu día</p>
+  <div class="ring"><svg width="64" height="64" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="26" fill="none" stroke="#FFFFFF" stroke-opacity=".28" stroke-width="8"/><circle cx="32" cy="32" r="26" fill="none" stroke="#F4A300" stroke-width="8" stroke-linecap="round" stroke-dasharray="65.3 200" transform="rotate(-90 32 32)"/><text x="32" y="38" text-anchor="middle" font-family="Fraunces" font-weight="600" font-size="18" fill="#FFFFFF">2/5</text></svg><div><b>Llevas 2 de 5 seguimientos</b><span>Te faltan 3. Empieza por los fríos.</span></div></div>
+  <div class="alert" role="status"><b>Contacta primero:</b> Sergio Medina (4 d) y Daniela Cuéllar (29 h)</div>
+  <p class="sec">Primero</p>
+  <article class="item hoy"><div class="top2"><span class="av">FT</span><div><h2>Familia Treviño</h2><div class="why">Cita hoy a las 5:30 pm</div></div></div>
+    <div class="det">Los Álamos · Lote 6</div>
+    <div class="acts"><a class="wa" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.8 7L4 20l1.1-4.9A8 8 0 1 1 21 12z"/></svg>WhatsApp</a><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>Llamar</a></div></article>
+  <article class="item frio"><div class="top2"><span class="av">SM</span><div><h2>Sergio Medina Fuentes</h2><div class="why">Sin respuesta desde hace 4 días</div></div></div>
+    <div class="det">Los Álamos · Lote 21</div>
+    <div class="acts"><a class="wa" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.8 7L4 20l1.1-4.9A8 8 0 1 1 21 12z"/></svg>WhatsApp</a><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>Llamar</a></div></article>
+  <article class="item frio"><div class="top2"><span class="av">DC</span><div><h2>Daniela Cuéllar</h2><div class="why">Nuevo lead sin contactar: 29 h</div></div></div>
+    <div class="det">Los Álamos · Lote 9</div>
+    <div class="acts"><a class="wa" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.8 7L4 20l1.1-4.9A8 8 0 1 1 21 12z"/></svg>WhatsApp</a><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>Llamar</a></div></article><p class="sec">Después</p>
+  <article class="item tarea"><div class="top2"><span class="av">RT</span><div><h2>Regina Treviño</h2><div class="why">Mandar cotización (tarea vencida)</div></div></div>
+    <div class="det">Vista Real · Casa 2</div>
+    <div class="acts"><a class="wa" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.8 7L4 20l1.1-4.9A8 8 0 1 1 21 12z"/></svg>WhatsApp</a><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>Llamar</a></div></article>
+  <article class="item luego"><div class="top2"><span class="av">JR</span><div><h2>Jorge Ramírez Ibarra</h2><div class="why">Llamar mañana 10:00</div></div></div>
+    <div class="det">Los Álamos · Lote 14</div>
+    <div class="acts"><a class="wa" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.8 7L4 20l1.1-4.9A8 8 0 1 1 21 12z"/></svg>WhatsApp</a><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>Llamar</a></div></article>
+</div>
+<div class="toast" role="status"><span>Moviste a Jorge a Contactado.</span><b>Deshacer (7 s)</b></div>
+<nav class="tabs" aria-label="Secciones"><a href="#" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg>Hoy</a><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h4v14H4zM10 5h4v10h-4zM16 5h4v7h-4z"/></svg>Pipeline</a><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>Leads</a><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h6v6H4zM14 5h6v6h-6zM4 15h6v4H4zM14 15h6v4h-6z"/></svg>Lotes</a></nav>
+<script>
+  var t = new URLSearchParams(location.search).get('tema');
+  if (t === 'oscuro' || t === 'claro') document.documentElement.setAttribute('data-theme', t === 'oscuro' ? 'dark' : 'light');
+</script>
+</body>
+</html>

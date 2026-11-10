@@ -79,6 +79,14 @@ Registro de decisiones tomadas ante ambigüedades. Formato: decisión — motivo
 46. **Reglas de la IA**: solo propone, nunca envía; el prompt no incluye teléfono, correo ni apellido; notas y mensajes del lead se tratan como datos no confiables (se neutralizan `<` y `>` y el system prompt prohíbe obedecerlos); un asesor solo analiza sus propios leads; el plan y la cuota mensual (hora de CDMX) se validan antes de llamar al modelo; cada llamada se registra en `ai_usage` (tokens y modelo, sin contenido). Salida estructurada validada con Zod; fallback de seguridad del lado del servidor (`fallbacks: "default"`).
 47. **Modelo**: `claude-opus-5-5` por defecto con esfuerzo `low` (tareas cortas); configurable con `AI_MODEL` por si se prefiere uno más barato.
 
+## Plano interactivo del desarrollo
+
+48. **El plano vive en Postgres, no en Supabase Storage.** Tabla `development_plans` (imagen en `bytea`, máximo 5 MB) con RLS como el resto: hereda el aislamiento entre organizaciones sin buckets, políticas ni URLs firmadas, y funciona igual en local y en producción. Se sirve por `GET /api/developments/[id]/plan` con sesión; la subida es `POST` en la misma ruta (no una server action, por el límite de 2.2 MB del CSV). Si los planos crecen o se piden PDF grandes, migrar a Storage.
+49. **Validación del archivo por bytes, no por extensión ni Content-Type.** Solo PNG, JPEG y WebP. SVG se rechaza a propósito (puede traer scripts) y el PDF no se acepta: hay que exportarlo como imagen. La respuesta lleva `Content-Security-Policy: sandbox` y `nosniff`.
+50. **El contorno de cada lote se guarda en `units.plan_shape` como fracciones (0 a 1) del ancho y alto de la imagen**, así no se descuadra al cambiar de tamaño de pantalla. Se admiten 3 a 60 puntos y se rechazan contornos casi sin área. Si se reemplaza el plano por otro de distinta proporción, los contornos conservan su posición (la interfaz lo advierte); al quitar el plano se borran todos.
+51. **Editor propio, sin librerías**: rectángulo de 2 clics (lo común en lotes) o polígono, arrastre de vértices, deshacer con Retroceso, Esc cancela, y al terminar un lote pasa solo al siguiente sin marcar. Pan con arrastre y zoom con rueda o botones. Solo el administrador edita (`units:write`); el asesor ve el plano y puede abrir el cotizador desde un lote. Sin pinch-zoom táctil todavía.
+52. **Seed**: "Residencial Los Pinos" trae un plano inventado (`prisma/seed-assets/plano-los-pinos.png`, generado desde `prisma/plano-layout.ts`) con sus 24 lotes ya marcados; los otros dos desarrollos quedan sin plano para mostrar el estado vacío.
+
 ## Pasada de piloto (10 nov 2026)
 
 ### D-P1. Formulario público: respuesta neutra, límites compartidos y anti-bots (QA B15/B16)

@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { parseForm, uuidSchema, type ActionState } from "@/lib/validation/common";
 import { bulkUnitsSchema, developmentSchema, unitSchema, unitStatusSchema } from "@/lib/validation/inventory";
+import { planShapeSchema } from "@/lib/plan-shape";
 import { requireCtx } from "@/server/auth/session";
 import { runAction } from "@/server/errors";
 import {
@@ -16,6 +17,7 @@ import {
   updateDevelopment,
   updateUnit,
 } from "@/server/services/inventory";
+import { deletePlan, setUnitShape } from "@/server/services/plans";
 
 export async function createDevelopmentAction(_: ActionState, formData: FormData): Promise<ActionState> {
   const { ctx } = await requireCtx("developments:write");
@@ -99,5 +101,33 @@ export async function deleteUnitAction(_: ActionState, formData: FormData): Prom
     await deleteUnit(ctx, parsed.data.id);
     revalidatePath(`/app/desarrollos/${parsed.data.developmentId}`);
     return { ok: true };
+  });
+}
+
+export async function setUnitShapeAction(
+  developmentId: string,
+  unitId: string,
+  shape: unknown,
+): Promise<ActionState> {
+  const { ctx } = await requireCtx("units:write");
+  const ids = z.object({ developmentId: uuidSchema, unitId: uuidSchema }).safeParse({ developmentId, unitId });
+  if (!ids.success) return { error: "Datos inválidos." };
+  const parsed = shape === null ? { success: true as const, data: null } : planShapeSchema.safeParse(shape);
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Contorno inválido." };
+  return runAction(async () => {
+    await setUnitShape(ctx, ids.data.developmentId, ids.data.unitId, parsed.data);
+    revalidatePath(`/app/desarrollos/${ids.data.developmentId}`);
+    return { ok: true };
+  });
+}
+
+export async function deletePlanAction(_: ActionState, formData: FormData): Promise<ActionState> {
+  const { ctx } = await requireCtx("units:write");
+  const parsed = parseForm(z.object({ developmentId: uuidSchema }), formData);
+  if (parsed.error) return parsed.error;
+  return runAction(async () => {
+    await deletePlan(ctx, parsed.data.developmentId);
+    revalidatePath(`/app/desarrollos/${parsed.data.developmentId}`);
+    return { ok: true, message: "Plano eliminado." };
   });
 }

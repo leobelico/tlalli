@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="es-MX" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tlalli · Milpa · App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root, :root[data-theme="light"] { --bg:#FBF6EC;--surface:#FFFFFF;--surface2:#F2E9D8;--ink:#1F2A26;--muted:#55625C;--line:#E0D4BC;--primary:#0E5A4E;--on-primary:#FFFFFF;--accent:#F4A300;--on-accent:#1F1500;--ok:#176B45;--warn:#7A4F00;--sold:#4A5568;--danger:#B8301F;--ok-bg:#DDF0E4;--warn-bg:#FBE8BE;--sold-bg:#E4E7EC;--danger-bg:#FADDD7; color-scheme: light; }
+:root[data-theme="dark"] { --bg:#0F1A17;--surface:#172421;--surface2:#20312D;--ink:#F3EDE0;--muted:#A9B8B0;--line:#2D4039;--primary:#5FD0B8;--on-primary:#06201A;--accent:#F7B733;--on-accent:#1F1500;--ok:#5FD0A0;--warn:#F0BD4F;--sold:#A8B4C2;--danger:#FF8D78;--ok-bg:#12372B;--warn-bg:#3A2B0B;--sold-bg:#28333D;--danger-bg:#40201A; color-scheme: dark; }
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+.lg-d { display: none; } .lg-l, .lg-d { line-height: 0; display: inline-flex; }
+:root[data-theme="dark"] .lg-l { display: none; } :root:not([data-theme="dark"]) .lg-d { display: none; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+
+body { font-family: 'DM Sans', system-ui, sans-serif; font-size: 16px; line-height: 1.5; }
+h1, h2, h3, .serif { font-family: 'Fraunces', Georgia, serif; font-weight: 600; letter-spacing: -0.02em; margin: 0; font-optical-sizing: auto; }
+.mono { font-family: 'DM Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: .02em; color: var(--muted); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; padding: 0 24px; border-radius: 16px; font-weight: 700; text-decoration: none; background: var(--primary); color: var(--on-primary); font-family: inherit; font-size: 16px; border: 0; }
+.btn.acc { background: var(--accent); color: var(--on-accent); }
+.btn.soft { background: var(--surface2); color: var(--ink); }
+.lg { display: flex; gap: 16px; list-style: none; margin: 0; padding: 0; font-size: 13.5px; color: var(--muted); flex-wrap: wrap; }
+.lg li { display: inline-flex; align-items: center; gap: 7px; }
+.sw { display: inline-block; width: 16px; height: 16px; border-radius: 6px; border: 2px solid; }
+.sw.d { background: var(--ok-bg); border-color: var(--ok); }
+.sw.a { background: repeating-linear-gradient(45deg, var(--warn-bg) 0 3px, var(--warn) 3px 5px); border-color: var(--warn); }
+.sw.v { background: var(--sold); border-color: var(--sold); }
+
+.shell { display: grid; grid-template-columns: 92px 1fr; min-height: 100vh; }
+.rail { background: var(--primary); color: var(--on-primary); display: flex; flex-direction: column; align-items: center; padding: 18px 0; gap: 4px; }
+.rail a { width: 70px; padding: 9px 0 7px; border-radius: 16px; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11.5px; font-weight: 600; color: var(--on-primary); opacity: .85; }
+.rail a.on { background: color-mix(in srgb, var(--on-primary) 18%, transparent); opacity: 1; }
+.rail svg { width: 22px; height: 22px; } .rail .lg0 { margin-bottom: 14px; }
+.rail .ct { position: absolute; margin: -2px 0 0 26px; background: var(--accent); color: var(--on-accent); border-radius: 999px; font-size: 11px; padding: 0 6px; font-weight: 700; }
+main { padding: 26px 32px; }
+.top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; }
+.top h1 { font-size: 40px; } .top p { margin: 2px 0 0; color: var(--muted); }
+.sum { display: flex; gap: 10px; }
+.sum div { background: var(--surface); border-radius: 18px; padding: 10px 18px; min-width: 120px; box-shadow: 0 1px 0 var(--line); } .sum b { display: block; font: 600 28px 'Fraunces'; line-height: 1.1; } .sum b.r { color: var(--danger); } .sum span { font-size: 13px; color: var(--muted); }
+.alert { margin: 18px 0 18px; background: var(--danger-bg); color: var(--ink); border-radius: 18px; padding: 12px 18px; display: flex; gap: 12px; align-items: center; font-size: 15px; }
+.alert i { font-style: normal; background: var(--danger); color: #fff; border-radius: 999px; padding: 2px 12px; font-weight: 700; font-size: 13px; } .alert a { color: var(--danger); font-weight: 700; }
+.board { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; align-items: start; }
+.col h2 { font: 700 16px 'DM Sans'; letter-spacing: 0; display: flex; align-items: center; gap: 8px; padding: 0 4px 10px; }
+.col h2 i { width: 11px; height: 11px; border-radius: 50%; background: var(--dot); } .col h2 span { margin-left: auto; background: var(--surface2); border-radius: 999px; padding: 0 10px; font-size: 13px; }
+.card { background: var(--surface); border-radius: 20px; padding: 14px; margin-bottom: 10px; box-shadow: 0 1px 0 var(--line); }
+.card.cold { box-shadow: inset 0 0 0 2px var(--danger); }
+.card .nm { font: 600 17px/1.2 'Fraunces'; } .card .dv { color: var(--muted); font-size: 13.5px; margin-top: 3px; }
+.row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; gap: 8px; }
+.tag { font-family: 'DM Mono'; font-size: 11px; background: var(--surface2); border-radius: 8px; padding: 2px 8px; }
+.when { font-size: 13px; color: var(--muted); white-space: nowrap; } .cold .when { color: var(--danger); font-weight: 700; }
+.who { display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--muted); }
+.av { width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: var(--on-accent); display: grid; place-items: center; font-weight: 700; font-size: 12px; }
+.mv { background: var(--surface2); border-radius: 10px; padding: 5px 10px; font-size: 12.5px; font-weight: 600; color: var(--ink); }
+.toast { position: fixed; right: 28px; bottom: 24px; background: var(--ink); color: var(--bg); border-radius: 18px; padding: 8px 8px 8px 20px; display: flex; gap: 16px; align-items: center; font-size: 15px; }
+.toast b { background: var(--accent); color: var(--on-accent); border-radius: 12px; min-height: 40px; padding: 0 16px; display: inline-flex; align-items: center; }
+
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <nav class="rail" aria-label="Secciones"><a href="#" class="lg0" aria-label="Tlalli"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="44" height="44" role="img" aria-label="Tlalli"><rect width="64" height="64" rx="18" fill="#5FD0B8"/><path d="M11,22 Q21.5,11 32,22 T53,22" fill="none" stroke="#F7B733" stroke-width="6.5" stroke-linecap="round"/><path d="M11,35 Q21.5,24 32,35 T53,35" fill="none" stroke="#0F1A17" stroke-width="6.5" stroke-linecap="round"/><path d="M11,48 Q21.5,37 32,48 T53,48" fill="none" stroke="#0F1A17" stroke-width="6.5" stroke-linecap="round"/></svg></a>
+    <a href="#" class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg>Inicio</a><a href="#" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h4v14H4zM10 5h4v10h-4zM16 5h4v7h-4z"/></svg>Pipeline</a><a href="#" class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>Leads</a><a href="#" class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4L19 7"/></svg>Tareas</a><a href="#" class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h6v6H4zM14 5h6v6h-6zM4 15h6v4H4zM14 15h6v4h-6z"/></svg>Lotes</a><a href="#" class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 11a4 4 0 1 0-8 0M4 20a8 8 0 0 1 16 0"/></svg>Equipo</a>
+    <a href="#" style="margin-top:auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19 12l2 1-2 3-2-.5-1.5 1V20h-3l-.5-2-2-1-2 1-2-2 1-2-1-2-2-.5v-3l2-.5 1-2-1-2 2-2 2 1 2-1 .5-2h3l.5 2 2 1 2-1z"/></svg>Ajustes</a>
+  </nav>
+  <main>
+    <div class="top"><div><span class="mono">Desarrollos Lomas del Altiplano</span><h1>Buenos días, Mariana</h1><p>Así va tu pipeline esta semana.</p></div>
+      <div class="sum"><div><b>12</b><span>leads abiertos</span></div><div><b class="r">8</b><span>fríos</span></div><div><b>2</b><span>por autorizar</span></div></div></div>
+    <div class="alert" role="status"><i>Contacta primero</i><span><a href="#">Sergio Medina (4 d)</a> · <a href="#">Daniela Cuéllar (29 h)</a> · <a href="#">Regina Treviño (6 d)</a></span></div>
+    <div class="board">
+<section class="col" style="--dot:#5B8DEF" aria-label="Nuevo">
+  <h2><i></i>Nuevo<span>7</span></h2>
+  <article class="card "><div class="nm">Jorge Ramírez Ibarra</div><div class="dv">Los Álamos · Lote 14</div>
+  <div class="row"><span class="tag">RADIO-EXA</span><span class="when">hace 2 h</span></div>
+  <div class="row"><span class="who"><span class="av">B</span>Beto</span><span class="mv">Mover a…</span></div></article><article class="card cold"><div class="nm">Daniela Cuéllar</div><div class="dv">Los Álamos · Lote 9</div>
+  <div class="row"><span class="tag">FB-LOMAS</span><span class="when">Frío · 29 h</span></div>
+  <div class="row"><span class="who"><span class="av">L</span>Lupita</span><span class="mv">Mover a…</span></div></article><article class="card "><div class="nm">Héctor Salazar</div><div class="dv">Sin desarrollo</div>
+  <div class="row"><span class="tag">ESPECTACULAR</span><span class="when">hace 1 h</span></div>
+  <div class="row"><span class="who"><span class="av">B</span>Beto</span><span class="mv">Mover a…</span></div></article>
+</section>
+<section class="col" style="--dot:#8C6BD9" aria-label="Contactado">
+  <h2><i></i>Contactado<span>5</span></h2>
+  <article class="card "><div class="nm">Ana Karen Montoya</div><div class="dv">Vista Real · Casa 3</div>
+  <div class="row"><span class="tag">IG-VISTA</span><span class="when">ayer</span></div>
+  <div class="row"><span class="who"><span class="av">L</span>Lupita</span><span class="mv">Mover a…</span></div></article><article class="card cold"><div class="nm">Sergio Medina Fuentes</div><div class="dv">Los Álamos · Lote 21</div>
+  <div class="row"><span class="tag">RADIO-EXA</span><span class="when">Frío · 4 d</span></div>
+  <div class="row"><span class="who"><span class="av">B</span>Beto</span><span class="mv">Mover a…</span></div></article>
+</section>
+<section class="col" style="--dot:#2E9E8A" aria-label="Cita agendada">
+  <h2><i></i>Cita agendada<span>4</span></h2>
+  <article class="card "><div class="nm">Familia Treviño</div><div class="dv">Los Álamos · Lote 6</div>
+  <div class="row"><span class="tag">FB-LOMAS</span><span class="when">hoy 5:30 pm</span></div>
+  <div class="row"><span class="who"><span class="av">L</span>Lupita</span><span class="mv">Mover a…</span></div></article><article class="card "><div class="nm">Elena Ortega Salazar</div><div class="dv">Vista Real · Casa 8</div>
+  <div class="row"><span class="tag">WEB</span><span class="when">mañana 11:00</span></div>
+  <div class="row"><span class="who"><span class="av">B</span>Beto</span><span class="mv">Mover a…</span></div></article>
+</section>
+<section class="col" style="--dot:#E39B00" aria-label="Cotización">
+  <h2><i></i>Cotización<span>3</span></h2>
+  <article class="card "><div class="nm">Ulises Galván</div><div class="dv">Los Álamos · Lote 18</div>
+  <div class="row"><span class="tag">RADIO-EXA</span><span class="when">hace 3 d</span></div>
+  <div class="row"><span class="who"><span class="av">B</span>Beto</span><span class="mv">Mover a…</span></div></article><article class="card cold"><div class="nm">Regina Treviño</div><div class="dv">Vista Real · Casa 2</div>
+  <div class="row"><span class="tag">WEB</span><span class="when">Frío · 6 d</span></div>
+  <div class="row"><span class="who"><span class="av">L</span>Lupita</span><span class="mv">Mover a…</span></div></article>
+</section>
+<section class="col" style="--dot:#C4552D" aria-label="Apartado">
+  <h2><i></i>Apartado<span>2</span></h2>
+  <article class="card "><div class="nm">Pedro Alvarado</div><div class="dv">Los Álamos · Lote 12</div>
+  <div class="row"><span class="tag">FB-LOMAS</span><span class="when">hace 1 d</span></div>
+  <div class="row"><span class="who"><span class="av">L</span>Lupita</span><span class="mv">Mover a…</span></div></article>
+</section></div>
+    <div class="toast" role="status">Moviste a Pedro Alvarado a Apartado <b>Deshacer (8 s)</b></div>
+  </main>
+</div>
+<script>
+  var t = new URLSearchParams(location.search).get('tema');
+  if (t === 'oscuro' || t === 'claro') document.documentElement.setAttribute('data-theme', t === 'oscuro' ? 'dark' : 'light');
+</script>
+</body>
+</html>

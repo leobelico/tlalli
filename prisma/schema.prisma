@@ -114,11 +114,11 @@ enum MessageStatus {
 }
 
 model Organization {
-  id                  String   @id @default(uuid()) @db.Uuid
-  name                String
-  slug                String   @unique
-  plan                Plan     @default(BASICO)
-  staleLeadHours      Int      @default(24) @map("stale_lead_hours")
+  id              String   @id @default(uuid()) @db.Uuid
+  name            String
+  slug            String   @unique
+  plan            Plan     @default(BASICO)
+  staleLeadHours  Int      @default(24) @map("stale_lead_hours")
   /// Per-stage overrides of the "cold lead" threshold in hours, e.g. {"CONTACTADO": 72} (QA B18).
   staleHoursByStage Json @default("{}") @map("stale_hours_by_stage")
   /// Largest discount (% of list price) an asesor may give without an admin (pilot item 5).
@@ -134,17 +134,18 @@ model Organization {
   /// Set the first time an admin saves the asesor discount cap (drives the first-day guide, QA2 B38).
   discountPolicySetAt DateTime? @map("discount_policy_set_at")
   /// Publishable key used by public web forms to post leads to this organization.
-  leadFormKey         String   @unique @map("lead_form_key")
+  leadFormKey     String   @unique @map("lead_form_key")
   /// Meta WhatsApp Cloud API phone number id that routes incoming messages to this org.
-  waPhoneNumberId     String?  @unique @map("wa_phone_number_id")
-  waDisplayPhone      String?  @map("wa_display_phone")
-  createdAt           DateTime @default(now()) @map("created_at")
-  updatedAt           DateTime @updatedAt @map("updated_at")
+  waPhoneNumberId String?  @unique @map("wa_phone_number_id")
+  waDisplayPhone  String?  @map("wa_display_phone")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
 
   memberships      Membership[]
   invitations      Invitation[]
   developments     Development[]
   units            Unit[]
+  developmentPlans DevelopmentPlan[]
   campaigns        Campaign[]
   leads            Lead[]
   activities       Activity[]
@@ -233,13 +234,32 @@ model Development {
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
 
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organization Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   units        Unit[]
   leads        Lead[]
   campaigns    Campaign[]
+  plan         DevelopmentPlan?
 
   @@index([organizationId])
   @@map("developments")
+}
+
+/// The site plan image of a development (PNG/JPEG/WebP). Stored in Postgres so it inherits tenant RLS.
+model DevelopmentPlan {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  developmentId  String   @unique @map("development_id") @db.Uuid
+  contentType    String   @map("content_type")
+  sizeBytes      Int      @map("size_bytes")
+  data           Bytes
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  development  Development  @relation(fields: [developmentId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@map("development_plans")
 }
 
 model Unit {
@@ -252,6 +272,8 @@ model Unit {
   price          Decimal    @db.Decimal(14, 2)
   status         UnitStatus @default(DISPONIBLE)
   notes          String?
+  /// Outline of the unit over the development plan image: [[x, y], ...] with x, y in 0..1 (fractions of the image).
+  planShape      Json?      @map("plan_shape")
   createdAt      DateTime   @default(now()) @map("created_at")
   updatedAt      DateTime   @updatedAt @map("updated_at")
 
@@ -429,20 +451,20 @@ model WhatsAppMessage {
 }
 
 model Quote {
-  id               String   @id @default(uuid()) @db.Uuid
-  organizationId   String   @map("organization_id") @db.Uuid
-  unitId           String   @map("unit_id") @db.Uuid
-  leadId           String?  @map("lead_id") @db.Uuid
-  createdById      String   @map("created_by_id") @db.Uuid
-  price            Decimal  @db.Decimal(14, 2)
-  discount         Decimal  @default(0) @db.Decimal(14, 2)
-  downPaymentPct   Decimal  @map("down_payment_pct") @db.Decimal(5, 2)
-  downPayment      Decimal  @map("down_payment") @db.Decimal(14, 2)
-  months           Int
-  annualRatePct    Decimal  @map("annual_rate_pct") @db.Decimal(5, 2)
-  monthlyPayment   Decimal  @map("monthly_payment") @db.Decimal(14, 2)
-  totalPaid        Decimal  @map("total_paid") @db.Decimal(14, 2)
-  createdAt        DateTime @default(now()) @map("created_at")
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  unitId         String   @map("unit_id") @db.Uuid
+  leadId         String?  @map("lead_id") @db.Uuid
+  createdById    String   @map("created_by_id") @db.Uuid
+  price          Decimal  @db.Decimal(14, 2)
+  discount       Decimal  @default(0) @db.Decimal(14, 2)
+  downPaymentPct Decimal  @map("down_payment_pct") @db.Decimal(5, 2)
+  downPayment    Decimal  @map("down_payment") @db.Decimal(14, 2)
+  months         Int
+  annualRatePct  Decimal  @map("annual_rate_pct") @db.Decimal(5, 2)
+  monthlyPayment Decimal  @map("monthly_payment") @db.Decimal(14, 2)
+  totalPaid      Decimal  @map("total_paid") @db.Decimal(14, 2)
+  createdAt      DateTime @default(now()) @map("created_at")
 
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   unit         Unit         @relation(fields: [unitId], references: [id], onDelete: Cascade)

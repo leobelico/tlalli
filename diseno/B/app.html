@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="es-MX" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tlalli · Obsidiana · App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root, :root[data-theme="light"] { --bg:#F4F6F2;--surface:#FFFFFF;--surface2:#E7ECE6;--ink:#0F1A17;--muted:#475852;--line:#CBD5CE;--primary:#1F3B33;--on-primary:#FFFFFF;--accent:#0B6B55;--on-accent:#FFFFFF;--ok:#0B6B55;--warn:#7A5200;--sold:#4A5A54;--danger:#B23A1E;--ok-bg:#D8F0E8;--warn-bg:#F6E5BE;--sold-bg:#DDE4E0;--danger-bg:#FBE2DB; color-scheme: light; }
+:root[data-theme="dark"] { --bg:#0C1110;--surface:#151C1A;--surface2:#1D2623;--ink:#ECF2EE;--muted:#9DB0A7;--line:#2A3631;--primary:#D9F24F;--on-primary:#0C1110;--accent:#3DDBB0;--on-accent:#04130E;--ok:#3DDBB0;--warn:#F5B83D;--sold:#8FA19A;--sold-fill:#55645E;--sold-text:#ECF2EE;--danger:#FF7A59;--ok-bg:#0F3329;--warn-bg:#3A2C0A;--sold-bg:#242E2A;--danger-bg:#3F1E16; color-scheme: dark; }
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+.lg-d { display: none; } .lg-l, .lg-d { line-height: 0; display: inline-flex; }
+:root[data-theme="dark"] .lg-l { display: none; } :root:not([data-theme="dark"]) .lg-d { display: none; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+
+body { font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 15px; line-height: 1.5; }
+h1, h2, h3 { font-weight: 700; letter-spacing: -0.035em; margin: 0; }
+.mono { font-family: 'Space Mono', ui-monospace, monospace; font-size: 11.5px; letter-spacing: .04em; color: var(--muted); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 22px; border-radius: 999px; font-weight: 700; text-decoration: none; background: var(--primary); color: var(--on-primary); border: 0; font-family: inherit; font-size: 15px; }
+.btn.ghost { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--line); }
+.lg { display: flex; gap: 16px; list-style: none; margin: 0; padding: 0; font-size: 12.5px; color: var(--muted); font-family: 'Space Mono'; }
+.lg li { display: inline-flex; align-items: center; gap: 6px; }
+.sw { display: inline-block; width: 14px; height: 14px; border-radius: 3px; border: 1.5px solid; }
+.sw.d { background: var(--ok-bg); border-color: var(--ok); }
+.sw.a { background: repeating-linear-gradient(45deg, var(--warn-bg) 0 3px, var(--warn) 3px 5px); border-color: var(--warn); }
+.sw.v { background: var(--sold); border-color: var(--sold); }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 3px var(--ok-bg); }
+
+header.bar { display: flex; align-items: center; gap: 14px; height: 64px; padding: 0 20px; border-bottom: 1px solid var(--line); background: var(--surface); }
+header.bar ul { display: flex; gap: 2px; list-style: none; margin: 0; padding: 0; }
+header.bar ul a { text-decoration: none; padding: 7px 10px; border-radius: 8px; color: var(--muted); font-size: 14px; display: inline-flex; gap: 6px; align-items: center; }
+header.bar ul a.on { background: var(--surface2); color: var(--ink); box-shadow: inset 0 -2px 0 var(--primary); }
+header.bar .ct { background: var(--primary); color: var(--on-primary); border-radius: 999px; padding: 0 7px; font-family: 'Space Mono'; font-size: 11px; font-weight: 700; }
+.cmd { margin-left: auto; min-width: 220px; height: 38px; border-radius: 10px; background: var(--bg); border: 1px solid var(--line); color: var(--muted); display: flex; align-items: center; justify-content: space-between; padding: 0 12px; font-size: 13.5px; }
+.me { width: 36px; height: 36px; border-radius: 50%; background: var(--accent); color: var(--on-accent); display: grid; place-items: center; font-weight: 700; }
+main { padding: 20px 24px; }
+.alert { display: flex; align-items: center; gap: 12px; border: 1px solid var(--danger); background: var(--danger-bg); border-radius: 12px; padding: 10px 14px; font-size: 14px; }
+.alert b { color: var(--danger); font-family: 'Space Mono'; font-size: 12px; letter-spacing: .04em; }
+.alert a { color: var(--ink); text-underline-offset: 3px; }
+.title { display: flex; align-items: baseline; justify-content: space-between; margin: 20px 0 14px; }
+.title h1 { font-size: 40px; } .chips { display: flex; gap: 8px; }
+.chip { font-family: 'Space Mono'; font-size: 12px; border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; color: var(--muted); background: var(--surface); }
+.chip.on { color: var(--on-primary); background: var(--primary); border-color: var(--primary); font-weight: 700; }
+.board { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; align-items: start; }
+.col { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 4px 4px 6px; }
+.col header { display: flex; align-items: center; gap: 8px; padding: 12px 10px 10px; }
+.led { width: 9px; height: 9px; border-radius: 2px; background: var(--led); box-shadow: 0 0 0 3px color-mix(in srgb, var(--led) 25%, transparent); }
+.col h2 { font-size: 15px; letter-spacing: -0.01em; } .col .n { margin-left: auto; font-family: 'Space Mono'; font-size: 12px; color: var(--muted); }
+.card { background: var(--surface2); border-radius: 11px; padding: 11px 12px; margin: 0 4px 6px; border: 1px solid transparent; }
+.card.cold { border-color: var(--danger); background: color-mix(in srgb, var(--danger-bg) 70%, var(--surface2)); }
+.nm { font-weight: 600; font-size: 14.5px; line-height: 1.25; } .dv { color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+.meta { display: flex; justify-content: space-between; align-items: center; margin-top: 9px; gap: 6px; }
+.tag { font-family: 'Space Mono'; font-size: 10.5px; color: var(--ink); background: var(--bg); border-radius: 6px; padding: 2px 7px; }
+.when { font-family: 'Space Mono'; font-size: 11px; color: var(--muted); white-space: nowrap; } .cold .when { color: var(--danger); font-weight: 700; }
+.who { margin-top: 9px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--muted); }
+.who i { font-style: normal; border: 1px solid var(--line); border-radius: 6px; padding: 1px 8px; }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: 22px; background: var(--ink); color: var(--bg); border-radius: 999px; padding: 8px 8px 8px 20px; display: flex; gap: 18px; align-items: center; font-size: 14px; }
+.toast b { background: var(--primary); color: var(--on-primary); border-radius: 999px; padding: 0 16px; min-height: 36px; display: inline-flex; align-items: center; }
+
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <a href="#" aria-label="Tlalli"><span class="lg-l"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 310 64" height="28" role="img" aria-label="Tlalli"><g transform="translate(4,4) scale(0.875)"><rect width="64" height="64" rx="10" fill="#0C1110"/><polygon points="32,6 58,32 32,58 6,32" fill="#D9F24F"/><path d="M32,32H58L32,58Z" fill="#3DDBB0"/><path d="M32,6V58M6,32H58" stroke="#0C1110" stroke-width="2.4"/></g><g transform="translate(76,8)"><path d="M4.5,6H38.5M21.5,6V44M51.5,6V44H76.5M86.5,44L103.5,6L120.5,44M93.5,30H113.5M135.5,6V44H160.5M173.5,6V44H198.5M211.5,6V44" fill="none" stroke="#0C1110" stroke-width="5" stroke-linecap="butt" stroke-linejoin="miter"/></g></svg></span><span class="lg-d"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 310 64" height="28" role="img" aria-label="Tlalli"><g transform="translate(4,4) scale(0.875)"><rect width="64" height="64" rx="10" fill="#D9F24F"/><polygon points="32,6 58,32 32,58 6,32" fill="#0C1110"/><path d="M32,32H58L32,58Z" fill="#0C1110"/><path d="M32,6V58M6,32H58" stroke="#D9F24F" stroke-width="2.4"/></g><g transform="translate(76,8)"><path d="M4.5,6H38.5M21.5,6V44M51.5,6V44H76.5M86.5,44L103.5,6L120.5,44M93.5,30H113.5M135.5,6V44H160.5M173.5,6V44H198.5M211.5,6V44" fill="none" stroke="#ECF2EE" stroke-width="5" stroke-linecap="butt" stroke-linejoin="miter"/></g></svg></span></a>
+  <nav aria-label="Secciones"><ul><li><a href="#" class="on">Pipeline</a></li><li><a href="#" class="">Leads</a></li><li><a href="#" class="">Tareas</a></li><li><a href="#" class="">Desarrollos</a></li><li><a href="#" class="">Cotizador</a></li><li><a href="#" class="">Autorizaciones<span class="ct">2</span></a></li><li><a href="#" class="">Equipo</a></li><li><a href="#" class="">Configuración</a></li></ul></nav>
+  <div class="cmd"><span>Buscar lead o lote…</span><span class="mono">⌘K</span></div>
+  <span class="me" title="Mariana Ortega">MO</span>
+</header>
+<main>
+  <div class="alert" role="status"><b>CONTACTA PRIMERO</b><span><a href="#">Sergio Medina · 4 d</a> &nbsp;·&nbsp; <a href="#">Daniela Cuéllar · 29 h</a> &nbsp;·&nbsp; <a href="#">Regina Treviño · 6 d</a> &nbsp;·&nbsp; <a href="#">ver los 8 fríos</a></span></div>
+  <div class="title"><div><span class="mono">DESARROLLOS LOMAS DEL ALTIPLANO · 12 ABIERTOS</span><h1>Pipeline</h1></div>
+    <div class="chips"><span class="chip on">Todos</span><span class="chip">Los Álamos</span><span class="chip">Vista Real</span><span class="chip">Solo fríos</span></div></div>
+  <div class="board">
+<section class="col" style="--led:#7FB3FF" aria-label="Nuevo">
+  <header><span class="led"></span><h2>Nuevo</h2><span class="n">07</span></header>
+  <article class="card "><div class="nm">Jorge Ramírez Ibarra</div><div class="dv">Los Álamos · Lote 14</div>
+  <div class="meta"><span class="tag">RADIO-EXA</span><span class="when">hace 2 h</span></div>
+  <div class="who"><span>Beto</span><i>Mover a…</i></div></article><article class="card cold"><div class="nm">Daniela Cuéllar</div><div class="dv">Los Álamos · Lote 9</div>
+  <div class="meta"><span class="tag">FB-LOMAS</span><span class="when">Frío · 29 h</span></div>
+  <div class="who"><span>Lupita</span><i>Mover a…</i></div></article><article class="card "><div class="nm">Héctor Salazar</div><div class="dv">Sin desarrollo</div>
+  <div class="meta"><span class="tag">ESPECTACULAR</span><span class="when">hace 1 h</span></div>
+  <div class="who"><span>Beto</span><i>Mover a…</i></div></article>
+</section>
+<section class="col" style="--led:#B49CFF" aria-label="Contactado">
+  <header><span class="led"></span><h2>Contactado</h2><span class="n">05</span></header>
+  <article class="card "><div class="nm">Ana Karen Montoya</div><div class="dv">Vista Real · Casa 3</div>
+  <div class="meta"><span class="tag">IG-VISTA</span><span class="when">ayer</span></div>
+  <div class="who"><span>Lupita</span><i>Mover a…</i></div></article><article class="card cold"><div class="nm">Sergio Medina Fuentes</div><div class="dv">Los Álamos · Lote 21</div>
+  <div class="meta"><span class="tag">RADIO-EXA</span><span class="when">Frío · 4 d</span></div>
+  <div class="who"><span>Beto</span><i>Mover a…</i></div></article>
+</section>
+<section class="col" style="--led:#D9F24F" aria-label="Cita agendada">
+  <header><span class="led"></span><h2>Cita agendada</h2><span class="n">04</span></header>
+  <article class="card "><div class="nm">Familia Treviño</div><div class="dv">Los Álamos · Lote 6</div>
+  <div class="meta"><span class="tag">FB-LOMAS</span><span class="when">hoy 5:30 pm</span></div>
+  <div class="who"><span>Lupita</span><i>Mover a…</i></div></article><article class="card "><div class="nm">Elena Ortega Salazar</div><div class="dv">Vista Real · Casa 8</div>
+  <div class="meta"><span class="tag">WEB</span><span class="when">mañana 11:00</span></div>
+  <div class="who"><span>Beto</span><i>Mover a…</i></div></article>
+</section>
+<section class="col" style="--led:#F5B83D" aria-label="Cotización">
+  <header><span class="led"></span><h2>Cotización</h2><span class="n">03</span></header>
+  <article class="card "><div class="nm">Ulises Galván</div><div class="dv">Los Álamos · Lote 18</div>
+  <div class="meta"><span class="tag">RADIO-EXA</span><span class="when">hace 3 d</span></div>
+  <div class="who"><span>Beto</span><i>Mover a…</i></div></article><article class="card cold"><div class="nm">Regina Treviño</div><div class="dv">Vista Real · Casa 2</div>
+  <div class="meta"><span class="tag">WEB</span><span class="when">Frío · 6 d</span></div>
+  <div class="who"><span>Lupita</span><i>Mover a…</i></div></article>
+</section>
+<section class="col" style="--led:#3DDBB0" aria-label="Apartado">
+  <header><span class="led"></span><h2>Apartado</h2><span class="n">02</span></header>
+  <article class="card "><div class="nm">Pedro Alvarado</div><div class="dv">Los Álamos · Lote 12</div>
+  <div class="meta"><span class="tag">FB-LOMAS</span><span class="when">hace 1 d</span></div>
+  <div class="who"><span>Lupita</span><i>Mover a…</i></div></article>
+</section></div>
+  <div class="toast" role="status">Moviste a Pedro Alvarado a Apartado <b>Deshacer · 8 s</b></div>
+</main>
+<script>
+  var t = new URLSearchParams(location.search).get('tema');
+  if (t === 'oscuro' || t === 'claro') document.documentElement.setAttribute('data-theme', t === 'oscuro' ? 'dark' : 'light');
+</script>
+</body>
+</html>

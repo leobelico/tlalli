@@ -168,3 +168,10 @@ Ninguna fase se bloqueó más de 20 minutos. Incidencias menores resueltas: puer
 - **Pruebas** (+10, total 133): solo Élite tiene IA, mes en hora de CDMX, neutralización de etiquetas, el prompt no incluye teléfono/correo/apellido, cuota mensual, permisos de asesor, aislamiento entre organizaciones, solo admin para el análisis.
 - Verificado en navegador: landing y precios (escritorio y móvil, sin desbordamiento), tablero con el nuevo tema, botones de IA (sin llave muestran un error claro) y una organización Básico ve la invitación a Élite.
 - **Pendiente**: probar la IA con una llave real de Anthropic (riesgo 2 del README). En `.env.local` hay `ANTHROPIC_API_KEY=""`.
+
+### Cambio posterior — Plano interactivo en Desarrollos ✅ (código y pruebas; falta verificar en navegador)
+
+- Pestaña **Plano** en cada desarrollo (`?vista=plano`): sube la imagen, marca cada lote (rectángulo o polígono) y se pinta según estatus; tooltip, selección con botón "Cotizar", lista lateral con contador de marcados.
+- Migración `development_plan` (tabla `development_plans` con RLS y columna `units.plan_shape`), servicio `src/server/services/plans.ts`, ruta `src/app/api/developments/[id]/plan/route.ts`, componentes `plan-board.tsx` y `plan-upload.tsx`.
+- **Pruebas** (+8, total 141): detección de formato por bytes (SVG/PDF/HTML rechazados), validación de contornos, permisos admin/asesor, aislamiento entre organizaciones con ids falsificados, borrado.
+- **Pendiente**: revisión visual del editor en el navegador (el script `plan.mjs` de Playwright está listo; requiere reiniciar `npm run dev` para cargar el nuevo cliente de Prisma), pinch-zoom táctil, aceptar PDF.

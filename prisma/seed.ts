@@ -14,8 +14,25 @@ import { createClient } from "@supabase/supabase-js";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client";
 import type { Channel, Stage } from "../src/generated/prisma/enums";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { lotShape, PLANO_LOTS } from "./plano-layout";
 
 config({ path: [".env.local", ".env"], quiet: true });
+
+/** Uploads the invented site plan for a development and outlines "Lote 1".."Lote 24" on it. */
+async function attachDemoPlan(organizationId: string, developmentId: string) {
+  const data = readFileSync(join(process.cwd(), "prisma/seed-assets/plano-los-pinos.png"));
+  await prisma.developmentPlan.create({
+    data: { organizationId, developmentId, contentType: "image/png", sizeBytes: data.length, data },
+  });
+  for (const lot of PLANO_LOTS) {
+    await prisma.unit.updateMany({
+      where: { developmentId, code: `Lote ${lot.n}` },
+      data: { planShape: lotShape(lot) },
+    });
+  }
+}
 
 const PASSWORD = "Demo1234!";
 const DAY = 86_400_000;
@@ -111,6 +128,7 @@ async function seedOrg(opts: {
         unitIds.push({ id: created.id, developmentId: dev.id, price });
       }
     }
+    if (d.name === "Residencial Los Pinos") await attachDemoPlan(org.id, dev.id);
   }
 
   const campaigns = [];
