@@ -1,23 +1,31 @@
 @import "tailwindcss";
 
 @theme {
-  /* Cyanotype blue: the colour of blueprints. Primary actions and links. */
-  --color-brand-50: #eef3fb;
-  --color-brand-100: #dbe6f5;
-  --color-brand-200: #b8cdeb;
-  --color-brand-300: #8aaedb;
-  --color-brand-400: #5a8bc7;
-  --color-brand-500: #3a6fb0;
-  --color-brand-600: #1f4e8c;
-  --color-brand-700: #183f73;
-  --color-brand-800: #14335d;
-  --color-brand-900: #102a4c;
+  /* Tlalli "Tierra": terracotta is the brand, teal the product accent, sand the paper. */
+  --color-brand-50: #fbf1ea;
+  --color-brand-100: #f5dfd1;
+  --color-brand-200: #eabfa3;
+  --color-brand-300: #d99673;
+  --color-brand-400: #c06e46;
+  --color-brand-500: #a5522c;
+  --color-brand-600: #8a3f1e;
+  --color-brand-700: #703219;
+  --color-brand-800: #582714;
+  --color-brand-900: #411d0f;
+  /* Teal: highlights, counters and secondary emphasis. */
+  --color-accent: #0f766e;
   /* Surveyor's stake orange: reserved for "se enfría" / urgency. */
   --color-stake: #f0531c;
   /* Ochre: apartado. */
   --color-ochre: #d9a441;
-  --color-ink: #1c2226;
-  --color-paper: #f1f3ef;
+  --color-ink: #25190f;
+  --color-paper: #f6f0e7;
+  /* Warm neutrals (sand) so cards, borders and hints belong to the same earth palette; text greys stay AA on paper. */
+  --color-stone-100: #efe7da;
+  --color-stone-200: #e3d8c6;
+  --color-stone-300: #d2c4ae;
+  --color-stone-500: #6b5f55;
+  --color-stone-600: #5e4e41;
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-bricolage), var(--font-geist-sans), ui-sans-serif, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;

@@ -36,6 +36,7 @@ export function MarketingShell({ children }: { children: ReactNode }) {
           <div>
             <Logo />
             <p className="mt-2 max-w-sm">{BRAND.tagline}</p>
+            <p className="mt-1 font-mono text-xs tracking-wide uppercase">Un producto de {BRAND.maker}</p>
           </div>
           <nav className="flex flex-wrap gap-x-5 gap-y-2">
             <Link href="/precios" className="hover:underline">
@@ -49,6 +50,9 @@ export function MarketingShell({ children }: { children: ReactNode }) {
             </Link>
             <a href={`mailto:${BRAND.supportEmail}`} className="hover:underline">
               {BRAND.supportEmail}
+            </a>
+            <a href={BRAND.whatsappUrl} className="hover:underline">
+              WhatsApp {BRAND.phoneDisplay}
             </a>
           </nav>
         </div>

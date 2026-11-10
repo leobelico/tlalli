@@ -66,11 +66,16 @@ export default function Home() {
             <Link href="/registro" className="btn-primary px-6 py-3 text-base">
               Prueba gratis 14 días
             </Link>
-            <Link href="/precios" className="btn-secondary px-6 py-3 text-base">
-              Ver precios
-            </Link>
+            <a
+              href={`${BRAND.whatsappUrl}?text=${encodeURIComponent(`Hola, quiero una demo de ${BRAND.name}.`)}`}
+              className="btn-secondary px-6 py-3 text-base"
+            >
+              Pedir demo por WhatsApp
+            </a>
           </div>
-          <p className="mt-3 text-sm text-stone-500">Sin tarjeta. Precios en pesos mexicanos.</p>
+          <p className="mt-3 text-sm text-stone-500">
+            Sin tarjeta. Precios en pesos mexicanos. <Link href="/precios" className="underline">Ver precios</Link> · WhatsApp {BRAND.phoneDisplay}
+          </p>
         </div>
         <div className="border border-ink/25 bg-white p-1 sm:p-2">
           <Plano className="h-auto w-full" />

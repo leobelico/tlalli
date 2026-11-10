@@ -24,12 +24,12 @@ describe("email providers (QA plan #3)", () => {
   it("resend provider posts to the Resend API with the key", async () => {
     const fetchMock = vi.fn(async () => new Response("{}", { status: 200 }));
     vi.stubGlobal("fetch", fetchMock);
-    const p = emailProviderFor("resend", { RESEND_API_KEY: "re_test", EMAIL_FROM: "Pórtico <hola@x.mx>" });
+    const p = emailProviderFor("resend", { RESEND_API_KEY: "re_test", EMAIL_FROM: "Tlalli <hola@x.mx>" });
     await p.send({ to: "a@x.test", subject: "S", text: "t", html: "<p>t</p>" });
     const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
     expect(url).toBe("https://api.resend.com/emails");
     expect((init.headers as Record<string, string>).Authorization).toBe("Bearer re_test");
-    expect(JSON.parse(String(init.body))).toMatchObject({ from: "Pórtico <hola@x.mx>", to: ["a@x.test"], subject: "S" });
+    expect(JSON.parse(String(init.body))).toMatchObject({ from: "Tlalli <hola@x.mx>", to: ["a@x.test"], subject: "S" });
   });
 
   it("mailpit provider posts to the local Mailpit API", async () => {

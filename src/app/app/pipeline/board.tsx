@@ -25,11 +25,11 @@ export type BoardCard = {
 export type BoardColumn = { stage: Stage; count: number; cards: BoardCard[] };
 
 const COLUMN_ACCENT: Record<Stage, string> = {
-  NUEVO: "border-t-sky-400",
-  CONTACTADO: "border-t-violet-400",
-  CITA_AGENDADA: "border-t-violet-500",
-  VISITA_REALIZADA: "border-t-indigo-500",
-  COTIZACION: "border-t-amber-400",
+  NUEVO: "border-t-[#c9a27c]",
+  CONTACTADO: "border-t-[#b8744a]",
+  CITA_AGENDADA: "border-t-[#a5522c]",
+  VISITA_REALIZADA: "border-t-[#8a3f1e]",
+  COTIZACION: "border-t-accent",
   APARTADO: "border-t-amber-500",
   VENDIDO: "border-t-emerald-500",
   PERDIDO: "border-t-red-400",

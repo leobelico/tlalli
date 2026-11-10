@@ -6,7 +6,7 @@ import { unitDisplayName } from "@/lib/labels";
 import { formatPhone } from "@/lib/phone";
 import type { QuoteDetail } from "@/server/services/quotes";
 
-const BRAND = rgb(0.07, 0.5, 0.42);
+const BRAND = rgb(0.54, 0.25, 0.12); // Tlalli terracotta (#8A3F1E)
 const INK = rgb(0.08, 0.12, 0.11);
 const MUTED = rgb(0.42, 0.42, 0.4);
 const LINE = rgb(0.88, 0.87, 0.85);
@@ -83,7 +83,7 @@ export async function renderQuotePdf({ quote, org, author }: QuoteDetail): Promi
     annualRatePct: toNumber(quote.annualRatePct),
   });
 
-  page.drawRectangle({ x: M, y: y - 6, width: width - 2 * M, height: 22, color: rgb(0.95, 0.97, 0.96) });
+  page.drawRectangle({ x: M, y: y - 6, width: width - 2 * M, height: 22, color: rgb(0.97, 0.94, 0.9) });
   text("PLAN DE PAGOS", M + 10, y, { f: bold, size: 10, color: BRAND });
   y -= 28;
 

@@ -62,7 +62,7 @@ export function digestEmail(i: { name: string; overdueTasks: number; staleLeads:
     subject: "Tus pendientes de hoy",
     text: `Hola ${i.name}, esto es lo que te espera hoy:\n\n${list}\n\nÁbrelo aquí: ${i.link}\n`,
     html: layout("Tus pendientes de hoy", [`Hola ${esc(i.name)}, esto es lo que te espera hoy:`, lines.map(esc).join("<br>")], {
-      label: "Abrir Pórtico",
+      label: `Abrir ${BRAND.name}`,
       href: i.link,
     }),
   };

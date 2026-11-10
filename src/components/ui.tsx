@@ -2,14 +2,30 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { BRAND } from "@/lib/brand";
 
-export function Logo({ className = "" }: { className?: string }) {
+/** Tlalli: a "T" made of lots (one of them marked) + a hand-drawn wordmark; same geometry as diseno/A3/logo. */
+export function Logo({ className = "", iconOnly = false }: { className?: string; iconOnly?: boolean }) {
+  const cells: [number, number][] = [[10, 10], [26, 10], [42, 10], [26, 26], [26, 42]];
   return (
-    <span className={`inline-flex items-center gap-2 font-[family-name:var(--font-display)] font-semibold tracking-tight ${className}`}>
-      <svg viewBox="0 0 28 28" className="size-7" aria-hidden>
-        <rect width="28" height="28" rx="4" className="fill-brand-600" />
-        <path d="M8 22V13a6 6 0 0 1 12 0v9h-3.2v-9a2.8 2.8 0 0 0-5.6 0v9z" fill="#f1f3ef" />
+    <span className={`inline-flex items-center ${className}`}>
+      <svg viewBox={iconOnly ? "0 0 64 64" : "0 0 211 64"} className={iconOnly ? "size-8" : "h-8 w-auto"} role="img" aria-label={BRAND.name}>
+        <g transform={iconOnly ? undefined : "translate(4,4) scale(0.875)"}>
+          <rect width="64" height="64" rx="7" className="fill-brand-600" />
+          {cells.map(([x, y]) => (
+            <rect key={`${x}-${y}`} x={x} y={y} width="12" height="12" fill="#fff" />
+          ))}
+          <rect x="42" y="42" width="12" height="12" className="fill-accent" />
+        </g>
+        {iconOnly ? null : (
+          <path
+            transform="translate(74,8)"
+            d="M12,8V44M5,18H20M32,4V44M69,18V44M69,31A13,13 0 1 0 69,31.01M84,4V44M100,4V44M116,18V44M116,6V8"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="6"
+            strokeLinecap="square"
+          />
+        )}
       </svg>
-      {BRAND.name}
     </span>
   );
 }

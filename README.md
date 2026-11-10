@@ -1,4 +1,4 @@
-# Pórtico — CRM inmobiliario con WhatsApp e IA
+# Tlalli — CRM inmobiliario con WhatsApp e IA
 
 SaaS multi-tenant para inmobiliarias y desarrolladoras de México: saber qué campaña (radio, espectaculares, redes, portales, referidos…) trajo a cada lead, no dejar que ninguno se enfríe y, en el plan Élite, apoyarse en un asistente de IA. Producto en español de México; código y commits en inglés. "Pórtico" y `hola@portico.mx` son marcadores de posición: no se ha verificado marca ni dominio (`src/lib/brand.ts`).
 
@@ -73,4 +73,4 @@ Ver [.env.example](.env.example) (comentado). Solo `NEXT_PUBLIC_SUPABASE_URL` y 
 7. **Escalabilidad no medida.** El dashboard y el embudo agregan en memoria de la aplicación; no hay pruebas con decenas de miles de leads ni índices revisados con `EXPLAIN`. El costo por lead usa el gasto total de la campaña sin prorratear por fechas.
 8. **Reglas de negocio simplificadas.** Un lead es una persona/teléfono; atribución *first-touch*; zona horaria fija de CDMX; sin reasignación masiva al desactivar a un asesor; sin importar/exportar inventario; el cotizador no contempla pagos extraordinarios ni créditos hipotecarios; las plantillas de WhatsApp viven en código.
 9. **Cobertura de pruebas y CI.** No hay pruebas E2E automatizadas en el repo (las hice con scripts desechables), ni CI, ni pruebas de accesibilidad o rendimiento. El PDF del cotizador no lo revisé visualmente.
-10. **Marca, dominio y mercado sin validar.** "Pórtico" y `hola@portico.mx` son marcadores (sin búsqueda de marca ni dominio); los precios ($1,490 / $3,490 / $6,990 / $12,990) y el límite de 500 consultas de IA son propuestas sin validar con clientes; no hay onboarding asistido, documentación de usuario ni soporte definido, y hace falta una prueba piloto con una desarrolladora real.
+10. **Marca, dominio y mercado sin validar.** "Tlalli" no tiene búsqueda de marca ni de dominio hecha (el correo de ventas `ventas@koatlcyber.com` y el WhatsApp 442 435 8301 son reales; el dominio propio `tlalli.mx` no está registrado); los precios ($1,490 / $3,490 / $6,990 / $12,990) y el límite de 500 consultas de IA son propuestas sin validar con clientes; no hay onboarding asistido, documentación de usuario ni soporte definido, y hace falta una prueba piloto con una desarrolladora real.

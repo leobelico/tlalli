@@ -20,7 +20,7 @@ export type PlanUnit = {
 const COLORS = {
   DISPONIBLE: { fill: "#10b981", stroke: "#047857" },
   APARTADO: { fill: "#f59e0b", stroke: "#b45309" },
-  VENDIDO: { fill: "#1f4e8c", stroke: "#14335d" },
+  VENDIDO: { fill: "#5a4b3e", stroke: "#3b2f25" },
 } as const;
 
 type Tool = "rect" | "poly";

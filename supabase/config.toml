@@ -249,7 +249,7 @@ otp_expiry = 3600
 # Password recovery email in Spanish (production: paste the same subject/body in the Supabase
 # dashboard -> Authentication -> Email Templates -> Reset Password).
 [auth.email.template.recovery]
-subject = "Crea tu contraseña nueva en Pórtico"
+subject = "Crea tu contraseña nueva en Tlalli"
 content_path = "./supabase/templates/recovery.html"
 
 # [auth.email.template.invite]

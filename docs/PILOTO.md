@@ -1,6 +1,6 @@
 # Antes del primer piloto
 
-Documento para quien va a poner Pórtico en manos de 2 o 3 desarrolladoras reales. Tiene cuatro partes:
+Documento para quien va a poner Tlalli en manos de 2 o 3 desarrolladoras reales. Tiene cuatro partes:
 
 1. [Checklist "Antes del primer piloto"](#1-checklist-antes-del-primer-piloto)
 2. [Pasos manuales con credenciales reales, en orden](#2-pasos-manuales-con-credenciales-reales-en-orden) (lo que **no** se pudo probar sin ellas)
@@ -19,9 +19,9 @@ Marca cada punto. Los marcados **(bloquea)** no se deben saltar.
 
 - [ ] **(bloquea) Aviso de privacidad y términos revisados por un abogado.** Son borradores. Cada desarrolladora necesita su propio aviso (la plataforma les da una plantilla) y un contrato de encargo de datos con ustedes.
 - [ ] **(bloquea) Que el aviso de cada desarrolladora mencione a quién se transmiten los datos:** Meta (WhatsApp) y, si usan IA, el proveedor de IA (en EE. UU.).
-- [ ] **Marca y dominio.** "Pórtico" y `hola@portico.mx` son marcadores: sin búsqueda de marca ni dominio registrado. Los correos que salen de la plataforma usan ese remitente.
+- [ ] **Marca y dominio.** "Tlalli" es un nombre nuevo (producto de KoatlCyber): **falta la búsqueda de marca en el IMPI y registrar el dominio**. El correo de ventas y soporte es `ventas@koatlcyber.com` y el WhatsApp 442 435 8301. Los correos que salen de la plataforma usan ese remitente.
 - [ ] **Precios y plan.** Los planes (Básico $1,490 a Élite IA $12,990) son propuestas sin validar. En el piloto nadie paga ni se vence la prueba de 14 días: **cambiar de plan es manual en la base de datos**.
-- [ ] **Quién da soporte y por qué canal.** No hay ayuda dentro de la app. Definan un WhatsApp o correo de soporte y una persona responsable; el texto de "Avanzado" en Configuración ya manda a escribir a `hola@portico.mx`.
+- [ ] **Quién da soporte y por qué canal.** No hay ayuda dentro de la app. Definan un WhatsApp o correo de soporte y una persona responsable; el texto de "Avanzado" en Configuración ya manda a escribir a `ventas@koatlcyber.com`.
 - [ ] **Reglas del tope de descuento.** Cada organización arranca con 5 % de descuento, tasa de referencia 4 %, enganche mínimo 10 % y plazo máximo 120 meses para asesores. Pregunten a cada desarrolladora cuánto puede dar un asesor sin autorización y ajusten los cinco valores en Configuración antes de entregar. **Ojo:** mensualidades sin intereses cuentan como descuento (ver el límite 6): si la desarrolladora vende "a meses sin intereses" como plan normal, suban la tasa de referencia solo hasta donde su plan estándar siga sin pedir autorización, o pónganla en 0 para no medir el financiamiento.
 - [ ] **Quién autoriza.** Alguien con rol Administrador debe revisar "Autorizaciones" a diario: si nadie lo hace, las ventas y descuentos grandes quedan esperando.
 
@@ -44,7 +44,7 @@ Marca cada punto. Los marcados **(bloquea)** no se deben saltar.
 - [ ] Que el equipo técnico recorra una vez la app en **dos teléfonos reales** (un iPhone y un Android): solo se probó emulando 390 px.
 - [ ] Capacitar a los asesores 30 minutos: crear un lead, cotizar, mover de etapa y qué hacer cuando una solicitud queda "pendiente".
 - [ ] Importar la base de prospectos de cada desarrolladora **con ellos presentes** (el archivo debe guardarse como CSV; el sistema ya reconoce los acentos de Excel).
-- [ ] Revisar que su sitio o landing envíe los leads al formulario de Pórtico (liga lista en Configuración).
+- [ ] Revisar que su sitio o landing envíe los leads al formulario de Tlalli (liga lista en Configuración).
 
 ---
 
@@ -69,7 +69,7 @@ Hazla entera. **Prueba:** abre `https://TU-DOMINIO/login`; debe verse la pantall
 En el panel de Supabase de producción → *Authentication*:
 1. **URL Configuration → Site URL:** `https://TU-DOMINIO` (sin diagonal final). En *Redirect URLs* agrega la misma.
 2. **Email Templates → Reset Password:**
-   - *Subject:* `Crea tu contraseña nueva en Pórtico`
+   - *Subject:* `Crea tu contraseña nueva en Tlalli`
    - *Body:* copia el contenido de [`supabase/templates/recovery.html`](../supabase/templates/recovery.html).
 3. **Importante:** en producción el correo de Supabase sale de su servicio de pruebas con límites muy bajos. Para el piloto configura **SMTP propio** en *Authentication → SMTP Settings* con las credenciales de Resend (host `smtp.resend.com`, puerto `465`, usuario `resend`, contraseña = tu API key, remitente = el de tu dominio verificado).
 
@@ -78,7 +78,7 @@ En el panel de Supabase de producción → *Authentication*:
 ### Paso 4. Correo de la plataforma con Resend
 1. En Resend: *Domains → Add Domain*, agrega tu dominio y copia los registros DNS (SPF y DKIM) a tu proveedor de DNS. Espera a que diga **Verified**.
 2. Crea una *API key* con permiso de envío.
-3. En el hosting define: `EMAIL_PROVIDER=resend`, `RESEND_API_KEY=...`, `EMAIL_FROM="Pórtico <avisos@TU-DOMINIO>"` y reinicia.
+3. En el hosting define: `EMAIL_PROVIDER=resend`, `RESEND_API_KEY=...`, `EMAIL_FROM="Tlalli <ventas@koatlcyber.com>"` y reinicia.
 
 **Prueba:** en Equipo, invita a un correo tuyo → debe llegar "te invitó a …" con botón. Luego crea un lead asignado a otra persona → a esa persona le llega "Nuevo lead asignado". Si no llega: mira *Logs* en Resend y la carpeta de spam. Un fallo de correo **no rompe nada** en la app; solo se registra en los logs.
 
