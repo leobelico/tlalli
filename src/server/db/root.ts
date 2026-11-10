@@ -17,6 +17,20 @@ function createClient() {
 
 const globalForPrisma = globalThis as unknown as { __rootPrisma?: PrismaClient };
 
-export const rootPrisma: PrismaClient = globalForPrisma.__rootPrisma ?? createClient();
+/**
+ * Created on first use, not when the module is imported: `next build` imports every route to collect its
+ * configuration, and a build machine does not (and should not need to) have the database URL. A missing
+ * DATABASE_URL still fails loudly, at the first query.
+ */
+function client(): PrismaClient {
+  return (globalForPrisma.__rootPrisma ??= createClient());
+}
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.__rootPrisma = rootPrisma;
+export const rootPrisma: PrismaClient = new Proxy({} as PrismaClient, {
+  get(_target, prop) {
+    const c = client();
+    const value = Reflect.get(c, prop, c);
+    return typeof value === "function" ? value.bind(c) : value;
+  },
+  has: (_target, prop) => prop in client(),
+});
