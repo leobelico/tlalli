@@ -73,6 +73,22 @@ export default async function SettingsPage() {
                 className="input"
               />
             </Field>
+            <Field
+              label="Tasa de referencia (% anual)"
+              name="referenceRatePct"
+              hint="Sirve para medir cuánto vale dar mensualidades sin intereses o a plazos largos. El descuento equivalente = precio de lista menos el valor presente de lo que paga el cliente a esta tasa. Si es mayor que el descuento máximo, el asesor necesita autorización. 0 = no medir el financiamiento."
+            >
+              <input id="referenceRatePct" name="referenceRatePct" type="number" min={0} max={60} step="0.5" defaultValue={org.referenceRatePct} className="input" />
+            </Field>
+            <Field label="Enganche mínimo para asesores (%)" name="asesorMinDownPct" hint="Con menos enganche, la cotización pasa a autorización.">
+              <input id="asesorMinDownPct" name="asesorMinDownPct" type="number" min={0} max={100} step="0.5" defaultValue={org.asesorMinDownPct} className="input" />
+            </Field>
+            <Field label="Tasa anual mínima para asesores (%)" name="asesorMinRatePct" hint="0 = pueden cotizar sin intereses. Solo aplica si hay saldo a financiar.">
+              <input id="asesorMinRatePct" name="asesorMinRatePct" type="number" min={0} max={60} step="0.5" defaultValue={org.asesorMinRatePct} className="input" />
+            </Field>
+            <Field label="Plazo máximo para asesores (meses)" name="asesorMaxMonths" hint="Más meses que esto pasa a autorización.">
+              <input id="asesorMaxMonths" name="asesorMaxMonths" type="number" min={1} max={360} defaultValue={org.asesorMaxMonths} className="input" />
+            </Field>
             <SubmitButton>Guardar</SubmitButton>
           </ActionForm>
         </Card>

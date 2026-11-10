@@ -4,6 +4,7 @@ import { withOrg } from "@/server/db/tenant";
 import { assertCan, can, leadScope, type Ctx } from "@/server/auth/permissions";
 import { DomainError, NotFoundError } from "@/server/errors";
 import { calculateQuote, QuoteInputError } from "@/lib/quote";
+import { policyReasons } from "@/lib/policy";
 import { formatMoney, toNumber } from "@/lib/format";
 import { requestAuthorization } from "./authorizations";
 import { requireLead } from "./leads";
@@ -32,20 +33,6 @@ export async function createQuote(ctx: Ctx, input: CreateQuoteInput, opts: { onB
     if (unit.status === "VENDIDO") throw new DomainError(`La unidad ${unit.code} ya está vendida.`);
     const listPrice = toNumber(unit.price);
     const lead = input.leadId ? await requireLead(tx, ctx, input.leadId) : null;
-    const org = await tx.organization.findUniqueOrThrow({ where: { id: ctx.orgId }, select: { maxAsesorDiscountPct: true } });
-    const cap = org.maxAsesorDiscountPct;
-    if (!opts.skipCap && !can(ctx.role, "pricing:override") && (input.discount ?? 0) > (listPrice * cap) / 100) {
-      const who = lead ? ` · Cliente: ${[lead.firstName, lead.lastName].filter(Boolean).join(" ")}` : "";
-      const pct = Math.round(((input.discount ?? 0) / listPrice) * 1000) / 10;
-      return {
-        pending: {
-          cap,
-          unitId: unit.id,
-          summary: `Descuento de ${formatMoney(input.discount ?? 0)} (${pct}%) sobre ${formatMoney(listPrice)} en ${unit.code}${who}`,
-        },
-      };
-    }
-
     let calc;
     try {
       calc = calculateQuote({
@@ -58,6 +45,31 @@ export async function createQuote(ctx: Ctx, input: CreateQuoteInput, opts: { onB
     } catch (e) {
       if (e instanceof QuoteInputError) throw new DomainError(e.message);
       throw e;
+    }
+    if (!opts.skipCap && !can(ctx.role, "pricing:override")) {
+      const org = await tx.organization.findUniqueOrThrow({
+        where: { id: ctx.orgId },
+        select: { maxAsesorDiscountPct: true, referenceRatePct: true, asesorMinDownPct: true, asesorMinRatePct: true, asesorMaxMonths: true },
+      });
+      const reasons = policyReasons(calc, {
+        capPct: org.maxAsesorDiscountPct,
+        referenceRatePct: org.referenceRatePct,
+        minDownPct: org.asesorMinDownPct,
+        minRatePct: org.asesorMinRatePct,
+        maxMonths: org.asesorMaxMonths,
+      });
+      if (reasons.length) {
+        const who = lead ? ` · Cliente: ${[lead.firstName, lead.lastName].filter(Boolean).join(" ")}` : "";
+        return {
+          pending: {
+            cap: org.maxAsesorDiscountPct,
+            onlyDiscount: reasons.every((r) => r.code === "DESCUENTO"),
+            reasons: reasons.map((r) => r.text),
+            unitId: unit.id,
+            summary: `${reasons.map((r) => r.text).join("; ")} sobre ${formatMoney(listPrice)} en ${unit.code}${who}`,
+          },
+        };
+      }
     }
     const q = await tx.quote.create({
       data: {
@@ -94,14 +106,18 @@ export async function createQuote(ctx: Ctx, input: CreateQuoteInput, opts: { onB
   });
 
   if ("pending" in outcome && outcome.pending) {
-    const { cap, unitId, summary } = outcome.pending;
+    const { cap, unitId, summary, onlyDiscount, reasons } = outcome.pending;
     throw await requestAuthorization(ctx, {
       kind: "DESCUENTO",
       unitId,
       leadId: input.leadId,
       summary,
       payload: { unitId: input.unitId, leadId: input.leadId, discount: input.discount, downPaymentPct: input.downPaymentPct, months: input.months, annualRatePct: input.annualRatePct },
-      message: `Tu descuento supera el descuento máximo para asesores (${cap}%). Lo enviamos a un administrador para que lo autorice; verás la respuesta en "Autorizaciones" y te avisaremos por correo.`,
+      message: `${
+        onlyDiscount
+          ? `Tu descuento supera el descuento máximo para asesores (${cap}%).`
+          : `Esta cotización queda fuera de lo que un asesor puede dar sin autorización (${reasons.join("; ")}).`
+      } Lo enviamos a un administrador para que lo autorice; verás la respuesta en "Autorizaciones" y te avisaremos por correo.`,
     });
   }
   const quote = outcome.quote!;

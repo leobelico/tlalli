@@ -123,6 +123,12 @@ model Organization {
   staleHoursByStage Json @default("{}") @map("stale_hours_by_stage")
   /// Largest discount (% of list price) an asesor may give without an admin (pilot item 5).
   maxAsesorDiscountPct Int @default(5) @map("max_asesor_discount_pct")
+  /// Annual % used to value the client's payments when comparing a quote with the cap (QA2 B32).
+  referenceRatePct Float @default(4) @map("reference_rate_pct")
+  /// Guard rails for quotes made by asesores (QA2 B32); outside them the quote goes to an admin.
+  asesorMinDownPct Float @default(10) @map("asesor_min_down_pct")
+  asesorMinRatePct Float @default(0) @map("asesor_min_rate_pct")
+  asesorMaxMonths Int @default(120) @map("asesor_max_months")
   /// Publishable key used by public web forms to post leads to this organization.
   leadFormKey         String   @unique @map("lead_form_key")
   /// Meta WhatsApp Cloud API phone number id that routes incoming messages to this org.

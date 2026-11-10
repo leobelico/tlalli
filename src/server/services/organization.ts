@@ -12,13 +12,29 @@ export async function getOrganization(ctx: Ctx) {
 
 export async function updateOrganizationSettings(
   ctx: Ctx,
-  input: { name: string; staleLeadHours: number; maxAsesorDiscountPct?: number },
+  input: {
+    name: string;
+    staleLeadHours: number;
+    maxAsesorDiscountPct?: number;
+    referenceRatePct?: number;
+    asesorMinDownPct?: number;
+    asesorMinRatePct?: number;
+    asesorMaxMonths?: number;
+  },
 ) {
   assertCan(ctx, "org:settings");
   const cap = input.maxAsesorDiscountPct;
   if (cap !== undefined && (!Number.isInteger(cap) || cap < 0 || cap > 100)) {
     throw new DomainError("El descuento máximo debe ser un número entero entre 0 y 100.");
   }
+  const inRange = (v: number | undefined, min: number, max: number) => v === undefined || (Number.isFinite(v) && v >= min && v <= max);
+  if (!inRange(input.referenceRatePct, 0, 60)) throw new DomainError("La tasa de referencia debe estar entre 0% y 60%.");
+  if (!inRange(input.asesorMinDownPct, 0, 100)) throw new DomainError("El enganche mínimo debe estar entre 0% y 100%.");
+  if (!inRange(input.asesorMinRatePct, 0, 60)) throw new DomainError("La tasa mínima debe estar entre 0% y 60%.");
+  if (input.asesorMaxMonths !== undefined && (!Number.isInteger(input.asesorMaxMonths) || input.asesorMaxMonths < 1 || input.asesorMaxMonths > 360)) {
+    throw new DomainError("El plazo máximo debe ser de 1 a 360 meses.");
+  }
+  const opt = <K extends string>(k: K, v: number | undefined) => (v === undefined ? {} : { [k]: v });
   return withOrg(ctx.orgId, (tx) =>
     tx.organization.update({
       where: { id: ctx.orgId },
@@ -26,6 +42,10 @@ export async function updateOrganizationSettings(
         name: input.name,
         staleLeadHours: input.staleLeadHours,
         ...(cap === undefined ? {} : { maxAsesorDiscountPct: cap }),
+        ...opt("referenceRatePct", input.referenceRatePct),
+        ...opt("asesorMinDownPct", input.asesorMinDownPct),
+        ...opt("asesorMinRatePct", input.asesorMinRatePct),
+        ...opt("asesorMaxMonths", input.asesorMaxMonths),
       },
     }),
   );

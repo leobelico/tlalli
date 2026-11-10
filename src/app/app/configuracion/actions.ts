@@ -26,6 +26,10 @@ const settingsSchema = z.object({
     .int({ error: "Usa un número entero." })
     .min(0, { error: "Entre 0 y 100." })
     .max(100, { error: "Entre 0 y 100." }),
+  referenceRatePct: z.coerce.number({ error: "Escribe un porcentaje." }).min(0, { error: "Entre 0 y 60." }).max(60, { error: "Entre 0 y 60." }),
+  asesorMinDownPct: z.coerce.number({ error: "Escribe un porcentaje." }).min(0, { error: "Entre 0 y 100." }).max(100, { error: "Entre 0 y 100." }),
+  asesorMinRatePct: z.coerce.number({ error: "Escribe un porcentaje." }).min(0, { error: "Entre 0 y 60." }).max(60, { error: "Entre 0 y 60." }),
+  asesorMaxMonths: z.coerce.number({ error: "Escribe los meses." }).int({ error: "Usa meses completos." }).min(1, { error: "De 1 a 360." }).max(360, { error: "De 1 a 360." }),
 });
 
 const whatsAppSchema = z.object({

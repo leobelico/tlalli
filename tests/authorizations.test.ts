@@ -29,7 +29,8 @@ describe("authorizations: discounts and sales (QA B04, B05)", () => {
     await expect(createQuote(asesor.ctx, { unitId, discount: cap + 1, downPaymentPct: 10, months: 12 })).rejects.toThrow(
       /descuento máximo/i,
     );
-    await expect(createQuote(asesor.ctx, { unitId, discount: cap, downPaymentPct: 10, months: 12 })).resolves.toBeTruthy();
+    // at the cap, paying interest at the organization's reference rate (4%): free installments would count as extra discount (QA2 B32)
+    await expect(createQuote(asesor.ctx, { unitId, discount: cap, downPaymentPct: 10, months: 12, annualRatePct: 4 })).resolves.toBeTruthy();
     await expect(createQuote(org.adminCtx, { unitId, discount: 399999, downPaymentPct: 10, months: 12 })).resolves.toBeTruthy();
   });
 

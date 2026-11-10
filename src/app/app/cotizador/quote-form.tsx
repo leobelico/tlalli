@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { ActionForm, Field, SubmitButton } from "@/components/form";
 import { calculateQuote, type QuoteResult } from "@/lib/quote";
+import { policyReasons, type QuotePolicy } from "@/lib/policy";
 import { formatMoney } from "@/lib/format";
 import { createQuoteAction } from "./actions";
 
@@ -14,14 +15,14 @@ export function QuoteForm({
   leads,
   initialUnitId,
   initialLeadId,
-  maxDiscountPct,
+  policy,
 }: {
   units: UnitOption[];
   leads: LeadOption[];
   initialUnitId?: string;
   initialLeadId?: string;
-  /** Asesor limit in % of list price (null = no limit, e.g. admins). */
-  maxDiscountPct?: number | null;
+  /** Asesor guard rails (null = no limit, e.g. admins). */
+  policy?: QuotePolicy | null;
 }) {
   const [unitId, setUnitId] = useState(initialUnitId ?? "");
   const [discount, setDiscount] = useState("");
@@ -29,6 +30,7 @@ export function QuoteForm({
   const [months, setMonths] = useState("24");
   const [rate, setRate] = useState("0");
   const unit = units.find((u) => u.id === unitId);
+  const maxDiscountPct = policy?.capPct ?? null;
 
   // Live preview uses the same pure function as the server.
   const preview = useMemo<{ r?: QuoteResult; error?: string }>(() => {
@@ -47,6 +49,8 @@ export function QuoteForm({
       return { error: (e as Error).message };
     }
   }, [unit, discount, pct, months, rate]);
+
+  const reasons = useMemo(() => (policy && preview.r ? policyReasons(preview.r, policy).map((r) => r.text) : []), [policy, preview.r]);
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
@@ -112,6 +116,16 @@ export function QuoteForm({
             <Row label={`Mensualidad × ${preview.r.months}`} value={formatMoney(preview.r.monthlyPayment)} strong />
             {preview.r.totalInterest > 0 ? <Row label="Intereses" value={formatMoney(preview.r.totalInterest)} /> : null}
             <Row label="Total" value={formatMoney(preview.r.totalPaid)} strong />
+            {reasons.length ? (
+              <div role="status" className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-amber-900">
+                <p className="font-medium">Necesita autorización de un administrador:</p>
+                <ul className="ml-4 list-disc">
+                  {reasons.map((t) => (
+                    <li key={t}>{t}</li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
           </dl>
         ) : null}
       </aside>

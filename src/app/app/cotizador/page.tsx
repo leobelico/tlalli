@@ -31,7 +31,17 @@ export default async function QuoterPage({ searchParams }: PageProps<"/app/cotiz
         leads={leads.map((l) => ({ id: l.id, label: [l.firstName, l.lastName].filter(Boolean).join(" ") }))}
         initialUnitId={isUuid(str(sp.unidad)) ? str(sp.unidad) : undefined}
         initialLeadId={isUuid(str(sp.lead)) ? str(sp.lead) : undefined}
-        maxDiscountPct={can(ctx.role, "pricing:override") ? null : org.maxAsesorDiscountPct}
+        policy={
+          can(ctx.role, "pricing:override")
+            ? null
+            : {
+                capPct: org.maxAsesorDiscountPct,
+                referenceRatePct: org.referenceRatePct,
+                minDownPct: org.asesorMinDownPct,
+                minRatePct: org.asesorMinRatePct,
+                maxMonths: org.asesorMaxMonths,
+              }
+        }
       />
     </>
   );

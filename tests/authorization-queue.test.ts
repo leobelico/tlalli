@@ -41,7 +41,7 @@ describe("per-organization discount cap and authorization queue (pilot, item 5)"
     expect((await rootPrisma.organization.findUniqueOrThrow({ where: { id: other.org.id } })).maxAsesorDiscountPct).toBe(5);
     const unitId = await mkUnit("C-1");
     await setCap(10);
-    await expect(createQuote(asesor.ctx, { unitId, discount: 50000, downPaymentPct: 10, months: 12 })).resolves.toBeTruthy(); // 10%
+    await expect(createQuote(asesor.ctx, { unitId, discount: 50000, downPaymentPct: 10, months: 12, annualRatePct: 4 })).resolves.toBeTruthy(); // 10%, interest at the reference rate (QA2 B32)
     await expect(createQuote(asesor.ctx, { unitId, discount: 50001, downPaymentPct: 10, months: 12 })).rejects.toBeInstanceOf(AuthorizationPendingError);
     await expect(updateOrganizationSettings(asesor.ctx, { name: "x", staleLeadHours: 24, maxAsesorDiscountPct: 50 })).rejects.toThrow(/permiso/i);
     await expect(setCap(101)).rejects.toThrow(/0 y 100/);
