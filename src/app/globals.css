@@ -158,3 +158,36 @@ body {
     background: transparent;
   }
 }
+
+/* Phones: fields at 16px so iOS Safari does not zoom in on focus, and comfortable touch targets (QA2 B40, B41). */
+@media (max-width: 767px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="file"]),
+  select,
+  textarea {
+    font-size: 16px;
+  }
+  input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+  select,
+  .btn,
+  .btn-primary,
+  .btn-secondary,
+  .btn-danger,
+  .btn-ghost,
+  .app-main summary {
+    min-height: 44px;
+  }
+  .app-main summary {
+    display: flex;
+    align-items: center;
+  }
+  .app-main label:has(> input[type="checkbox"]) {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+  .app-main input[type="checkbox"],
+  .app-main input[type="radio"] {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}

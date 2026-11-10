@@ -50,7 +50,7 @@ export function MobileNav({
                   <Link
                     href={item.href}
                     onClick={() => setOpen(false)}
-                    className={`block rounded-lg px-3 py-2.5 text-sm font-medium ${
+                    className={`flex min-h-11 items-center rounded-lg px-3 py-2.5 text-sm font-medium ${
                       active ? "bg-brand-50 text-brand-800" : "text-stone-700 hover:bg-stone-100"
                     }`}
                   >

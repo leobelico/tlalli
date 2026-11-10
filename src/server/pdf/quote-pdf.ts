@@ -2,7 +2,7 @@ import "server-only";
 import { PDFDocument, StandardFonts, rgb, type PDFFont } from "pdf-lib";
 import { calculateQuote } from "@/lib/quote";
 import { formatDate, formatMoney, toNumber } from "@/lib/format";
-import { UNIT_TYPE_LABEL } from "@/lib/labels";
+import { unitDisplayName } from "@/lib/labels";
 import { formatPhone } from "@/lib/phone";
 import type { QuoteDetail } from "@/server/services/quotes";
 
@@ -63,7 +63,7 @@ export async function renderQuotePdf({ quote, org, author }: QuoteDetail): Promi
   const area = toNumber(quote.unit.areaM2);
   const unitLines = [
     quote.unit.development.name,
-    `${UNIT_TYPE_LABEL[quote.unit.type]} ${quote.unit.code}`,
+    unitDisplayName(quote.unit.type, quote.unit.code),
     area ? `Superficie: ${area.toLocaleString("es-MX")} m²` : "",
     [quote.unit.development.address, quote.unit.development.city].filter(Boolean).join(", "),
   ];

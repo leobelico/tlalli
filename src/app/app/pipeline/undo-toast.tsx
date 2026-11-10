@@ -34,7 +34,7 @@ export function UndoToast({
       className="fixed inset-x-4 bottom-4 z-50 flex items-center justify-between gap-3 rounded-xl bg-stone-900 px-4 py-3 text-sm text-white shadow-lg sm:left-auto sm:max-w-md"
     >
       <span>{message}</span>
-      <button type="button" disabled={busy} onClick={onUndo} className="shrink-0 rounded-lg bg-white px-3 py-1.5 font-medium text-stone-900 disabled:opacity-60">
+      <button type="button" disabled={busy} onClick={onUndo} className="min-h-11 shrink-0 rounded-lg bg-white px-4 py-1.5 font-medium text-stone-900 disabled:opacity-60">
         {busy ? "Deshaciendo…" : `Deshacer (${left} s)`}
       </button>
     </div>

@@ -16,6 +16,20 @@ export const UNIT_TYPE_LABEL: Record<UnitType, string> = {
   LOCAL: "Local comercial",
 };
 
+/** Words a unit code may already start with, per type ("Lote 1", "Depto 7", "Lt 5"). */
+const TYPE_PREFIXES: Record<UnitType, string[]> = {
+  LOTE: ["lote", "lt"],
+  CASA: ["casa"],
+  DEPARTAMENTO: ["departamento", "depto", "dpto", "depa"],
+  LOCAL: ["local"],
+};
+
+/** "Lote 1", not "Lote Lote 1": the type is added only when the code does not already say it (QA2 B42). */
+export function unitDisplayName(type: UnitType, code: string): string {
+  const first = code.trim().split(/[\s.\-_/]+/)[0]?.toLowerCase() ?? "";
+  return TYPE_PREFIXES[type].includes(first) ? code.trim() : `${UNIT_TYPE_LABEL[type]} ${code.trim()}`;
+}
+
 export const UNIT_STATUS_LABEL: Record<UnitStatus, string> = {
   DISPONIBLE: "Disponible",
   APARTADO: "Apartado",
