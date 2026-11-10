@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { changeStage, changeStageDetailed, undoStageChange } from "@/server/services/pipeline";
 import { createLeadManual, updateLead } from "@/server/services/leads";
-import { createDevelopment, createUnit, setUnitStatus } from "@/server/services/inventory";
+import { createDevelopment, createUnit, setUnitStatus, updateUnit } from "@/server/services/inventory";
 import { rootPrisma } from "@/server/db/root";
 import { addMember, cleanup, makeOrg } from "./helpers/factory";
 
@@ -157,5 +157,17 @@ describe("undo and unit ownership (QA2 B31, B35)", () => {
     await changeStage(a1.ctx, mover.id, { stage: "APARTADO" });
     await expect(updateLead(org.adminCtx, mover.id, { firstName: "Mueve", phone: mover.phone, unitId: target, assignedToId: a1.user.id })).rejects.toThrow(/ya (fue|está) apartada/i);
     expect((await unit(own)).status).toBe("APARTADO");
+  });
+
+  it("B33 was a false alarm: a held or sold lot cannot be set to Disponible by hand, by either path, and the message names the client", async () => {
+    const u = await mkUnit();
+    const l = await mkLead(org.adminCtx, u, "Nombre Visible");
+    await changeStage(org.adminCtx, l.id, { stage: "APARTADO" });
+    await expect(setUnitStatus(org.adminCtx, u, "DISPONIBLE")).rejects.toThrow(/Nombre Visible/);
+    await expect(updateUnit(org.adminCtx, u, { code: "X-edit", type: "LOTE", price: 400000, status: "DISPONIBLE" })).rejects.toThrow(/Nombre Visible/);
+    await changeStage(org.adminCtx, l.id, { stage: "VENDIDO", saleAmount: 400000 });
+    await expect(setUnitStatus(org.adminCtx, u, "DISPONIBLE")).rejects.toThrow(/vendida/i);
+    expect((await unit(u)).status).toBe("VENDIDO");
+    expect(await incoherent()).toEqual([]);
   });
 });
