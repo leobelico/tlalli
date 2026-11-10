@@ -139,7 +139,7 @@ Las migraciones crean las tablas, los permisos y la **seguridad por organizació
    ```bash
    DIRECT_URL="postgresql://postgres:CONTRASEÑA@db.XXXX.supabase.co:5432/postgres" npx prisma migrate deploy
    ```
-   Debe terminar con `All migrations have been successfully applied.` (hoy son 11 migraciones).
+   Debe terminar con `All migrations have been successfully applied.` (hoy son 13 migraciones).
 5. **Verifica** en el editor SQL de Supabase:
    ```sql
    select rolname from pg_roles where rolname = 'app_rls';                       -- debe devolver 1 fila

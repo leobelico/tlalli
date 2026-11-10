@@ -14,7 +14,10 @@ Este documento aplica la parte 2 y 3 de `docs/PILOTO.md` a tu dominio. Se asume 
    ```bash
    DIRECT_URL="postgresql://postgres:CONTRASEÑA@db.XXXX.supabase.co:5432/postgres" npx prisma migrate deploy
    ```
-   Debe terminar con *All migrations have been successfully applied* (hoy son 11).
+   Debe terminar con *All migrations have been successfully applied* (hoy son 13).
+   - **Si dice `P1001: Can't reach database server`:** la conexión directa de Supabase es solo IPv6 y muchas redes no la tienen. Usa el **Session pooler** (Connect → Session pooler): host `aws-0-us-east-2.pooler.supabase.com`, puerto `5432`, usuario `postgres.zvtkyzrwkwailudhcnvb` (esta es la de tu proyecto).
+   - **Contraseña con símbolos** (`?`, `@`, `#`, `/`…): en la URL van codificados (`?` → `%3F`, `@` → `%40`, `#` → `%23`). Lo más fácil es usar una contraseña solo de letras y números.
+   - **En PowerShell** el prefijo `VARIABLE=valor comando` no existe; usa `$env:DIRECT_URL="postgresql://…"; npx prisma migrate deploy`.
 4. En el editor SQL verifica: `select rolname from pg_roles where rolname='app_rls';` (1 fila) y `select indexname from pg_indexes where indexname='leads_one_hold_per_unit';` (1 fila). Si falta `app_rls`, no sigas.
 5. *Authentication → URL Configuration*: **Site URL** `https://tlalli.site` y en *Redirect URLs* `https://tlalli.site/**`.
 6. *Authentication → Emails → Reset password*: asunto `Crea tu contraseña nueva en Tlalli` y pega el contenido de `supabase/templates/recovery.html`.
@@ -27,7 +30,7 @@ Este documento aplica la parte 2 y 3 de `docs/PILOTO.md` a tu dominio. Se asume 
 |---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | `https://zvtkyzrwkwailudhcnvb.supabase.co` |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | la llave `sb_publishable_…` de tu proyecto (pública por diseño; la app también acepta `NEXT_PUBLIC_SUPABASE_ANON_KEY`) |
-| `DATABASE_URL` | pooler 6543 + `?pgbouncer=true` |
+| `DATABASE_URL` | `postgresql://postgres.zvtkyzrwkwailudhcnvb:CONTRASEÑA@aws-0-us-east-2.pooler.supabase.com:6543/postgres?pgbouncer=true` (transaction pooler; la contraseña codificada si tiene símbolos) |
 | `APP_URL` | `https://tlalli.site` (sin diagonal final) |
 | `TRUSTED_PROXY` | `vercel` |
 | `CRON_SECRET` | 32+ caracteres: `node -e "console.log(require('crypto').randomBytes(24).toString('hex'))"` |
