@@ -25,7 +25,8 @@ Este documento aplica la parte 2 y 3 de `docs/PILOTO.md` a tu dominio. Se asume 
 
 | Variable | Valor |
 |---|---|
-| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | del proyecto (Settings → API) |
+| `NEXT_PUBLIC_SUPABASE_URL` | `https://zvtkyzrwkwailudhcnvb.supabase.co` |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | la llave `sb_publishable_…` de tu proyecto (pública por diseño; la app también acepta `NEXT_PUBLIC_SUPABASE_ANON_KEY`) |
 | `DATABASE_URL` | pooler 6543 + `?pgbouncer=true` |
 | `APP_URL` | `https://tlalli.site` (sin diagonal final) |
 | `TRUSTED_PROXY` | `vercel` |
