@@ -11,7 +11,7 @@ import { addActivity, createLeadManual, deleteLead, updateLead } from "@/server/
 import { importLeadsCsv, MAX_IMPORT_BYTES } from "@/server/services/lead-import";
 import { decodeCsvBytes } from "@/lib/csv-encoding";
 import { parseLeadFilters } from "@/lib/lead-filters";
-import { reassignLeads } from "@/server/services/reassign";
+import { reassignLeads, undoReassignment } from "@/server/services/reassign";
 
 export async function createLeadAction(_: ActionState, formData: FormData): Promise<ActionState> {
   const { ctx } = await requireCtx("leads:create");
@@ -125,8 +125,26 @@ export async function reassignFilteredAction(_: ActionState, formData: FormData)
   if (to !== "none" && !uuidSchema.safeParse(to).success) return { error: "Elige a quién pasar los leads." };
   const filters = parseLeadFilters(Object.fromEntries(formData));
   return runAction(async () => {
-    const { count } = await reassignLeads(ctx, { ...filters, page: undefined }, to === "none" ? null : to);
+    const { count, batchId } = await reassignLeads(ctx, { ...filters, page: undefined }, to === "none" ? null : to);
     revalidatePath("/app/leads");
-    return { ok: true, message: count ? `Listo: se reasignaron ${count} leads.` : "No había leads abiertos que mover con esos filtros." };
+    return {
+      ok: true,
+      message: count ? `Listo: se reasignaron ${count} leads.` : "No había leads abiertos que mover con esos filtros.",
+      data: batchId ? { batchId } : undefined,
+    };
+  });
+}
+
+/** "Deshacer" for the 10 seconds after a bulk reassignment (QA2 B37). */
+export async function undoReassignAction(batchId: string): Promise<ActionState> {
+  const { ctx } = await requireCtx("leads:assign");
+  if (!uuidSchema.safeParse(batchId).success) return { error: "Cambio no encontrado." };
+  return runAction(async () => {
+    const { restored, skipped } = await undoReassignment(ctx, batchId);
+    revalidatePath("/app/leads");
+    return {
+      ok: true,
+      message: `Se deshizo: ${restored} leads regresaron a su asesor.${skipped ? ` ${skipped} no se tocaron porque ya habían cambiado de nuevo.` : ""}`,
+    };
   });
 }

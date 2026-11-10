@@ -156,6 +156,7 @@ model Organization {
   privacyNotices   PrivacyNotice[]
   aiUsage          AiUsage[]
   authorizationRequests AuthorizationRequest[]
+  reassignmentBatches   ReassignmentBatch[]
 
   @@map("organizations")
 }
@@ -512,4 +513,22 @@ model AuthorizationRequest {
   @@index([organizationId, status, createdAt])
   @@index([requestedById])
   @@map("authorization_requests")
+}
+
+/// One bulk reassignment from the leads list, kept for 30 s so it can be undone (QA2 B37).
+model ReassignmentBatch {
+  id             String    @id @default(uuid(7)) @db.Uuid
+  organizationId String    @map("organization_id") @db.Uuid
+  userId         String    @map("user_id") @db.Uuid
+  /// New owner (null = left unassigned).
+  toUserId       String?   @map("to_user_id") @db.Uuid
+  /// [{ "id": leadId, "from": previousOwnerId | null }]
+  moves          Json
+  undoneAt       DateTime? @map("undone_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, createdAt])
+  @@map("reassignment_batches")
 }

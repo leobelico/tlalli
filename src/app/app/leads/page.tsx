@@ -4,6 +4,7 @@ import { Badge, Card, EmptyState, LinkButton, PageHeader } from "@/components/ui
 import { requireCtx } from "@/server/auth/session";
 import { can } from "@/server/auth/permissions";
 import { listLeads } from "@/server/services/leads";
+import { countReassignable } from "@/server/services/reassign";
 import { listCampaignsForSelect } from "@/server/services/campaigns";
 import { listAllAgents } from "@/server/services/organization";
 import { parseLeadFilters } from "@/lib/lead-filters";
@@ -26,10 +27,11 @@ export default async function LeadsPage({ searchParams }: PageProps<"/app/leads"
   const filters = parseLeadFilters(sp);
   const stage = filters.stage;
   const asesor = filters.assignedToId;
-  const [{ leads, total, page, pages, stalePolicy }, campaigns, agents] = await Promise.all([
+  const [{ leads, total, page, pages, stalePolicy }, campaigns, agents, openTotal] = await Promise.all([
     listLeads(ctx, filters),
     listCampaignsForSelect(ctx),
     listAllAgents(ctx),
+    isAdmin ? countReassignable(ctx, filters) : Promise.resolve(0),
   ]);
   const agentName = Object.fromEntries(agents.map((a) => [a.id, a.name]));
   const qs = (patch: Record<string, string | undefined>) => {
@@ -100,9 +102,9 @@ export default async function LeadsPage({ searchParams }: PageProps<"/app/leads"
         </div>
       </form>
 
-      {isAdmin && total > 0 ? (
+      {isAdmin && openTotal > 0 ? (
         <BulkReassign
-          total={total}
+          total={openTotal}
           filters={Object.fromEntries(
             Object.entries({ q: str(sp.q), etapa: str(sp.etapa), campana: str(sp.campana), canal: str(sp.canal), asesor: str(sp.asesor), frios: str(sp.frios) }).filter(
               (e): e is [string, string] => !!e[1],
