@@ -1,0 +1,32 @@
+=== --- paso 1 registro (celular) (+0 s)
+=== tras registrarse: /app | Empieza aquí 0 de 4 listos 1. Crea tu primer desarrollo Un fraccionamiento, torre o proyecto con sus lotes o departamentos y precios. Crear desarrollo 2. Importa tus leads Sube tu lista de Excel (CSV)
+=== guía del primer día: 0 de 4 | Empieza aquí 0 de 4 listos 1. Crea tu primer desarrollo Un fraccionamiento, torre o proyec
+=== --- paso 2 desarrollo y unidades (escritorio) (+3 s)
+=== unidades creadas: 30
+=== guía del primer día: 1 de 4 | Empieza aquí 1 de 4 listos ✓ Crea tu primer desarrollo (listo) 2. Importa tus leads Sube t
+=== --- paso 3 importar CSV de Excel (Windows-1252) (+8 s)
+=== resultado del importador: Confirmo que las personas de este archivo nos dieron sus datos y aceptaron nuestro aviso de privacidad (LFPDPPP). Quedará registrado a mi nombre. / Importación terminada: 5 nuevos, 0 ya existían (se registró el nuevo contacto), 0 con errores, 0 con avisos. / Máximo 2,000 filas / 2 MB por archivo.
+=== en la base: [{"first_name":"José","last_name":"Ñúñez Peña","phone":"+524442000001","email":"jose@ejemplo.test"},{"first_name":"María","last_name":"Núñez Gómez","phone":"+524442000002","email":null},{"first_name":"Ángel","last_name":"Güemes","phone":"+524442000003","email":"angel@ejemplo.test"},{"first_name":"Zoë","last_name":"Lukasz","phone":"+524442000004","email":null},{"first_name":"Renée","last_name":"Müller-Ortiz","phone":"+524442000005","email":null}]
+=== guía del primer día: 2 de 4 | Empieza aquí 2 de 4 listos ✓ Crea tu primer desarrollo (listo) ✓ Importa tus leads (listo)
+=== UTF-8 con BOM y coma dentro de comillas -> [{"first_name":"Ñandú, Jr.","last_name":null},{"first_name":"Ñandú, Jr.","last_name":null},{"first_name":"Ñandú, Jr.","last_name":null}]
+=== --- paso 4 invitar asesor (+15 s)
+=== enlace de invitación: generado
+=== guía del primer día: 3 de 4 | Empieza aquí 3 de 4 listos ✓ Crea tu primer desarrollo (listo) ✓ Importa tus leads (listo)
+=== el asesor entra a: /app
+=== --- paso 5 captura y movimiento (+20 s)
+=== leads sin asignar tras el CSV: 1
+=== lead capturado por el asesor en celular: /app/leads/72ec45a8-63b0-4e61-81d3-ebf62c67a293
+=== --- paso 6 cotizar y PDF (+24 s)
+=== cotización: /app/cotizador/b0a811b3-5bfb-42c5-94d6-a26a2f83342c
+=== PDF: 200 application/pdf 2774 bytes | cabecera %PDF-
+=== texto del PDF (resumen): Desarrollos del Bajío Ñandú COTIZACIÓN Folio B0A811B3 Fecha: 9 nov 2026 CLIENTE UNIDAD María José Peña Ñíguez Fraccionamiento Los Álamos 444 812 0007 Lote 1 majo@ejemplo.test Superficie: 160 m² San Luis Potosí PLAN DE PAGOS $485,000.00 Precio de lista $97,000.00 Enganche (20%) Saldo a financiar $388,000.00 Plazo 24 meses Tasa de interés anual Mensualidad (23 pagos) Sin intereses Última mensualidad $16,166.66 Total a pagar $16,166.82 $485,000.00 • Cotización válida por 15 días naturales a partir de la fecha de emisión, sujeta a disponibilidad. • Precios en pesos mexicanos. No incluye gastos notariales, escrituración, impuestos ni avalúo. • Las mensualidades son con financiamiento directo del 
+ok  : B42: el PDF dice "Lote 1
+majo@ejem" sin repetir el tipo
+=== el emoji del nombre no se imprime en el PDF (se omite o sustituye): María José Peña Ñíguez                 
+=== etapa final del lead tras cotizar: COTIZACION
+=== tiempo total del recorrido: 24 s
+=== acciones en la cotización: ["← Volver al lead","Abrir PDF","Enviar por WhatsApp"]
+=== guía del primer día: ya no aparece | (sin guía)
+
+Sin hallazgos
+exit=0

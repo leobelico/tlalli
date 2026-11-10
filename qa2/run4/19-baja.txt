@@ -1,0 +1,24 @@
+=== solicitudes pendientes antes de la baja: 1
+=== antes de la baja {"leads":12,"tareas":0}
+=== opciones de heredero: ["Elige a alguien…","José Ñúñez Peña","Dejar sin asignar"]
+=== sin elegir heredero -> [{"active":true}]
+=== mensaje: 1 tarea vencida · 3 solicitudes por autorizar · 1 para las próximas 24 h | Desactivado. Se reasignaron 12 leads y 0 tareas. 1 solicitud de autorización pasaron a la persona elegida.
+=== después de la baja {"activo":false,"leadsAbiertosDelAsesor":0,"tareasAbiertasDelAsesor":0,"leadsAbiertosSinDueno":0,"leadsAbiertosAInactivos":0,"solicitudesPendientesDelAsesor":0}
+ok  : B36: ninguna solicitud pendiente a nombre del asesor dado de baja
+=== asesora dada de baja con sesión abierta -> navega /app/leads y termina en /onboarding | Tu acceso a Fraccionamientos Peña & Núñez 🏡 fue desactivado por un administrador, así que ya no puedes ver sus prospect
+=== pestaña vieja intentó mover la etapa: NUEVO -> NUEVO | dueño ahora admin | mensaje: 
+=== con cookies de la asesora dada de baja GET /api/quotes/29fb1a9a-7f13-4aca-90e5-c2b8b317dad0 -> 404 
+=== con cookies de la asesora dada de baja GET /api/quotes/29fb1a9a-7f13-4aca-90e5-c2b8b317dad0/pdf -> 401 
+=== con cookies de la asesora dada de baja GET /app/leads -> 307 /onboarding
+=== con cookies de la asesora dada de baja GET /app/autorizaciones -> 307 /onboarding
+=== solicitudes visibles para aprobar tras la baja: 3
+=== el admin aprueba la solicitud del asesor dado de baja -> cotizaciones + 1 | autor otro | lead sigue con el admin (heredero)
+=== opciones del reasignador masivo: ["Elige a alguien…","José Ñúñez Peña","Dejar sin asignar"] | leads NUEVO en la lista: 3
+=== mensaje: 1 tarea vencida · 2 solicitudes por autorizar · 1 para las próximas 24 h | No había leads abiertos que mover con esos filtros.
+=== NUEVO ahora con el admin: 3 de 3 | otras etapas siguen con el asesor: 12
+=== leads de la organización B asignados a usuarios de A: 0
+=== reasignar a un usuario de OTRA organización (valor forzado) ->  · 1 para las próximas 24 h | La persona elegida no pertenece a tu equipo o está inactiva. | Perdido |  | leads de A en manos del rival: 0
+=== reasignar a un usuario INACTIVO (valor forzado) ->  · 1 para las próximas 24 h | La persona elegida no pertenece a tu equipo o está inactiva. | Perdido |  | leads del inactivo antes/después: 12 12
+
+Sin hallazgos
+exit=0

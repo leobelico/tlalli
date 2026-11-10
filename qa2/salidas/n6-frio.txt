@@ -1,0 +1,14 @@
+=== esperados fríos con los umbrales por defecto: L1,L3,L6,L8,L9,L10,L11,L14 (8)
+=== banner (celular): Contacta primero: L10 (4 d) · L1 (30 h) · L14 (41 d) · L6 (8 d) · L8 (5 d) · ver los 8 fríos 1 tarea vencida · 2 solicitudes por autorizar
+=== nombres en el banner: L10,L1,L14,L6,L8 | total declarado: 8
+ok  : total de fríos = 8 según umbrales por etapa
+=== orden por contacto más antiguo (lo que implementa el producto): L10,L1,L14,L6,L8 | el banner: L10,L1,L14,L6,L8
+=== orden por horas de atraso respecto al umbral de su etapa: L14,L10,L6,L11,L8
+=== lista "fríos": L1,L10,L11,L9,L3,L8,L6,L14 (8)
+=== tras agendar tarea futura a L10: Contacta primero: L1 (30 h) · L14 (41 d) · L6 (8 d) · L8 (5 d) · L11 (3 d) · ver los 7 fríos 1 tarea vencida · 2 solicitudes por autorizar · 1 para las próximas 24 h
+=== campo de umbral por etapa visible: 1
+=== con CONTACTADO=48 h, fríos: L1,L11,L9,L4,L3,L8,L6,L14
+ok  : el umbral por etapa configurado desde la pantalla surte efecto
+=== sin fríos el banner dice: 1 tarea vencida · 2 solicitudes por autorizar · 1 para las próximas 24 h
+
+Sin hallazgos

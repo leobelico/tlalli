@@ -1,0 +1,26 @@
+=== --- paso 1 registro (celular) (+0 s)
+=== tras registrarse: /app | Hola, Ximena Resumen de Desarrollos del Bajío Ñandú. Desde Hasta Aplicar Leads creados en el periodo. Las ventas cuentan por fecha de venta. Leads nuevos 0 Ventas 0 $0 Conversión a venta 0% 0 perdidos
+=== --- paso 2 desarrollo y unidades (escritorio) (+2 s)
+=== unidades creadas: 30
+=== --- paso 3 importar CSV de Excel (Windows-1252) (+6 s)
+=== resultado del importador: Confirmo que las personas de este archivo nos dieron sus datos y aceptaron nuestro aviso de privacidad (LFPDPPP). Quedará registrado a mi nombre. / Importación terminada: 5 nuevos, 0 ya existían (se registró el nuevo contacto), 0 con errores, 0 con avisos. / Máximo 2,000 filas / 2 MB por archivo.
+=== en la base: [{"first_name":"José","last_name":"Ñúñez Peña","phone":"+524442000001","email":"jose@ejemplo.test"},{"first_name":"María","last_name":"Núñez Gómez","phone":"+524442000002","email":null},{"first_name":"Ángel","last_name":"Güemes","phone":"+524442000003","email":"angel@ejemplo.test"},{"first_name":"Zoë","last_name":"Lukasz","phone":"+524442000004","email":null},{"first_name":"Renée","last_name":"Müller-Ortiz","phone":"+524442000005","email":null}]
+=== UTF-8 con BOM y coma dentro de comillas -> [{"first_name":"Ñandú, Jr.","last_name":null}]
+=== --- paso 4 invitar asesor (+13 s)
+=== enlace de invitación: generado
+=== el asesor entra a: /app
+=== --- paso 5 captura y movimiento (+16 s)
+=== leads sin asignar tras el CSV: 1
+=== lead capturado por el asesor en celular: /app/leads/804b5a42-ecc5-4fff-8590-973bd7aadefe
+=== --- paso 6 cotizar y PDF (+20 s)
+=== cotización: /app/cotizador/bb3ea306-cd97-4346-93dc-32c82557814b
+=== PDF: 200 application/pdf 2829 bytes | cabecera %PDF-
+=== texto del PDF (resumen): Desarrollos del Baj�o �and� COTIZACI�N Folio BB3EA306 Fecha: 9 nov 2026 CLIENTE UNIDAD Mar�a Jos� Pe�a ��guez Fraccionamiento Los �lamos 444 812 0007 Lote Lote 1 majo@ejemplo.test Superficie: 160 m� San Luis Potos� PLAN DE PAGOS $485,000.00 Precio de lista - $10,000.00 Descuento $475,000.00 Precio final Enganche (10%) $47,500.00 Saldo a financiar $427,500.00 Plazo Tasa de inter�s anual 48 meses Mensualidad Sin intereses Total a pagar $8,906.25 $475,000.00 � Cotizaci�n v�lida por 15 d�as naturales a partir de la fecha de emisi�n, sujeta a disponibilidad. � Precios en pesos mexicanos. No incluye gastos notariales, escrituraci�n, impuestos ni aval�o. � Las mensualidades son con financiamiento d
+HALLAZGO: el PDF no contiene "María José"
+HALLAZGO: el PDF no contiene "Ñíguez"
+=== el emoji del nombre no se imprime en el PDF (se omite o sustituye): Mar�a Jos� Pe�a ��guez                 
+=== etapa final del lead tras cotizar: COTIZACION
+=== tiempo total del recorrido: 20 s
+=== acciones en la cotización: ["← Volver al lead","Abrir PDF","Enviar por WhatsApp"]
+
+2 hallazgos

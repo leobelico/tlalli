@@ -1,0 +1,28 @@
+=== unidad Lote 19 precio 544000 | tope 5% = 27200
+=== descuento = 5.00% -> /app/cotizador/71dd78de-56e1-4049-afe9-d251b82e12a9 | cotizaciones + 1
+=== descuento = 5% + $1 -> Contacta primero: Sergio Medina Fuentes (29 d) · Elena Ortega Salazar (21 d) · Ulises Galván Cervantes (23 d) · Regina T | cotizaciones + 0
+=== descuento -100000 -> El monto no puede ser negativo. | Revisa los datos marcados. | El descuento no puede ser negativo. |  | cotizaciones + 0
+=== descuento 99999999 -> El descuento no puede ser mayor o igual al precio. | El descuento no puede ser mayor o igual al precio. |  | cotizaciones + 0
+=== solicitudes tras pedir dos veces lo mismo: [{"status":"PENDIENTE","kind":"DESCUENTO","summary":"Descuento de $108,800.00 (20%) sobre $544,000.00 en Lote 19"}]
+=== cotizaciones nuevas tras doble aprobación simultánea: 1 | solicitudes [{"status":"APROBADA","kind":"DESCUENTO","summary":"Descuento de $108,800.00 (20%) sobre $544,000.00 en Lote 19"}]
+=== pestaña 1 dice: Autorizaciones Descuentos y ventas que los asesores no pueden dar por su cuenta. | pestaña 2 dice: Autorizaciones Descuentos y ventas que los asesores no pueden dar por su cuenta.
+ok  : doble aprobación simultánea crea una sola cotización
+=== cotización aprobada: descuento 108800.00 a nombre de asesor1@potosi.ejemplo.test
+=== tras rechazar: cotizaciones + 0 [{"status":"RECHAZADA","kind":"DESCUENTO","summary":"Descuento de $163,200.00 (30%) sobre $544,000.00 en Lote 19"}]
+=== asesor ve: Autorizaciones Tus solicitudes a un administrador. Cuando respondan, te llega un correo y lo verás aquí. Pendientes No hay solicitudes pendientes Historial Rechazada Descuento rechazada por Andrea Admin el 9 nov 2026, 7:
+=== tras repetir después de rechazo: ["RECHAZADA","PENDIENTE"]
+=== la cotización aprobada tiene botones de edición: 0 | enlaces a editar: 0
+=== GET /app/cotizador/8a3a1219-bf93-4254-b2b2-19aab92deee9/editar -> 404
+=== GET /app/cotizador/8a3a1219-bf93-4254-b2b2-19aab92deee9/edit -> 404
+=== cotización 0% enganche, 360 meses, 0% interés sin pedir permiso -> Contacta primero: Sergio Medina Fuentes (29 d) · Elena Ortega Salazar (21 d) · Ulises Galván Cervantes (23 d) · Regina Treviño Domínguez (22 d)
+
+4 tareas vencidas | Esta cotización queda fuera de lo que un asesor puede dar sin autorización (Descuento equivalen
+ok  : B32: 360 meses, 0% enganche, 0% interés queda pendiente de autorización: Contacta primero: Sergio Medina Fuentes (29 d) · Elena Ortega Salazar (21 d) · Ulises Galván Cervantes (23 d) · Regina Treviño Domínguez (22 d)
+
+4 tareas vencid
+=== venta al 94% -> {"stage":"CONTACTADO","sale_amount":null} | solicitudes [{"status":"PENDIENTE","kind":"VENTA","summary":"Venta de Lote 19 por $511,360.00 (lista $544,000.00) · Cliente: Flood"}]
+=== admin autoriza la venta -> {"stage":"VENDIDO","sale_amount":"511360.00"}
+=== aprobar descuento de un lote ya vendido -> (29 d) | (21 d) | (12 d) | (9 d) | (7 d) | La unidad Lote 19 ya está vendida. |  | cotizaciones + 0 [{"status":"PENDIENTE","kind":"DESCUENTO","summary":"Descuento de $136,000.00 (25%) sobre $544,000.00 en Lote 19"}]
+
+Sin hallazgos
+exit=0

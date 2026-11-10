@@ -1,0 +1,67 @@
+
+> inmobiliaria@0.1.0 build
+> next build
+
+▲ Next.js 16.4.5 (Turbopack)
+- Environments: .env.local
+✓ Running next.config.ts took 99ms
+- Experiments (use with caution):
+  · serverActions
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 3.3s
+  Running TypeScript ...
+  Finished TypeScript in 6.2s ...
+  Collecting page data using 23 workers ...
+  Generating static pages using 23 workers (0/30) ...
+  Generating static pages using 23 workers (7/30) 
+  Generating static pages using 23 workers (14/30) 
+  Generating static pages using 23 workers (22/30) 
+✓ Generating static pages using 23 workers (30/30) in 548ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /api/cron/daily-digest
+├ ƒ /api/developments/[id]/plan
+├ ƒ /api/public/leads
+├ ƒ /api/quotes/[id]/pdf
+├ ƒ /api/webhooks/whatsapp
+├ ƒ /app
+├ ƒ /app/autorizaciones
+├ ƒ /app/campanas
+├ ƒ /app/configuracion
+├ ƒ /app/cotizador
+├ ƒ /app/cotizador/[id]
+├ ƒ /app/desarrollos
+├ ƒ /app/desarrollos/[id]
+├ ƒ /app/equipo
+├ ƒ /app/leads
+├ ƒ /app/leads/[id]
+├ ƒ /app/leads/importar
+├ ƒ /app/leads/nuevo
+├ ƒ /app/pipeline
+├ ƒ /app/tareas
+├ ƒ /aviso-privacidad/[slug]
+├ ƒ /f/[slug]
+├ ƒ /f/[slug]/gracias
+├ ƒ /invitacion/[token]
+├ ƒ /login
+├ ƒ /nueva-contrasena
+├ ƒ /onboarding
+├ ○ /precios
+├ ○ /privacidad
+├ ƒ /recuperar
+├ ○ /registro
+├ ƒ /restablecer
+├ ○ /robots.txt
+├ ○ /sitemap.xml
+└ ○ /terminos
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

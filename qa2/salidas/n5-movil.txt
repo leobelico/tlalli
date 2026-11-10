@@ -1,0 +1,29 @@
+=== ==== admin (celular)
+=== secciones en el menú: 10 ["Inicio","Pipeline","Leads","Tareas","Desarrollos","Cotizador","Autorizaciones","Campañas","Equipo","Configuración"]
+   /app                   ancho 390/390 | objetivos <36px: 7 ["Pórtico","Menú","Sergio Medina Fuentes","Karla Barrios Barrios","Gloria Salazar Quintero"] | campos con fuente <16px (iOS hace zoom): 2 ["desde","hasta"]
+   /app/leads             ancho 390/390 | objetivos <36px: 59 ["Pórtico","Menú","Sergio Medina Fuentes","Karla Barrios Barrios","Gloria Salazar Quintero"] | campos con fuente <16px (iOS hace zoom): 5 ["q","etapa","campana","asesor"]
+   /app/pipeline          ancho 390/390 | objetivos <36px: 206 ["Pórtico","Menú","Sergio Medina Fuentes","Karla Barrios Barrios","Gloria Salazar Quintero"] | campos con fuente <16px (iOS hace zoom): 104 ["q","desarrollo","campana","asesor"]
+   /app/tareas            ancho 390/390 | objetivos <36px: 9 ["Pórtico","Menú","Sergio Medina Fuentes","Karla Barrios Barrios","Gloria Salazar Quintero"] | campos con fuente <16px (iOS hace zoom): 0 []
+   /app/cotizador         ancho 390/390 | objetivos <36px: 7 ["Pórtico","Menú","Sergio Medina Fuentes","Karla Barrios Barrios","Gloria Salazar Quintero"] | campos con fuente <16px (iOS hace zoom): 6 ["unitId","leadId","discount","downPaymentPct"]
+   /app/autorizaciones    ancho 390/390 | objetivos <36px: 7 ["Pórtico","Menú","Sergio Medina Fuentes","Karla Barrios Barrios","Gloria Salazar Quintero"] | campos con fuente <16px (iOS hace zoom): 0 []
+   /app/equipo            ancho 390/390 | objetivos <36px: 15 ["Pórtico","Menú","Sergio Medina Fuentes","Karla Barrios Barrios","Gloria Salazar Quintero"] | campos con fuente <16px (iOS hace zoom): 4 ["email","role","reassignTo","reassignTo"]
+   /app/configuracion     ancho 390/390 | objetivos <36px: 8 ["Pórtico","Menú","Sergio Medina Fuentes","Karla Barrios Barrios","Gloria Salazar Quintero"] | campos con fuente <16px (iOS hace zoom): 10 ["name","staleLeadHours","maxAsesorDiscountPct","CONTACTADO"]
+   /app/desarrollos       ancho 390/390 | objetivos <36px: 7 ["Pórtico","Menú","Sergio Medina Fuentes","Karla Barrios Barrios","Gloria Salazar Quintero"] | campos con fuente <16px (iOS hace zoom): 4 ["name","city","address","description"]
+=== ==== asesor (celular)
+=== secciones en el menú: 7 ["Inicio","Pipeline","Leads","Tareas","Desarrollos","Cotizador","Autorizaciones"]
+   /app                   ancho 390/390 | objetivos <36px: 6 ["Pórtico","Menú","Sergio Medina Fuentes","Ulises Galván Cervantes","Regina Treviño Domínguez"] | campos con fuente <16px (iOS hace zoom): 2 ["desde","hasta"]
+   /app/leads             ancho 390/390 | objetivos <36px: 57 ["Pórtico","Menú","Sergio Medina Fuentes","Ulises Galván Cervantes","Regina Treviño Domínguez"] | campos con fuente <16px (iOS hace zoom): 3 ["q","etapa","campana"]
+   /app/pipeline          ancho 390/390 | objetivos <36px: 101 ["Pórtico","Menú","Sergio Medina Fuentes","Ulises Galván Cervantes","Regina Treviño Domínguez"] | campos con fuente <16px (iOS hace zoom): 51 ["q","desarrollo","campana","SELECT"]
+   /app/tareas            ancho 390/390 | objetivos <36px: 18 ["Pórtico","Menú","Sergio Medina Fuentes","Ulises Galván Cervantes","Regina Treviño Domínguez"] | campos con fuente <16px (iOS hace zoom): 0 []
+   /app/cotizador         ancho 390/390 | objetivos <36px: 6 ["Pórtico","Menú","Sergio Medina Fuentes","Ulises Galván Cervantes","Regina Treviño Domínguez"] | campos con fuente <16px (iOS hace zoom): 6 ["unitId","leadId","discount","downPaymentPct"]
+   /app/autorizaciones    ancho 390/390 | objetivos <36px: 6 ["Pórtico","Menú","Sergio Medina Fuentes","Ulises Galván Cervantes","Regina Treviño Domínguez"] | campos con fuente <16px (iOS hace zoom): 0 []
+   /app/desarrollos       ancho 390/390 | objetivos <36px: 6 ["Pórtico","Menú","Sergio Medina Fuentes","Ulises Galván Cervantes","Regina Treviño Domínguez"] | campos con fuente <16px (iOS hace zoom): 0 []
+=== encabezados del pipeline en celular: ["Nuevo","Contactado","Cita agendada","Visita realizada","Cotización","Apartado","Vendido","Perdido"]
+=== tarjetas con selector "Mover a…": 66 | leads abiertos del asesor en BD: 61
+=== tarjetas tras abrir todas las etapas: 66
+=== diálogo de confirmación dentro del viewport: sí
+=== botón Deshacer visible en celular: {"x":233,"y":780,"width":125,"height":32} | alto 32
+HALLAZGO: el botón Deshacer mide 32 px de alto: difícil de tocar con el pulgar en 10 segundos
+=== tras deshacer, no quedan avisos: 0
+
+1 hallazgos

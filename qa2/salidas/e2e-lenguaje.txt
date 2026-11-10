@@ -1,0 +1,8 @@
+ok  : [escritorio] Configuración sin jerga con Avanzado plegado
+ok  : [escritorio] Avanzado abre con WhatsApp y formulario explicados
+ok  : [escritorio] ficha del lead sin variables {{n}}
+ok  : [celular] Configuración sin jerga con Avanzado plegado
+ok  : [celular] Avanzado abre con WhatsApp y formulario explicados
+ok  : [celular] ficha del lead sin variables {{n}}
+
+Todo OK

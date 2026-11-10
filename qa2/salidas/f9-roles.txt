@@ -1,0 +1,16 @@
+=== capturado borrarLead
+=== capturado hacerAdmin
+=== capturado statusUnidad
+=== capturado config
+=== capturado invitarAdmin
+=== asesor GET /app/equipo -> /app?error=permiso 200 Pórtico Fraccionamientos Peña & Núñez 🏡 Inicio Pipeline Leads Tareas Desarrollo
+=== asesor GET /app/configuracion -> /app?error=permiso 200 Pórtico Fraccionamientos Peña & Núñez 🏡 Inicio Pipeline Leads Tareas Desarrollo
+=== asesor GET /app/leads/importar -> /app?error=permiso 200 Pórtico Fraccionamientos Peña & Núñez 🏡 Inicio Pipeline Leads Tareas Desarrollo
+=== asesor GET /app/campanas -> /app?error=permiso 200 Pórtico Fraccionamientos Peña & Núñez 🏡 Inicio Pipeline Leads Tareas Desarrollo
+=== asesor GET /app/leads/50871e1d-d7ff-4140-89db-47fb1b215831 -> /app/leads/50871e1d-d7ff-4140-89db-47fb1b215831 404 Pórtico Fraccionamientos Peña & Núñez 🏡 Inicio Pipeline Leads Tareas Desarrollo
+=== asesor replay borrarLead 200 /app?error=permiso;push 1:"$Sreact.fragment" 2:"/_next/static/chunks/3qfy96eoyh-ek.js" 3:I[39756,["$2"],"default"] 4:"/_next/static/chunks/27s08gsm_ttyj.js" 5:I[58298,["$2","$4"],"default"] 6:I[37457,["$2"],"default"] 7:"/_n
+=== asesor replay hacerAdmin 200 /app?error=permiso;push 1:"$Sreact.fragment" 2:"/_next/static/chunks/3qfy96eoyh-ek.js" 3:I[39756,["$2"],"default"] 4:"/_next/static/chunks/27s08gsm_ttyj.js" 5:I[58298,["$2","$4"],"default"] 6:I[37457,["$2"],"default"] 7:"/_n
+=== asesor replay statusUnidad 200 /app?error=permiso;push 1:"$Sreact.fragment" 2:"/_next/static/chunks/3qfy96eoyh-ek.js" 3:I[39756,["$2"],"default"] 4:"/_next/static/chunks/27s08gsm_ttyj.js" 5:I[58298,["$2","$4"],"default"] 6:I[37457,["$2"],"default"] 7:"/_n
+=== asesor replay config 200 /app?error=permiso;push 1:"$Sreact.fragment" 2:"/_next/static/chunks/3qfy96eoyh-ek.js" 3:I[39756,["$2"],"default"] 4:"/_next/static/chunks/27s08gsm_ttyj.js" 5:I[58298,["$2","$4"],"default"] 6:I[37457,["$2"],"default"] 7:"/_n
+=== asesor replay invitarAdmin 200 /app?error=permiso;push 1:"$Sreact.fragment" 2:"/_next/static/chunks/3qfy96eoyh-ek.js" 3:I[39756,["$2"],"default"] 4:"/_next/static/chunks/27s08gsm_ttyj.js" 5:I[58298,["$2","$4"],"default"] 6:I[37457,["$2"],"default"] 7:"/_n
+=== BD [{"lead_del_asesor_sigue":"1","rol_asesor":"ASESOR","horas":24,"invitaciones_intruso":"0"}]

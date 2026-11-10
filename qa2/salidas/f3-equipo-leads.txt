@@ -1,0 +1,121 @@
+=== invitación http://localhost:3300/invitacion/GOaYsXMx9jFclpdgL-MA6o1mndl7JQhShLqvhI824l8 José Ñúñez Peña | Plan Básico: 2 de 3 lugares ocupados (incluye invitaciones pendientes). | Invitación creada. Copia el enlace y envíaselo (vence en 7 días; solo se muestra una vez). | Cancelar
+=== invitación abierta Pórtico
+Te invitaron a Fraccionamientos Peña & Núñez 🏡
+
+Te unirás como asesor con el correo qa-asesor-mw9s25z1@ejemplo.test.
+
+Tu nombre
+Crea una contraseña
+
+Mínimo 8 caracteres.
+
+Crear cuenta y unirme
+
+¿Ya tienes cuenta? Inicia sesión
+=== asesor tras aceptar http://localhost:3300/app
+=== asesor inicio Pórtico
+Inicio
+Menú
+Hola, Carla
+
+Resumen de tus leads.
+
+Desde
+Hasta
+Aplicar
+
+Leads creados en el periodo. Las ventas cuentan por fecha de venta.
+
+Leads nuevos
+
+0
+
+Ventas
+
+0
+
+$0
+
+Conversión a venta
+
+0%
+
+0 perdidos
+
+Primera respuesta
+
+—
+
+0 sin contactar
+
+Leads fríos ahora
+
+0
+
+Sin datos en este periodo
+
+Captura o importa leads, o amplía el rango de fechas.
+=== reusar enlace Pórtico
+Invitación no válida
+
+El enlace expiró, ya se usó o fue cancelado. Pide a tu administrador uno nuevo.
+=== lead vacío /app/leads/nuevo José Ñúñez Peña | ← Leads | Captura a un prospecto que llamó, escribió o llegó a la oficina. | Escribe el nombre. | Teléfono inválido. Usa 10 dígitos, ej. 444 123 4567. | Confirma que el prospecto aceptó el aviso de privacidad. | Revisa los datos marcados.
+=== lead tel 9 dígitos /app/leads/nuevo José Ñúñez Peña | ← Leads | Captura a un prospecto que llamó, escribió o llegó a la oficina. | Teléfono inválido. Usa 10 dígitos, ej. 444 123 4567. | Revisa los datos marcados.
+=== lead tel letras /app/leads/nuevo José Ñúñez Peña | ← Leads | Captura a un prospecto que llamó, escribió o llegó a la oficina. | Teléfono inválido. Usa 10 dígitos, ej. 444 123 4567. | Revisa los datos marcados.
+=== lead tel 0000000000 /app/leads/nuevo José Ñúñez Peña | ← Leads | Captura a un prospecto que llamó, escribió o llegó a la oficina. | Teléfono inválido. Usa 10 dígitos, ej. 444 123 4567. | Revisa los datos marcados.
+=== lead tel con lada 01 /app/leads/50d9d7c5-feb8-47c6-9c8d-72e5375470c7 José Ñúñez Peña | ← Leads | 444 123 4567 | El asistente de IA resume cada lead, sugiere el siguiente paso y redacta borradores de WhatsApp. Está incluido en el plan Élite IA. | Hola Ana, gracias por tu interés en nuestros desarrollos. Soy José Ñúñez Peña, tu asesor(a). ¿Te puedo compartir precios, p
+=== lead tel +52 1 /app/leads/401bf41a-669a-4c0a-97a6-79575911b861 José Ñúñez Peña | ← Leads | 444 812 0001 | El asistente de IA resume cada lead, sugiere el siguiente paso y redacta borradores de WhatsApp. Está incluido en el plan Élite IA. | Hola Ana, gracias por tu interés en nuestros desarrollos. Soy José Ñúñez Peña, tu asesor(a). ¿Te puedo compartir precios, p
+=== lead tel con ext /app/leads/nuevo José Ñúñez Peña | ← Leads | Captura a un prospecto que llamó, escribió o llegó a la oficina. | Teléfono inválido. Usa 10 dígitos, ej. 444 123 4567. | Revisa los datos marcados.
+=== lead nombre 200 /app/leads/nuevo José Ñúñez Peña | ← Leads | Captura a un prospecto que llamó, escribió o llegó a la oficina. | Máximo 80 caracteres. | Revisa los datos marcados.
+=== lead nota 5000 /app/leads/nuevo José Ñúñez Peña | ← Leads | Captura a un prospecto que llamó, escribió o llegó a la oficina. | Máximo 2000 caracteres. | Revisa los datos marcados.
+=== lead correo malo /app/leads/nuevo José Ñúñez Peña | ← Leads | Captura a un prospecto que llamó, escribió o llegó a la oficina. | Correo inválido. | Revisa los datos marcados.
+=== lead presupuesto negativo /app/leads/nuevo José Ñúñez Peña | ← Leads | Captura a un prospecto que llamó, escribió o llegó a la oficina. | El monto no puede ser negativo. | Revisa los datos marcados.
+=== lead emoji y acentos /app/leads/50871e1d-d7ff-4140-89db-47fb1b215831 José Ñúñez Peña | ← Leads | 444 812 0007 · majo@ejemplo.test | El asistente de IA resume cada lead, sugiere el siguiente paso y redacta borradores de WhatsApp. Está incluido en el plan Élite IA. | Hola María José 💃, gracias por tu interés en nuestros desarrollos. Soy José Ñúñez Peña, tu asesor(a). 
+=== lead sin consentimiento /app/leads/nuevo José Ñúñez Peña | ← Leads | Captura a un prospecto que llamó, escribió o llegó a la oficina. | Confirma que el prospecto aceptó el aviso de privacidad. | Revisa los datos marcados.
+=== lead duplicado /app/leads/50871e1d-d7ff-4140-89db-47fb1b215831?duplicado=1 Pórtico
+
+Fraccionamientos Peña & Núñez 🏡
+
+Inicio
+Pipeline
+Leads
+Tareas
+Desarrollos
+Cotizador
+Autorizaciones
+Campañas
+Equipo
+Configuración
+
+José Ñúñez Peña
+
+qa-a-mw9s25z1@ejemplo.test · Administrador
+
+Cerrar sesión
+
+← Leads
+
+Ya existía un lead con ese teléfono; registramos el nuevo contacto en su historial en lugar de duplicarlo.
+
+María José 💃 Peña Ñíguez
+
+444 812 0007 · majo@ejemplo.test
+
+Cotizar
+Llamar
+Abrir WhatsApp
+Etapa
+Nuevo
+Contactado
+Cita agendada
+Visita realizada
+Cotización
+Apartado
+Vendido
+Perdido
+Asesor: José Ñúñez Peña
+Asistente
+IA
+
+El asistente de IA resume cada lead, sugiere el 
+=== doble clic lead http://localhost:3300/app/leads/7c3e8dae-27c1-4767-aeb2-1078e1a91888

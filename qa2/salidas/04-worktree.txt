@@ -1,0 +1,2 @@
+Preparing worktree (detached HEAD f81eb0d)
+HEAD is now at f81eb0d Pilot readiness: checklist, manual steps with real credentials, deploy guide and updated QA report (pilot items 9-10)

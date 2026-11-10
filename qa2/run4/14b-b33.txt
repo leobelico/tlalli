@@ -1,0 +1,5 @@
+=== mensaje al liberar a mano un lote apartado:  · 1 para las próximas 24 h | Borrar | Borrar | La unidad Lote 2 está apartada por L1. Para liberarla, cambia primero la etapa de ese cliente (por ejemplo a Perdido). | Borrar | Borrar | Borrar | Borrar | Borrar | Borrar | estado del lote en la base: APARTADO
+ok  : B33: no se puede; el mensaje nombra al cliente y dice qué hacer
+
+Sin hallazgos
+exit=0

@@ -22,12 +22,12 @@ Marca cada punto. Los marcados **(bloquea)** no se deben saltar.
 - [ ] **Marca y dominio.** "Pórtico" y `hola@portico.mx` son marcadores: sin búsqueda de marca ni dominio registrado. Los correos que salen de la plataforma usan ese remitente.
 - [ ] **Precios y plan.** Los planes (Básico $1,490 a Élite IA $12,990) son propuestas sin validar. En el piloto nadie paga ni se vence la prueba de 14 días: **cambiar de plan es manual en la base de datos**.
 - [ ] **Quién da soporte y por qué canal.** No hay ayuda dentro de la app. Definan un WhatsApp o correo de soporte y una persona responsable; el texto de "Avanzado" en Configuración ya manda a escribir a `hola@portico.mx`.
-- [ ] **Reglas del tope de descuento.** Cada organización arranca con 5 %. Pregunten a cada desarrolladora cuánto puede dar un asesor sin autorización y cámbienlo en Configuración antes de entregar.
+- [ ] **Reglas del tope de descuento.** Cada organización arranca con 5 % de descuento, tasa de referencia 4 %, enganche mínimo 10 % y plazo máximo 120 meses para asesores. Pregunten a cada desarrolladora cuánto puede dar un asesor sin autorización y ajusten los cinco valores en Configuración antes de entregar. **Ojo:** mensualidades sin intereses cuentan como descuento (ver el límite 6): si la desarrolladora vende "a meses sin intereses" como plan normal, suban la tasa de referencia solo hasta donde su plan estándar siga sin pedir autorización, o pónganla en 0 para no medir el financiamiento.
 - [ ] **Quién autoriza.** Alguien con rol Administrador debe revisar "Autorizaciones" a diario: si nadie lo hace, las ventas y descuentos grandes quedan esperando.
 
 ### Lo que hay que hacer en el servidor (ver partes 2 y 3)
 
-- [ ] **(bloquea) Commitear el trabajo de planos que sigue sin subir.** Al escribir este documento, el plano interactivo de lotes (`prisma/migrations/20261106193955_development_plan`, `src/server/services/plans.ts`, `src/app/app/desarrollos/[id]/plan-*.tsx`, `src/app/api/developments/`, `src/lib/plan-shape.ts`, `prisma/plano-layout.ts` y los cambios en `desarrollos/[id]/page.tsx` y `desarrollos/actions.ts`) está **sin commitear**. El build y las pruebas de este recorrido lo incluyeron; un despliegue desde el último commit no.
+- [ ] **(bloquea) Confirmar que el trabajo de planos está commiteado.** Al escribir este documento (9 nov 2026) el árbol de trabajo aún lo mostraba sin commitear; si ya lo subiste, tacha este punto tras revisar `git status`. El plano interactivo de lotes (`prisma/migrations/20261106193955_development_plan`, `src/server/services/plans.ts`, `src/app/app/desarrollos/[id]/plan-*.tsx`, `src/app/api/developments/`, `src/lib/plan-shape.ts`, `prisma/plano-layout.ts` y los cambios en `desarrollos/[id]/page.tsx` y `desarrollos/actions.ts`) está **sin commitear**. El build y las pruebas de este recorrido lo incluyeron; un despliegue desde el último commit no.
 
 - [ ] **(bloquea)** Crear el proyecto de Supabase de producción y aplicar las migraciones (parte 3).
 - [ ] **(bloquea)** Definir todas las variables de entorno de producción (parte 3, paso 3). En especial `TRUSTED_PROXY`, `CRON_SECRET` (16+ caracteres) y `FORM_TOKEN_SECRET`.
@@ -174,7 +174,7 @@ Estas frases están pensadas para entregarlas tal cual a las desarrolladoras del
 3. **El asistente de IA** (plan Élite) todavía no se ha probado con conversaciones reales. Úsalo como apoyo, no como verdad; solo propone, nunca envía nada solo.
 4. **Los avisos llegan por correo**, no por WhatsApp ni notificación en el teléfono. Si un asesor no revisa su correo, no se entera. Pídeles que lo tengan abierto en el celular.
 5. **Cada asesor ve solo sus leads.** Si dos asesores capturan el mismo teléfono, el sistema lo detecta y avisa al administrador, pero no reasigna solo.
-6. **El tope de descuento es uno para todos los asesores** de tu empresa (no por persona ni por desarrollo). Arriba de ese tope la solicitud queda esperando a un administrador: **si nadie la revisa, el cliente espera.**
+6. **El tope de descuento es uno para todos los asesores** de tu empresa (no por persona ni por desarrollo). Además del descuento en pesos, cuenta lo que vale darle al cliente mensualidades sin intereses o a plazos muy largos (medido con una tasa de referencia que tú defines). También hay un enganche mínimo, una tasa mínima y un plazo máximo para asesores. Lo que se salga de cualquiera de esos límites queda esperando a un administrador: **si nadie lo revisa, el cliente espera.** Un administrador no tiene estos límites.
 7. **Un asesor no puede registrar una venta si el cliente no tiene un lote ligado.** Se liga cotizando o en "Editar datos".
 8. **Cotizador:** solo calcula financiamiento directo (enganche y mensualidades). No incluye crédito Infonavit, Fovissste ni bancario, ni pagos extraordinarios.
 9. **No lleva la cobranza ni las etapas posteriores a la venta** (contrato, mensualidades pagadas o vencidas, escrituración, entrega) **ni comisiones.**
@@ -185,3 +185,8 @@ Estas frases están pensadas para entregarlas tal cual a las desarrolladoras del
 14. **Seguridad de tus datos:** cada empresa solo ve lo suyo (probado con intentos de saltarse la separación). Aun así, aún no hay verificación en dos pasos ni registro de quién hizo cada cambio, y la app todavía no ha tenido una revisión de seguridad externa.
 15. **Derechos ARCO:** si un prospecto te pide borrar sus datos, el botón "Eliminar lead y su historial" lo hace; aún no hay una pantalla para entregarle una copia de sus datos ni constancia del borrado.
 16. **Respaldos y soporte:** haremos respaldos diarios, pero durante el piloto el soporte es por correo o WhatsApp en horario laboral, no 24 horas.
+
+17. **Primer día:** en el Inicio de una empresa nueva aparece "Empieza aquí" con cuatro pasos (crear tu primer desarrollo, importar tus leads, invitar a tus asesores, definir tu tope de descuento). Desaparece solo al terminar los cuatro; el último se marca la primera vez que guardas la configuración.
+18. **Reasignar muchos leads a la vez** pide confirmación diciendo cuántos se mueven, y tienes 10 segundos para deshacerlo. Los vendidos y perdidos nunca se mueven.
+19. **Deshacer un cambio de etapa** solo sirve para el último cambio de ese cliente, los 10 segundos siguientes. Si alguien más ya tomó el lote, no se deshace y se te explica por qué.
+20. **Tu formulario en otra página:** por seguridad nadie puede mostrar tu formulario dentro de su sitio. Si quieres ponerlo en tu página, tu administrador escribe el sitio en Configuración → Avanzado; el cambio puede tardar hasta 30 segundos.

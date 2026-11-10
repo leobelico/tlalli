@@ -1,0 +1,18 @@
+=== B setup /app/desarrollos/e2691cac-931c-44e8-8d2a-25123684d1f7 e2139a78-aeb3-43df-9c10-0e3b690226d4 88e53f28-e0a1-497d-a4ee-7e50a5ddf487
+===   interceptado /app/leads/88e53f28-e0a1-497d-a4ee-7e50a5ddf487 IDs sustituidos
+=== 1 actividad en lead de A Rival Admin | ← Leads | 444 900 0157 | El asistente de IA resume cada lead, sugiere el siguiente paso y redacta borradores de WhatsApp. Está incluido en el plan Élite IA. | Hola Lead B, gracias por tu interés en nuestros desarrollos. Soy Rival Admin, tu asesor(a). ¿Te puedo compartir precios, planos y formas de pago por aquí? | Lead no encontrado. | Sin tareas. Agenda el siguiente paso para no perder al lead. | Lead creado (Captura manual · Otro). | Eliminar lead y su historial
+===   interceptado /app/leads/88e53f28-e0a1-497d-a4ee-7e50a5ddf487 IDs sustituidos
+=== 2 tarea en lead de A Rival Admin | ← Leads | 444 900 0157 | El asistente de IA resume cada lead, sugiere el siguiente paso y redacta borradores de WhatsApp. Está incluido en el plan Élite IA. | Hola Lead B, gracias por tu interés en nuestros desarrollos. Soy Rival Admin, tu asesor(a). ¿Te puedo compartir precios, planos y formas de pago por aquí? | Sin tareas. Agenda el siguiente paso para no perder al lead. | Lead no encontrado. | Lead creado (Captura manual · Otro). | Eliminar lead y su historial
+=== 3 etapa lead A sin error visible
+===   interceptado /app/desarrollos/e2691cac-931c-44e8-8d2a-25123684d1f7 IDs sustituidos
+=== 4 status unidad A Rival Admin | ← Desarrollos | SLP | Unidad no encontrada. | Borrar
+===   interceptado /app/cotizador IDs sustituidos
+=== 5 cotizar unidad A /app/cotizador Rival Admin | Enganche, mensualidades y plazo para una unidad. Genera un PDF para enviar al cliente. | Unidad no encontrada.
+===   interceptado /app/leads/88e53f28-e0a1-497d-a4ee-7e50a5ddf487 IDs sustituidos
+=== 6 lead B -> unidad A Rival Admin | ← Leads | 444 900 0157 | El asistente de IA resume cada lead, sugiere el siguiente paso y redacta borradores de WhatsApp. Está incluido en el plan Élite IA. | Hola Lead B, gracias por tu interés en nuestros desarrollos. Soy Rival Admin, tu asesor(a). ¿Te puedo compartir precios, planos y formas de pago por aquí? | Sin tareas. Agenda el siguiente paso para no perder al lead. | Lead creado (Captura manual · Otro). | Unidad no encontrada. | Eliminar lead y su historial
+===   interceptado /app/leads/88e53f28-e0a1-497d-a4ee-7e50a5ddf487 IDs sustituidos
+=== 7 borrar lead A /app/leads/88e53f28-e0a1-497d-a4ee-7e50a5ddf487 Pórtico Competencia Inmobiliaria S.A. de C.V. Inicio Pipeline Leads Tareas Desarrollos Cotizador A
+=== 8 cookie org_id de A Pórtico Competencia Inmobiliaria S.A. de C.V. Inicio Pipeline Leads Tareas Desarrollos Cotizador Autorizaciones Campañas Equipo Configuración Rival
+=== BD antes   [{"etapa_mj":"APARTADO","lote1":"DISPONIBLE","ana_existe":"1"}]
+=== BD despues [{"etapa_mj":"APARTADO","lote1":"DISPONIBLE","ana_existe":"1"}]
+=== inyectado en A [{"actividades":"0","tareas":"0","cotizaciones_en_unidad_de_a":"0"}]

@@ -1,0 +1,11 @@
+=== unit set /app/leads/3c882bee-60cb-4384-bbd1-0b49a832cc5f Lote 1 · $480,000 · Disponible
+=== stage 32cc5f -> Apartado valor: APARTADO err: 
+=== unit set /app/leads/827f867a-f73b-44be-8d4d-a328e9904e50 Lote 1 · $480,000 · Apartado
+=== stage 904e50 -> Apartado valor: NUEVO err: La unidad Lote 1 ya fue apartada por otro cliente.
+=== inventario Lote 1 manual -> DISPONIBLE
+=== stage 904e50 -> Apartado valor: NUEVO err: La unidad Lote 1 ya fue apartada por otro cliente.
+=== unit set /app/leads/3c882bee-60cb-4384-bbd1-0b49a832cc5f Lote 2 · $480,000 · Disponible
+=== BD final [{"first_name":"Ana","stage":"NUEVO","code":"Lote 1","status":"DISPONIBLE"},{"first_name":"María José 💃","stage":"APARTADO","code":"Lote 2","status":"APARTADO"}]
+=== unidades [{"code":"Lote 1","status":"DISPONIBLE"},{"code":"Lote 2","status":"APARTADO"}]
+=== unidades con mas de un cliente apartado/vendido []
+exit=0

@@ -1,0 +1,15 @@
+   asesor /app                   ancho 390/390 | fuente<16: 0 [] | controles<44px: 0 []
+   asesor /app/leads             ancho 390/390 | fuente<16: 0 [] | controles<44px: 0 []
+   asesor /app/pipeline          ancho 390/390 | fuente<16: 0 [] | controles<44px: 0 []
+   asesor /app/tareas            ancho 390/390 | fuente<16: 0 [] | controles<44px: 0 []
+   asesor /app/cotizador         ancho 390/390 | fuente<16: 0 [] | controles<44px: 0 []
+   asesor /app/autorizaciones    ancho 390/390 | fuente<16: 0 [] | controles<44px: 0 []
+   asesor /app/desarrollos       ancho 390/390 | fuente<16: 0 [] | controles<44px: 0 []
+   admin /app/equipo            ancho 390/390 | fuente<16: 0 [] | controles<44px: 0 []
+   admin /app/configuracion     ancho 390/390 | fuente<16: 0 [] | controles<44px: 0 []
+   admin /app/leads             ancho 390/390 | fuente<16: 0 [] | controles<44px: 0 []
+=== alto de los enlaces del menú: [44,44,44,44,44,44,44]
+=== botón Deshacer: {"x":225,"y":772,"width":133,"height":44}
+ok  : Deshacer mide 44 px de alto
+
+Sin hallazgos

@@ -1,0 +1,18 @@
+   /login     CSP: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; i… | XFO: DENY | nosniff: nosniff
+   /app       CSP: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; i… | XFO: DENY | nosniff: nosniff
+   /registro  CSP: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; i… | XFO: DENY | nosniff: nosniff
+=== API pública (sin CSP a propósito para el visor de PDF): (sin CSP) | XFO DENY
+=== formulario por defecto: frame-ancestors 'none' | XFO DENY
+=== HSTS desde la aplicación (lo debe poner el hosting): (no)
+=== violaciones del CSP en la consola del navegador en 7 pantallas: 0 []
+=== iframe desde http://localhost:8123 por defecto: bloqueado
+=== mensaje al guardar: Contacta primero: Sergio Medina Fuentes (29 d) · Elena Ortega Salazar (21 d) · Karla Barrios Barrios (12 d) · Gloria Salazar Quintero (9 d) 
+=== con permiso: localhost:8123 -> se muestra | 127.0.0.1:8123 (no permitido) -> bloqueado | cabecera: frame-ancestors http://localhost:8123 | XFO: (ninguna)
+ok  : el formulario se incrusta solo en el sitio que el cliente permitió
+=== "*" -> (29 d) | (21 d) | (12 d) | (9 d) | (7 d) | "*" no es una dirección válida. Escribe el sitio completo, con https:// (por ejemplo https://midesarrolladora.mx). | 
+=== 120 peticiones de un script sin marca -> {"400":60,"429":60}
+=== una persona usa el formulario alojado justo después -> 200 | lead creado: 1
+ok  : B34: la persona real pudo enviar el formulario mientras un script saturaba la API
+
+Sin hallazgos
+exit=0

@@ -1,0 +1,7 @@
+=== 320 peticiones inválidas (no crean leads) desde un solo cliente -> {"400":207,"429":113}
+=== un cliente real llena el formulario justo después -> 429 {"ok":false,"error":"Demasiadas solicitudes."}
+=== leads creados por el bot: 0
+HALLAZGO: un solo bot, con peticiones que ni siquiera crean leads, bloquea el formulario de TODA la organización durante ~1 minuto, y la persona real ve "Demasiadas solicitudes" (sin límite por IP no hay forma de separarlos)
+=== un minuto después -> 200
+
+1 hallazgos

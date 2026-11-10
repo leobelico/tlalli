@@ -1,0 +1,21 @@
+// B33 (falsa alarma): el administrador intenta poner Disponible un lote apartado, con clics reales.
+import { browser, login, shot, BASE } from './lib.mjs';
+import { log, fail, ok, finish, sql } from './n-lib.mjs';
+import fs from 'fs';
+const acc = JSON.parse(fs.readFileSync('accounts.json')); const { devHref } = JSON.parse(fs.readFileSync('devA.json'));
+const b = await browser(); const { p } = await login(b, acc.A.email, { password: acc.A.password });
+const devId = devHref.split('/').pop();
+const holder = (await sql("select l.id from leads l where l.organization_id=(select organization_id from developments where id=$1) order by l.id limit 1", [devId]))[0];
+const unit = (await sql("select id from units where development_id=$1 and code='Lote 2'", [devId]))[0];
+await sql("update leads set unit_id=$2, development_id=$3, stage='APARTADO' where id=$1", [holder.id, unit.id, devId]);
+await sql("update units set status='APARTADO' where id=$1", [unit.id]);
+await p.goto(BASE + devHref);
+const row = p.locator('tr', { has: p.locator('td', { hasText: /^Lote 2$/ }) });
+await row.locator('select[name=status]').selectOption('DISPONIBLE');
+await p.waitForTimeout(2500);
+const msg = (await p.locator('[role=alert], .text-red-600, .text-red-700').allInnerTexts()).join(' | ');
+const st = (await sql("select u.status from units u join developments d on d.id=u.development_id where u.code='Lote 2' and d.id=$1", [devHref.split('/').pop()]))[0].status;
+log('mensaje al liberar a mano un lote apartado:', msg.slice(0, 220), '| estado del lote en la base:', st);
+await shot(p, 'r2-liberar-a-mano', false);
+if (st !== 'APARTADO' || !/apartad/i.test(msg)) fail('el lote apartado se pudo liberar a mano'); else ok('B33: no se puede; el mensaje nombra al cliente y dice qué hacer');
+await b.close(); finish();

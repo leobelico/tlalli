@@ -1,0 +1,7 @@
+=== venta registrada; unidad VENDIDO
+=== asesor2 intenta apartar el lote vendido -> La unidad Lote 12 ya está vendida.
+=== tras Deshacer (asesor1) y apartar (asesor2) a la vez: unidad APARTADO [{"first_name":"Flood0","stage":"APARTADO"}] | lead1: { stage: 'CONTACTADO', sale_amount: null }
+ok  : inventario coherente tras deshacer la venta y apartar al mismo tiempo
+
+Sin hallazgos
+exit=0

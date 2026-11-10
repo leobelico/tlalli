@@ -1,0 +1,7 @@
+=== texto del reasignador: Pasar los 2 leads abiertos de esta lista a Elige a alguien… José Ñúñez Peña Carla Asesora QA Dejar sin asignar
+=== con filtro etapa=COTIZACION se movieron 2 leads; en esa etapa hay 2
+ok  : la reasignación masiva respeta el filtro de etapa
+=== sin filtro, "Dejar sin asignar": leads sin dueño ahora 14 | diálogos de confirmación mostrados: 0 | botón Deshacer: 0
+HALLAZGO: la reasignación masiva sin filtro (toda la organización) se ejecuta con un solo clic, sin confirmación ni deshacer
+
+1 hallazgos

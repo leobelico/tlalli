@@ -1,0 +1,25 @@
+// Deshacer una VENTA con otro asesor esperando el lote (pasada 3, punto 1).
+import { browser, login } from './lib.mjs';
+import { log, fail, ok, finish, demo, invariants, resetRace, pickLeads, openMove, confirmBtn, stageErr, sql, BASE } from './n-lib.mjs';
+const d = await demo(); const b = await browser();
+const a1 = await login(b, 'asesor1@potosi.ejemplo.test', { width: 390, height: 844 });
+const a2 = await login(b, 'asesor2@potosi.ejemplo.test');
+const { L1, L2 } = await pickLeads(d.org, d.users); const [U] = d.units;
+await resetRace(d, [L1.id, L2.id], U.id);
+await a1.p.goto(`${BASE}/app/leads/${L1.id}`); await a1.p.waitForSelector('#stage-control'); await a1.p.waitForTimeout(400);
+await a1.p.selectOption('#stage-control', { label: 'Vendido' });
+await a1.p.locator('dialog[open]').waitFor();
+await a1.p.fill('#saleAmount', String(Math.round(Number(U.price))));
+await a1.p.locator('dialog[open]').getByRole('button', { name: 'Confirmar' }).click();
+const undo = a1.p.getByRole('button', { name: /Deshacer/ }); await undo.waitFor({ timeout: 8000 });
+log('venta registrada; unidad', (await sql('select status from units where id=$1', [U.id]))[0].status);
+await openMove(a2.p, L2.id, 'Apartado'); await confirmBtn(a2.p).click(); await a2.p.waitForTimeout(1800);
+log('asesor2 intenta apartar el lote vendido ->', await stageErr(a2.p));
+await Promise.all([undo.click(), (async () => { await openMove(a2.p, L2.id, 'Apartado'); await confirmBtn(a2.p).click(); })()]);
+await a1.p.waitForTimeout(3000);
+const st = (await sql('select status from units where id=$1', [U.id]))[0].status;
+const holders = await sql("select first_name, stage from leads where unit_id=$1 and stage in ('APARTADO','VENDIDO')", [U.id]);
+log('tras Deshacer (asesor1) y apartar (asesor2) a la vez: unidad', st, JSON.stringify(holders), '| lead1:', (await sql('select stage, sale_amount from leads where id=$1', [L1.id]))[0]);
+const inv = await invariants(d.org, [U.id]);
+if (inv.length) fail('incoherencia: ' + JSON.stringify(inv)); else ok('inventario coherente tras deshacer la venta y apartar al mismo tiempo');
+await b.close(); finish();

@@ -1,0 +1,25 @@
+import { browser, login, shot, BASE } from './lib.mjs';
+const b = await browser();
+const log = (...a) => console.log('===', ...a);
+const { p } = await login(b, 'asesor1@potosi.ejemplo.test', { width: 390, height: 844 });
+await p.goto(BASE + '/app/leads');
+const hrefs = await p.locator('a[href^="/app/leads/"]').evaluateAll(as => as.map(a => a.getAttribute('href')).filter(h => /[0-9a-f-]{36}$/.test(h)));
+const lead = hrefs[4];
+await p.goto(BASE + lead);
+const waText = async () => (await p.innerText('body')).match(/(Modo de prueba|WhatsApp Business)[\s\S]{0,700}/)?.[0].replace(/\s+/g, ' ');
+if (!(await p.getByRole('button', { name: 'Enviar plantilla' }).isVisible())) await p.locator('summary', { hasText: 'Enviar plantilla' }).click();
+await p.getByRole('button', { name: 'Enviar plantilla' }).click(); await p.waitForTimeout(2000);
+log('tras plantilla', await waText());
+await p.locator('summary', { hasText: /Simular mensaje/ }).click();
+await p.locator('input[aria-label="Mensaje simulado"]').fill('Hola, ¿tienen lotes en esquina? 😀 ¿Aceptan Infonavit?');
+await p.getByRole('button', { name: 'Simular' }).click(); await p.waitForTimeout(2500);
+log('tras entrante', await waText());
+await p.locator('input[aria-label="Mensaje"]').fill('¡Claro! Sí aceptamos Infonavit. ¿Le llamo hoy?');
+await p.getByRole('button', { name: 'Enviar', exact: true }).click(); await p.waitForTimeout(2500);
+log('tras respuesta', await waText());
+await shot(p, 'f11-whatsapp-cel');
+// tareas page reminders
+await p.goto(BASE + '/app/tareas');
+await shot(p, 'f11-tareas-cel');
+log('tareas', (await p.innerText('main')).slice(0, 500).replace(/\s+/g, ' '));
+await b.close();

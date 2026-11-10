@@ -1,0 +1,23 @@
+=== unidad Lote 19 precio 544000 | tope 5% = 27200
+=== descuento = 5.00% -> /app/cotizador/782af6cd-2e85-4e70-87c6-bd7195f34020 | cotizaciones + 1
+=== descuento = 5% + $1 -> Contacta primero: Sergio Medina Fuentes (28 d) · Elena Ortega Salazar (21 d) · Ulises Galván Cervantes (22 d) · Regina T | cotizaciones + 0
+=== descuento -100000 -> El monto no puede ser negativo. | Revisa los datos marcados. | El descuento no puede ser negativo. |  | cotizaciones + 0
+=== descuento 99999999 -> El descuento no puede ser mayor o igual al precio. |  | cotizaciones + 0
+=== solicitudes tras pedir dos veces lo mismo: [{"status":"PENDIENTE","kind":"DESCUENTO","summary":"Descuento de $108,800.00 (20%) sobre $544,000.00 en Lote 19 · Cliente: Flood"}]
+=== cotizaciones nuevas tras doble aprobación simultánea: 1 | solicitudes [{"status":"APROBADA","kind":"DESCUENTO","summary":"Descuento de $108,800.00 (20%) sobre $544,000.00 en Lote 19 · Cliente: Flood"}]
+=== pestaña 1 dice: Autorizaciones Descuentos y ventas que los asesores no pueden dar por su cuenta. | pestaña 2 dice: Autorizaciones Descuentos y ventas que los asesores no pueden dar por su cuenta.
+ok  : doble aprobación simultánea crea una sola cotización
+=== cotización aprobada: descuento 108800.00 a nombre de asesor1@potosi.ejemplo.test
+=== tras rechazar: cotizaciones + 0 [{"status":"RECHAZADA","kind":"DESCUENTO","summary":"Descuento de $163,200.00 (30%) sobre $544,000.00 en Lote 19 · Cliente: Flood"}]
+=== asesor ve: Autorizaciones Tus solicitudes a un administrador. Cuando respondan, te llega un correo y lo verás aquí. Pendientes No hay solicitudes pendientes Historial Rechazada Descuento rechazada por Andrea Admin el 9 nov 2026, 3:
+=== tras repetir después de rechazo: ["RECHAZADA","PENDIENTE"]
+=== la cotización aprobada tiene botones de edición: 0 | enlaces a editar: 0
+=== GET /app/cotizador/7154ce38-b4bf-4fd5-b66e-f1a546ab0a56/editar -> 404
+=== GET /app/cotizador/7154ce38-b4bf-4fd5-b66e-f1a546ab0a56/edit -> 404
+=== cotización 0% enganche, 360 meses, 0% interés sin pedir permiso -> {"discount":"0.00","down_payment_pct":"0.00","months":360,"annual_rate_pct":"0.00","monthly_payment":"1511.11","total_paid":"544000.00"}
+HALLAZGO: financiamiento a 360 meses SIN intereses y SIN enganche lo puede dar un asesor sin autorización (descuento encubierto equivalente a >70% del precio a una tasa de mercado de 10%)
+=== venta al 94% -> {"stage":"CONTACTADO","sale_amount":null} | solicitudes [{"status":"PENDIENTE","kind":"VENTA","summary":"Venta de Lote 19 por $511,360.00 (lista $544,000.00) · Cliente: Flood"}]
+=== admin autoriza la venta -> {"stage":"VENDIDO","sale_amount":"511360.00"}
+=== aprobar descuento de un lote ya vendido -> (28 d) | (21 d) | (12 d) | (9 d) | (7 d) | La unidad Lote 19 ya está vendida. |  | cotizaciones + 0 [{"status":"PENDIENTE","kind":"DESCUENTO","summary":"Descuento de $136,000.00 (25%) sobre $544,000.00 en Lote 19 · Cliente: Flood"}]
+
+1 hallazgos

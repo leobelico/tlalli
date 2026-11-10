@@ -1,0 +1,10 @@
+ok  : la confirmación dice "de Nuevo a Contactado" y avisa de los 10 s
+ok  : Cancelar no cambia nada
+ok  : aparece "Deshacer (10 s)"
+ok  : Deshacer regresa la etapa y quita el contacto que el cambio había registrado
+ok  : el aviso desaparece solo a los 10 s
+ok  : el pipeline pide confirmación al mover una tarjeta
+ok  : Deshacer en el pipeline regresa la tarjeta
+
+Todo OK
+exit=0

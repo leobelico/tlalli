@@ -1,0 +1,29 @@
+=== ========= sin TRUSTED_PROXY (puerto 3300)
+=== nuevo -> 200 {"ok":true} | existente -> 200 {"ok":true}
+ok  : [sin TRUSTED_PROXY (puerto 3300)] respuesta idéntica (estatus, cuerpo y cabeceras) para teléfono nuevo y existente
+=== mediana de tiempo: nuevo 21 ms | existente 13 ms (diferencia 7 ms, 4 muestras)
+=== 30 peticiones en 0.656s con X-Forwarded-For falso distinto (último valor fijo 198.51.100.7): aceptadas 30, 429 0
+=== (sin TRUSTED_PROXY no hay límite por IP: solo quedan los límites por organización (300/min) y por teléfono (5/h))
+=== 8 envíos del mismo teléfono -> actividades en el historial: 5
+=== ========= TRUSTED_PROXY=xff:1 (puerto 3301)
+=== nuevo -> 200 {"ok":true} | existente -> 200 {"ok":true}
+ok  : [TRUSTED_PROXY=xff:1 (puerto 3301)] respuesta idéntica (estatus, cuerpo y cabeceras) para teléfono nuevo y existente
+=== mediana de tiempo: nuevo 26 ms | existente 15 ms (diferencia 11 ms, 4 muestras)
+=== 30 peticiones en 0.503s con X-Forwarded-For falso distinto (último valor fijo 198.51.100.7): aceptadas 20, 429 10
+ok  : xff:1: el límite por IP se activa aunque el cliente cambie el inicio de X-Forwarded-For
+=== misma IP real esperando ya limitada -> 429
+=== 8 envíos del mismo teléfono -> actividades en el historial: 5
+=== ========= llaves, cuerpos raros y XSS (puerto 3300)
+=== llave inválida -> 401 {"ok":false,"error":"Llave de formulario inválida."}
+=== JSON roto -> 400 {"ok":false,"error":"Cuerpo inválido."}
+=== cuerpo de 20 KB -> 413
+=== sin aceptar privacidad -> 400 {"ok":false,"error":"Datos inválidos.","fields":{"acepta_privacidad":["acepta_privacidad debe ser true"]}}
+=== leads de la org B antes/después de enviar con la llave de A: 0 0
+=== token falso -> 200 {"ok":true} | lead creado: 0
+=== honeypot lleno -> 200 {"ok":true} | lead creado: 0
+=== XSS en /app/leads -> no se ejecutó | diálogos 0
+=== XSS en /app/pipeline -> no se ejecutó | diálogos 0
+=== XSS en /app/leads/c77a2911-f3fd-4443-b20e-127f88997045 -> no se ejecutó | diálogos 0
+=== XSS en /app -> no se ejecutó | diálogos 0
+
+Sin hallazgos

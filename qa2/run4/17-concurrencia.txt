@@ -1,0 +1,53 @@
+=== lotes Lote 12 Lote 13 | leads Flood16 Flood0
+=== A) carrera de apartado, 8 rondas
+   ronda 1: titulares=1 (Flood16) unidad=APARTADO errores: [] [La unidad Lote 12 ya fue apartada por otro cliente.]
+   ronda 2: titulares=1 (Flood16) unidad=APARTADO errores: [] [La unidad Lote 12 ya fue apartada por otro cliente.]
+   ronda 3: titulares=1 (Flood16) unidad=APARTADO errores: [] [La unidad Lote 12 ya fue apartada por otro cliente.]
+   ronda 4: titulares=1 (Flood16) unidad=APARTADO errores: [] [La unidad Lote 12 ya fue apartada por otro cliente.]
+   ronda 5: titulares=1 (Flood16) unidad=APARTADO errores: [] [La unidad Lote 12 ya fue apartada por otro cliente.]
+   ronda 6: titulares=1 (Flood16) unidad=APARTADO errores: [] [La unidad Lote 12 ya fue apartada por otro cliente.]
+   ronda 7: titulares=1 (Flood16) unidad=APARTADO errores: [] [La unidad Lote 12 ya fue apartada por otro cliente.]
+   ronda 8: titulares=1 (Flood16) unidad=APARTADO errores: [] [La unidad Lote 12 ya fue apartada por otro cliente.]
+ok  : B01 carrera: nunca hubo 2 titulares en 8 rondas
+ok  : el perdedor de la carrera ve un mensaje en español
+=== B) asesor1 aparta, deshace; asesor2 aparta de inmediato
+=== asesor2 intenta mientras asesor1 aún puede deshacer -> La unidad Lote 12 ya fue apartada por otro cliente. | titulares [{"first_name":"Flood16","stage":"APARTADO"}]
+ok  : tras deshacer, el otro asesor apartó el lote
+=== C) deshacer vs apartar al mismo tiempo (6 rondas)
+   ronda 1: titulares=Flood0:APARTADO unidad=APARTADO incoherencias=[] err2=[]
+   ronda 2: titulares= unidad=DISPONIBLE incoherencias=[] err2=[La unidad Lote 12 ya fue apartada por otro cliente.]
+   ronda 3: titulares= unidad=DISPONIBLE incoherencias=[] err2=[La unidad Lote 12 ya fue apartada por otro cliente.]
+   ronda 4: titulares= unidad=DISPONIBLE incoherencias=[] err2=[La unidad Lote 12 ya fue apartada por otro cliente.]
+   ronda 5: titulares= unidad=DISPONIBLE incoherencias=[] err2=[La unidad Lote 12 ya fue apartada por otro cliente.]
+   ronda 6: titulares= unidad=DISPONIBLE incoherencias=[] err2=[La unidad Lote 12 ya fue apartada por otro cliente.]
+ok  : C) deshacer y apartar simultáneos dejan el inventario coherente
+=== D) deshacer después de que el lote fue tomado por otro
+=== cambio de unidad del lead apartado -> (29 d) | (21 d) | (23 d) | (22 d) |  | lote U: DISPONIBLE | lote U2: APARTADO
+=== asesor2 aparta U -> ok | titulares U [{"first_name":"Flood0","stage":"APARTADO"}]
+=== asesor1 deshace; error: (ninguno)
+=== estado final U: APARTADO [{"first_name":"Flood0","stage":"APARTADO"}] | U2: DISPONIBLE []
+ok  : D) coherente
+=== E) doble Deshacer
+=== tras doble clic: etapa CONTACTADO | unidad DISPONIBLE | error: (ninguno)
+=== eventos [{"to_stage":"CONTACTADO","deshecho":false},{"to_stage":"APARTADO","deshecho":true},{"to_stage":"CONTACTADO","deshecho":false},{"to_stage":"APARTADO","deshecho":true}]
+=== F) ventas
+=== B04 asesor vende por $1 -> {"stage":"CONTACTADO","sale_amount":null} {
+  err: '',
+  notice: 'Contacta primero: Sergio Medina Fuentes (29 d) · Elena Ortega Salazar (21 d) · Ulises Galván Cervantes (23 d) · Regina Treviño Domínguez (22 d)\n' +
+    '\n' +
+    '4 tareas vencidas El monto de la venta está por debajo '
+}
+=== B03 venta sin unidad -> CONTACTADO {
+  err: 'Para registrar la venta liga primero la unidad al cliente (Editar datos) o pide a un administrador que la registre.',
+  notice: 'Contacta primero: Sergio Medina Fuentes (29 d) · Elena Ortega Salazar (21 d) · Ulises Galván Cervantes (23 d) · Regina Treviño Domínguez (22 d)\n' +
+    '\n' +
+    '4 tareas vencidas'
+}
+=== venta al precio de lista (asesor) -> {"stage":"VENDIDO","sale_amount":"540000.00"} | unidad VENDIDO | botón Deshacer visible: 1
+=== asesor2 aparta lote vendido -> La unidad Lote 12 ya está vendida.
+=== G) deshacer una venta
+=== asesor2 intenta apartar el lote vendido -> La unidad Lote 12 ya está vendida.
+=== venta registrada (evento deshacible): true
+
+Sin hallazgos
+exit=0

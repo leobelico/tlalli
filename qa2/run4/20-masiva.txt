@@ -1,0 +1,14 @@
+=== diálogo (filtro): ¿Reasignar 2 leads? Vas a pasar 2 leads abiertos a Carla Asesora QA (los que muestran los filtros de esta lista). Los vendidos y perdidos no se mueven. Tendrás 10 segundos para deshacerlo. Cancelar Reasignar 2
+ok  : Cancelar no mueve nada
+=== con filtro etapa=COTIZACION se movieron 2 de 2
+ok  : la reasignación respeta el filtro de etapa
+=== tras Deshacer, leads con el asesor: 0 | 1 tarea vencida · 2 solicitudes por autorizar · 1 para las próximas 24 h | Se deshizo: 2 leads regresaron a su asesor.
+ok  : Deshacer regresa los leads a su asesor anterior
+=== diálogo (sin filtro): ¿Reasignar 13 leads? Vas a pasar 13 leads abiertos a sin asignar, que son todos los leads abiertos de la organización. Los vendidos y perdidos no se mueven. Tendrás 10 segundos para deshacerlo. Cancelar Reasignar 13
+ok  : sin filtro: el diálogo avisa que son todos y cuántos (13)
+=== sin dueño tras confirmar: 13
+=== sin dueño tras Deshacer: 0
+ok  : Deshacer restaura la lista completa
+
+Sin hallazgos
+exit=0

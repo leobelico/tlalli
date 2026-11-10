@@ -1,0 +1,10 @@
+ok  : login -> /recuperar
+ok  : correo desconocido: mensaje genérico -> Si ese correo tiene una cuenta, te enviamos un enlace para crear una contraseña 
+ok  : mismo mensaje para correo existente
+ok  : correo recibido: Crea tu contraseña nueva en Pórtico
+ok  : enlace del correo -> /nueva-contrasena
+ok  : contraseña corta rechazada
+ok  : cambió la contraseña y entró a /app
+ok  : login con la nueva contraseña: entra
+ok  : login con la vieja contraseña: rechaza
+ok  : enlace reutilizado: /recuperar?error=enlace

@@ -1,0 +1,7 @@
+=== banner 1 tarea vencida · 2 solicitudes por autorizar
+=== fríos (lista) 0 leads.
+=== guardar límites [
+  '1 tarea vencida · 2 solicitudes por autorizar',
+  'Límites por etapa guardados.'
+]
+=== fríos con Contactado=720 h 0 leads.

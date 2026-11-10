@@ -1,0 +1,10 @@
+node_modules/
+accounts.json
+devA.json
+asesor.json
+n7-cuenta.json
+*.pdf
+_*.md
+_*.tmp
+salidas/prod-server*.log
+salidas/*.pdf
