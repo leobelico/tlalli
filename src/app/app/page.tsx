@@ -6,6 +6,7 @@ import { AiBadge, InsightsPanel } from "@/components/ai-panels";
 import { getAiStatus } from "@/server/services/ai";
 import { PLANS } from "@/lib/plans";
 import { getDashboard, parseRange } from "@/server/services/dashboard";
+import { getOnboarding } from "@/server/services/onboarding";
 import { CHANNEL_LABEL, STAGE_LABEL } from "@/lib/labels";
 import { formatHours, formatMoney, toDateTimeLocal } from "@/lib/format";
 
@@ -18,7 +19,7 @@ export default async function AppHome({ searchParams }: PageProps<"/app">) {
   const { ctx, session } = await requireCtx();
   const sp = await searchParams;
   const range = parseRange(str(sp.desde), str(sp.hasta));
-  const [d, ai] = await Promise.all([getDashboard(ctx, range), getAiStatus(ctx)]);
+  const [d, ai, guide] = await Promise.all([getDashboard(ctx, range), getAiStatus(ctx), getOnboarding(ctx)]);
   const isAdmin = d.scope === "all";
   const fromValue = toDateTimeLocal(range.from).slice(0, 10);
   const toValue = toDateTimeLocal(new Date(range.to.getTime() - 1)).slice(0, 10);
@@ -31,6 +32,46 @@ export default async function AppHome({ searchParams }: PageProps<"/app">) {
         <p role="alert" className="mb-4 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900">
           No tienes permiso para entrar a esa sección. Si la necesitas, pídesela a tu administrador.
         </p>
+      ) : null}
+      {guide && !guide.complete ? (
+        <section aria-label="Primeros pasos" className="card mb-6 p-5">
+          <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+            <h2 className="font-semibold">Empieza aquí</h2>
+            <p className="text-sm text-stone-600">
+              {guide.doneCount} de {guide.steps.length} listos
+            </p>
+          </div>
+          <div
+            role="progressbar"
+            aria-label="Avance de los primeros pasos"
+            aria-valuemin={0}
+            aria-valuemax={guide.steps.length}
+            aria-valuenow={guide.doneCount}
+            className="mb-4 h-2 overflow-hidden rounded-full bg-stone-200"
+          >
+            <div className="h-full bg-brand-600" style={{ width: `${(guide.doneCount / guide.steps.length) * 100}%` }} />
+          </div>
+          <ol className="space-y-2">
+            {guide.steps.map((step, i) => (
+              <li key={step.key} className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                <span aria-hidden className={step.done ? "text-emerald-600" : "text-stone-400"}>
+                  {step.done ? "✓" : `${i + 1}.`}
+                </span>
+                <span className={step.done ? "text-stone-500 line-through" : "font-medium"}>{step.title}</span>
+                {step.done ? (
+                  <span className="sr-only">(listo)</span>
+                ) : (
+                  <>
+                    <span className="text-sm text-stone-600">{step.description}</span>
+                    <Link href={step.href} className="btn-secondary min-h-11 text-sm">
+                      {step.cta}
+                    </Link>
+                  </>
+                )}
+              </li>
+            ))}
+          </ol>
+        </section>
       ) : null}
       <PageHeader
         title={`Hola, ${session.user.name.split(" ")[0]}`}

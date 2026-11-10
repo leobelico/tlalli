@@ -43,7 +43,7 @@ export async function updateOrganizationSettings(
       data: {
         name: input.name,
         staleLeadHours: input.staleLeadHours,
-        ...(cap === undefined ? {} : { maxAsesorDiscountPct: cap }),
+        ...(cap === undefined ? {} : { maxAsesorDiscountPct: cap, discountPolicySetAt: new Date() }),
         ...opt("referenceRatePct", input.referenceRatePct),
         ...opt("asesorMinDownPct", input.asesorMinDownPct),
         ...opt("asesorMinRatePct", input.asesorMinRatePct),

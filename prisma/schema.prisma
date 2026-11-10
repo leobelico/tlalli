@@ -131,6 +131,8 @@ model Organization {
   asesorMaxMonths Int @default(120) @map("asesor_max_months")
   /// Sites (origins) that may embed the hosted form in an iframe (QA2 B39). Empty = nobody.
   formEmbedOrigins String[] @default([]) @map("form_embed_origins")
+  /// Set the first time an admin saves the asesor discount cap (drives the first-day guide, QA2 B38).
+  discountPolicySetAt DateTime? @map("discount_policy_set_at")
   /// Publishable key used by public web forms to post leads to this organization.
   leadFormKey         String   @unique @map("lead_form_key")
   /// Meta WhatsApp Cloud API phone number id that routes incoming messages to this org.
