@@ -8,6 +8,7 @@ import { LOST_REASON_LABEL, STAGE_LABEL, STAGES } from "@/lib/labels";
 import { formatMoney, toNumber } from "@/lib/format";
 import { requestAuthorization } from "./authorizations";
 import { requireLead } from "./leads";
+import { HOLD_STAGES, holdTakenError, lockLead, lockUnits, translatingHoldViolation } from "./unit-holds";
 import { stalePolicy } from "@/lib/stale";
 
 export type StageChangeInput = {
@@ -81,8 +82,10 @@ export async function changeStageDetailed(ctx: Ctx, leadId: string, input: Stage
       });
     }
   }
-  return withOrg(ctx.orgId, async (tx) => {
+  return translatingHoldViolation(() => withOrg(ctx.orgId, async (tx) => {
+    await lockLead(tx, leadId);
     const lead = await requireLead(tx, ctx, leadId);
+    await lockUnits(tx, [lead.unitId]);
     const to = input.stage;
     if (lead.stage === to) return { lead, eventId: null as string | null };
 
@@ -119,7 +122,7 @@ export async function changeStageDetailed(ctx: Ctx, leadId: string, input: Stage
         if (to === "APARTADO") {
           if (unit.status === "VENDIDO") throw new DomainError(`La unidad ${unit.code} ya está vendida.`);
           if (unit.status === "APARTADO" && lead.stage !== "VENDIDO") {
-            throw new DomainError(`La unidad ${unit.code} ya está apartada por otro cliente.`);
+            throw holdTakenError(unit.code);
           }
           await tx.unit.update({ where: { id: unit.id }, data: { status: "APARTADO" } });
           unitChange = { id: unit.id, before: unit.status, after: "APARTADO" };
@@ -127,7 +130,7 @@ export async function changeStageDetailed(ctx: Ctx, leadId: string, input: Stage
         } else if (to === "VENDIDO") {
           if (unit.status === "VENDIDO") throw new DomainError(`La unidad ${unit.code} ya está vendida.`);
           if (unit.status === "APARTADO" && lead.stage !== "APARTADO") {
-            throw new DomainError(`La unidad ${unit.code} está apartada por otro cliente.`);
+            throw holdTakenError(unit.code);
           }
           await tx.unit.update({ where: { id: unit.id }, data: { status: "VENDIDO" } });
           unitChange = { id: unit.id, before: unit.status, after: "VENDIDO" };
@@ -173,7 +176,7 @@ export async function changeStageDetailed(ctx: Ctx, leadId: string, input: Stage
       data: { organizationId: ctx.orgId, leadId, userId: ctx.userId, type: "CAMBIO_ETAPA", body: body + unitNote },
     });
     return { lead: updated, eventId: event.id as string | null };
-  });
+  }));
 }
 
 /**
@@ -183,19 +186,36 @@ export async function changeStageDetailed(ctx: Ctx, leadId: string, input: Stage
  * compensating stage event that cannot itself be undone).
  */
 export async function undoStageChange(ctx: Ctx, eventId: string) {
-  return withOrg(ctx.orgId, async (tx) => {
-    const ev = await tx.leadStageEvent.findUnique({ where: { id: eventId } });
-    if (!ev) throw new NotFoundError("Cambio no encontrado.");
+  return translatingHoldViolation(() => withOrg(ctx.orgId, async (tx) => {
+    const found = await tx.leadStageEvent.findUnique({ where: { id: eventId } });
+    if (!found) throw new NotFoundError("Cambio no encontrado.");
+    // Serialize with every other change to this lead and its lots (QA2 B31): lead first, then lots by id.
+    await lockLead(tx, found.leadId);
+    const ev = await tx.leadStageEvent.findUniqueOrThrow({ where: { id: eventId } });
     const lead = await requireLead(tx, ctx, ev.leadId);
+    const snap = ev.undoSnapshot as UndoSnapshot | null;
+    await lockUnits(tx, [lead.unitId, snap?.unit?.id]);
     if (ev.userId !== ctx.userId) throw new DomainError("Solo quien lo hizo puede deshacer este cambio.");
     if (ev.undoneAt) throw new DomainError("Este cambio ya se deshizo.");
-    const snap = ev.undoSnapshot as UndoSnapshot | null;
     if (!snap) throw new DomainError("Este cambio ya no se puede deshacer.");
     if (Date.now() - ev.createdAt.getTime() > UNDO_WINDOW_MS) {
       throw new DomainError("Pasó demasiado tiempo para deshacerlo. Mueve al cliente de nuevo a la etapa anterior.");
     }
     const later = await tx.leadStageEvent.count({ where: { leadId: ev.leadId, id: { not: ev.id }, createdAt: { gte: ev.createdAt } } });
     if (later > 0 || lead.stage !== ev.toStage) throw new DomainError("Hubo otro cambio después de este; ya no se puede deshacer.");
+
+    const holds = (HOLD_STAGES as readonly string[]).includes(snap.stage);
+    // Going back to apartado/vendido is only possible if nobody else holds the lot now.
+    if (holds && lead.unitId) {
+      const other = await tx.lead.findFirst({
+        where: { unitId: lead.unitId, id: { not: lead.id }, stage: { in: [...HOLD_STAGES] } },
+        select: { id: true },
+      });
+      if (other) {
+        const u = await tx.unit.findUnique({ where: { id: lead.unitId }, select: { code: true } });
+        throw new DomainError(`No se puede deshacer: la unidad ${u?.code ?? ""} ya fue apartada por otro cliente.`.replace("unidad  ya", "unidad ya"));
+      }
+    }
 
     const date = (v: string | null) => (v ? new Date(v) : null);
     await tx.lead.update({
@@ -211,11 +231,20 @@ export async function undoStageChange(ctx: Ctx, eventId: string) {
         soldAt: date(snap.soldAt),
       },
     });
-    if (snap.unit) {
-      const unit = await tx.unit.findUnique({ where: { id: snap.unit.id } });
-      // Only if nobody changed the unit since our move.
-      if (unit && unit.status === snap.unit.after) await tx.unit.update({ where: { id: unit.id }, data: { status: snap.unit.before } });
+
+    // Reconcile every lot involved from who actually holds it now, in this same transaction.
+    const wasHolding = (HOLD_STAGES as readonly string[]).includes(ev.toStage);
+    for (const unitId of new Set([snap.unit?.id, lead.unitId].filter((x): x is string => !!x))) {
+      const unit = await tx.unit.findUnique({ where: { id: unitId } });
+      if (!unit) continue;
+      const holder = await tx.lead.findFirst({ where: { unitId, stage: { in: [...HOLD_STAGES] } }, select: { stage: true } });
+      let desired: UnitStatus = unit.status;
+      if (holder) desired = holder.stage === "VENDIDO" ? "VENDIDO" : "APARTADO";
+      else if (snap.unit?.id === unitId) desired = unit.status === snap.unit.after ? snap.unit.before : unit.status;
+      else if (wasHolding && !holds && unit.status === "APARTADO") desired = "DISPONIBLE"; // the lot this lead had moved its apartado to
+      if (desired !== unit.status) await tx.unit.update({ where: { id: unitId }, data: { status: desired } });
     }
+
     await tx.leadStageEvent.update({ where: { id: ev.id }, data: { undoneAt: new Date() } });
     await tx.leadStageEvent.create({
       data: { organizationId: ctx.orgId, leadId: ev.leadId, fromStage: ev.toStage, toStage: snap.stage, userId: ctx.userId },
@@ -230,7 +259,7 @@ export async function undoStageChange(ctx: Ctx, eventId: string) {
       },
     });
     return { stage: snap.stage };
-  });
+  }));
 }
 
 export type PipelineFilters = { developmentId?: string; assignedToId?: string; campaignId?: string; q?: string };

@@ -7,6 +7,7 @@ import { DomainError, ForbiddenError, NotFoundError } from "@/server/errors";
 import { CHANNEL_LABEL, SOURCE_LABEL } from "@/lib/labels";
 import { OPEN_STAGES, stalePolicy, staleWhere, upcomingTaskInclude, type StalePolicy } from "@/lib/stale";
 import { notifyLeadAssigned } from "@/server/notify/leads";
+import { holdTakenError, lockLead, lockUnits, translatingHoldViolation } from "./unit-holds";
 
 export type LeadCreateInput = {
   firstName: string;
@@ -321,8 +322,10 @@ export async function updateLead(
   input: Omit<LeadCreateInput, "campaignCode" | "developmentName"> & { assignedToId?: string },
 ) {
   let reassignedTo: string | null = null;
-  const updated = await withOrg(ctx.orgId, async (tx) => {
+  const updated = await translatingHoldViolation(() => withOrg(ctx.orgId, async (tx) => {
+    await lockLead(tx, leadId);
     const lead = await requireLead(tx, ctx, leadId);
+    await lockUnits(tx, [lead.unitId, input.unitId]);
     if (input.campaignId && !(await tx.campaign.findUnique({ where: { id: input.campaignId } }))) {
       throw new NotFoundError("Campaña no encontrada.");
     }
@@ -347,7 +350,7 @@ export async function updateLead(
         const target = await tx.unit.findUnique({ where: { id: newUnitId } });
         if (!target) throw new NotFoundError("Unidad no encontrada.");
         if (target.status !== "DISPONIBLE") {
-          throw new DomainError(`La unidad ${target.code} ya está ${target.status === "VENDIDO" ? "vendida" : "apartada"}.`);
+          throw target.status === "VENDIDO" ? new DomainError(`La unidad ${target.code} ya está vendida.`) : holdTakenError(target.code);
         }
         await tx.unit.update({ where: { id: newUnitId }, data: { status: "APARTADO" } });
         unitNote = ` Apartado movido a la unidad ${target.code}.`;
@@ -392,7 +395,7 @@ export async function updateLead(
       });
     }
     return tx.lead.update({ where: { id: leadId }, data });
-  });
+  }));
   if (reassignedTo) await notifyLeadAssigned(ctx.orgId, leadId, reassignedTo, ctx.userId);
   return updated;
 }
