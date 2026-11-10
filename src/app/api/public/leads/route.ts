@@ -63,7 +63,21 @@ export async function OPTIONS() {
   return new NextResponse(null, { status: 204, headers: CORS });
 }
 
+/**
+ * Accepted answers (new lead, known phone, dropped bot) all wait until the same floor has passed, so
+ * response time cannot tell a visitor whether a phone is already a customer (QA2 B43).
+ */
+const ANSWER_FLOOR_MS = 150;
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
 export async function POST(req: NextRequest) {
+  const started = Date.now();
+  const res = await handle(req);
+  if (res.status === 200 || res.status === 303) await sleep(Math.max(0, ANSWER_FLOOR_MS - (Date.now() - started)) + Math.floor(Math.random() * 20));
+  return res;
+}
+
+async function handle(req: NextRequest) {
   const ip = clientIp(req.headers);
   if (ip) {
     const r = await hitRateLimit(`lead-ip:${ip}`, LIMITS.perIp.limit, LIMITS.perIp.windowMs);

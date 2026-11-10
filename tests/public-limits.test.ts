@@ -87,3 +87,26 @@ describe("public intake limits are safe by default (QA2 B34)", () => {
     expect(await rootPrisma.lead.count({ where: { organizationId: org.org.id, firstName: "Visita" } })).toBe(1);
   });
 });
+
+describe("response time does not reveal whether a phone already exists (QA2 B43)", () => {
+  let org: Awaited<ReturnType<typeof makeOrg>>;
+  beforeAll(async () => {
+    org = await makeOrg("Tiempo Org");
+  });
+  beforeEach(() => resetSharedRateLimits());
+  afterAll(cleanup);
+
+  it("every accepted answer takes at least the same floor, new phone or existing", async () => {
+    const send = async (phone: string) => {
+      const t = performance.now();
+      const res = await POST(post({ nombre: "Tiempo", telefono: phone, acepta_privacidad: true }, { "x-form-key": org.org.leadFormKey }));
+      expect(res.status).toBe(200);
+      return performance.now() - t;
+    };
+    const first = await send("4449700001"); // new
+    const again = await send("4449700001"); // existing
+    expect(first).toBeGreaterThanOrEqual(100);
+    expect(again).toBeGreaterThanOrEqual(100);
+    expect(Math.abs(first - again)).toBeLessThan(80);
+  });
+});
