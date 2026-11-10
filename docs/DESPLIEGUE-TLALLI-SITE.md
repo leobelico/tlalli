@@ -60,3 +60,11 @@ Luego, en el navegador: registra tu cuenta en `/registro`, crea un desarrollo, i
 - **HSTS:** actívalo (Vercel → *Settings → Security*, o `Strict-Transport-Security: max-age=31536000; includeSubDomains`) solo cuando confirmes que todo funciona por HTTPS: el navegador lo recuerda un año.
 - Búsqueda de marca "Tlalli" en el IMPI.
 - Respaldos diarios de Supabase y una prueba de restauración.
+
+## Organización de demostración (opcional, en el Supabase de producción)
+Carga **una** organización inventada ("Demo Tlalli · Lomas del Altiplano": 3 desarrollos con 46 unidades, el plano de lotes del desarrollo Los Pinos, 8 campañas, 120 leads con historial, 45 tareas) con tres accesos `demo.admin@`, `demo.asesor1@` y `demo.asesor2@tlalli.site`. Se vuelve a correr sin duplicar (borra y recrea solo esa organización y esos tres accesos):
+
+```powershell
+$env:DEMO_HOSTED="1"; $env:DEMO_PASSWORD="UnaContraseñaDeAlMenos12"; $env:DATABASE_URL="postgresql://postgres.zvtkyzrwkwailudhcnvb:CONTRASEÑA@aws-0-us-east-2.pooler.supabase.com:5432/postgres"; npx tsx prisma/seed.ts
+```
+Usa el pooler de sesión (5432) para este comando. No necesita la llave de servicio. Bórrala del proyecto cuando entregues el sistema a una desarrolladora real.

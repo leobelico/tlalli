@@ -34,18 +34,27 @@ async function attachDemoPlan(organizationId: string, developmentId: string) {
   }
 }
 
-const PASSWORD = "Demo1234!";
 const DAY = 86_400_000;
 const H = 3_600_000;
 
 const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }) });
 
-if (process.env.NODE_ENV === "production") throw new Error("Refusing to seed in production");
+/**
+ * DEMO_HOSTED=1 loads ONE invented organization ("demo-tlalli") into a hosted Supabase project: auth users are
+ * created with SQL (no service-role key needed) and the password comes from DEMO_PASSWORD. It only ever touches
+ * that organization and its three demo logins. The normal two-organization seed stays local-only.
+ */
+const HOSTED = process.env.DEMO_HOSTED === "1";
+if (process.env.NODE_ENV === "production" && !HOSTED) throw new Error("Refusing to seed in production");
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-if (!url || !serviceKey) throw new Error("NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required");
-if (!/localhost|127\.0\.0\.1/.test(url)) throw new Error("Seed only runs against a local Supabase instance");
-const admin = createClient(url, serviceKey, { auth: { persistSession: false } });
+if (!HOSTED) {
+  if (!url || !serviceKey) throw new Error("NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required");
+  if (!/localhost|127\.0\.0\.1/.test(url)) throw new Error("Seed only runs against a local Supabase instance");
+}
+const admin = HOSTED ? null : createClient(url!, serviceKey!, { auth: { persistSession: false } });
+const PASSWORD = process.env.DEMO_PASSWORD ?? "Demo1234!";
+if (HOSTED && PASSWORD.length < 12) throw new Error("DEMO_HOSTED needs DEMO_PASSWORD with 12+ characters");
 
 // Deterministic pseudo-random so the demo looks the same every run.
 let seed = 42;
@@ -55,8 +64,30 @@ const pick = <T,>(xs: readonly T[]): T => xs[Math.floor(rnd() * xs.length)];
 const FIRST = ["Alejandra", "Bruno", "Carmen", "Diego", "Elena", "Fernando", "Gloria", "Héctor", "Irma", "Joaquín", "Karla", "Luis", "Mariana", "Nicolás", "Olga", "Pablo", "Regina", "Sergio", "Tania", "Ulises"];
 const LAST = ["Aguilar", "Barrios", "Cervantes", "Domínguez", "Espinosa", "Fuentes", "Galván", "Hernández", "Ibarra", "Juárez", "Lara", "Medina", "Návar", "Ortega", "Palacios", "Quintero", "Rangel", "Salazar", "Treviño", "Uribe"];
 
+/** Hosted projects: create a confirmed email/password login directly in the auth schema. */
+async function createAuthUserSql(email: string, name: string): Promise<string> {
+  const rows = await prisma.$queryRaw<{ id: string }[]>`
+    INSERT INTO auth.users (instance_id, id, aud, role, email, encrypted_password, email_confirmed_at,
+      raw_app_meta_data, raw_user_meta_data, created_at, updated_at,
+      confirmation_token, recovery_token, email_change_token_new, email_change)
+    VALUES ('00000000-0000-0000-0000-000000000000', gen_random_uuid(), 'authenticated', 'authenticated', ${email},
+      extensions.crypt(${PASSWORD}, extensions.gen_salt('bf')), now(),
+      '{"provider":"email","providers":["email"]}'::jsonb, ${JSON.stringify({ name })}::jsonb, now(), now(), '', '', '', '')
+    RETURNING id::text`;
+  const id = rows[0].id;
+  await prisma.$executeRaw`
+    INSERT INTO auth.identities (id, user_id, provider_id, identity_data, provider, last_sign_in_at, created_at, updated_at)
+    VALUES (gen_random_uuid(), ${id}::uuid, ${id}, ${JSON.stringify({ sub: id, email, email_verified: true, phone_verified: false })}::jsonb, 'email', now(), now(), now())`;
+  return id;
+}
+
 async function ensureAuthUser(email: string, name: string): Promise<string> {
-  const { data, error } = await admin.auth.admin.createUser({
+  if (HOSTED) {
+    const id = await createAuthUserSql(email, name);
+    await prisma.user.upsert({ where: { id }, update: { name, email }, create: { id, email, name } });
+    return id;
+  }
+  const { data, error } = await admin!.auth.admin.createUser({
     email,
     password: PASSWORD,
     email_confirm: true,
@@ -74,11 +105,16 @@ async function ensureAuthUser(email: string, name: string): Promise<string> {
 async function wipe(slug: string, emails: string[]) {
   await prisma.organization.deleteMany({ where: { slug } });
   const users = await prisma.user.findMany({ where: { email: { in: emails } }, select: { id: true } });
-  for (const u of users) await admin.auth.admin.deleteUser(u.id);
+  if (HOSTED) {
+    await prisma.user.deleteMany({ where: { email: { in: emails } } });
+    await prisma.$executeRaw`DELETE FROM auth.users WHERE email = ANY(${emails})`; // identities cascade
+    return;
+  }
+  for (const u of users) await admin!.auth.admin.deleteUser(u.id);
   await prisma.user.deleteMany({ where: { email: { in: emails } } });
   // Leftover auth users without a profile row (e.g. from a failed earlier run).
-  const { data } = await admin.auth.admin.listUsers({ perPage: 1000 });
-  for (const au of data?.users ?? []) if (au.email && emails.includes(au.email)) await admin.auth.admin.deleteUser(au.id);
+  const { data } = await admin!.auth.admin.listUsers({ perPage: 1000 });
+  for (const au of data?.users ?? []) if (au.email && emails.includes(au.email)) await admin!.auth.admin.deleteUser(au.id);
 }
 
 type LeadPlan = { n: number; stages: Stage[] };
@@ -141,17 +177,26 @@ async function seedOrg(opts: {
   }
 
   const notice = await prisma.privacyNotice.findFirstOrThrow({ where: { organizationId: org.id } });
+  const heldUnits = new Set<string>();
   for (let i = 0; i < opts.leads.n; i++) {
     const stage = opts.leads.stages[i % opts.leads.stages.length];
     const campaign = rnd() < 0.85 ? pick(campaigns) : null;
     const createdAt = new Date(Date.now() - (1 + rnd() * 25) * DAY);
-    const unit = pick(unitIds);
+    let unit = pick(unitIds);
+    const closed = stage === "VENDIDO" || stage === "APARTADO";
+    if (closed) {
+      // One holder per unit (partial unique index), and the unit's status follows its holder.
+      let k = unitIds.indexOf(unit);
+      while (heldUnits.has(unitIds[k % unitIds.length].id)) k++;
+      unit = unitIds[k % unitIds.length];
+      heldUnits.add(unit.id);
+      await prisma.unit.update({ where: { id: unit.id }, data: { status: stage === "VENDIDO" ? "VENDIDO" : "APARTADO" } });
+    }
     const touched = stage !== "NUEVO";
     const firstContactAt = touched ? new Date(createdAt.getTime() + (0.2 + rnd() * 20) * H) : null;
     const lastContactAt = touched ? new Date(Math.min(Date.now(), firstContactAt!.getTime() + rnd() * 6 * DAY)) : null;
     const assignee = pick(asesores);
     const phone = `+52444555${String(opts.phoneBase + i).padStart(4, "0")}`;
-    const closed = stage === "VENDIDO" || stage === "APARTADO";
     const lead = await prisma.lead.create({
       data: {
         organizationId: org.id,
@@ -215,7 +260,46 @@ async function seedOrg(opts: {
   return org;
 }
 
+/** One rich invented organization for a hosted project: 3 developments (one with a site plan), 8 campaigns, ~120 leads. */
+async function mainHosted() {
+  const p = ["NUEVO", "NUEVO", "NUEVO", "CONTACTADO", "CONTACTADO", "CONTACTADO", "CITA_AGENDADA", "CITA_AGENDADA", "VISITA_REALIZADA", "COTIZACION", "COTIZACION", "COTIZACION", "APARTADO", "VENDIDO", "VENDIDO", "PERDIDO", "PERDIDO", "PERDIDO"] as Stage[];
+  const org = await seedOrg({
+    name: "Demo Tlalli · Lomas del Altiplano",
+    slug: "demo-tlalli",
+    plan: "ELITE",
+    people: [
+      { email: "demo.admin@tlalli.site", name: "Mariana Ortega", role: "ADMIN" },
+      { email: "demo.asesor1@tlalli.site", name: "Beto Rangel", role: "ASESOR" },
+      { email: "demo.asesor2@tlalli.site", name: "Lupita Navarro", role: "ASESOR" },
+    ],
+    developments: [
+      { name: "Residencial Los Pinos", address: "Carretera a Guadalajara km 4", units: [{ prefix: "Lote ", count: 24, type: "LOTE", area: 160, price: 520000 }] },
+      { name: "Torre Alameda", address: "Av. Universidad 1200", units: [{ prefix: "Depto ", count: 10, type: "DEPARTAMENTO", area: 78, price: 2350000 }] },
+      { name: "Vista Real", address: "Camino a Soledad 88", units: [{ prefix: "Casa ", count: 12, type: "CASA", area: 120, price: 1650000 }] },
+    ],
+    campaigns: [
+      { name: "Radio Exa", channel: "RADIO", code: "RADIO-EXA", spend: 18000 },
+      { name: "Espectacular Carretera 57", channel: "ESPECTACULAR", code: "ESP-57", spend: 32000 },
+      { name: "Facebook Los Pinos", channel: "FACEBOOK", code: "FB-PINOS", spend: 9500 },
+      { name: "Instagram Vista Real", channel: "INSTAGRAM", code: "IG-VISTA", spend: 7000 },
+      { name: "Google Torre Alameda", channel: "GOOGLE", code: "GOO-TORRE", spend: 12000 },
+      { name: "Portal inmobiliario", channel: "PORTAL", code: "PORTAL-1", spend: 8000 },
+      { name: "Volantes y expo", channel: "EVENTO", code: "EXPO-1", spend: 6000 },
+      { name: "Referidos clientes", channel: "REFERIDO", code: "REF-2026" },
+    ],
+    leads: { n: 120, stages: p },
+    phoneBase: 500,
+  });
+  const [devs, units, leads] = await Promise.all([
+    prisma.development.count({ where: { organizationId: org.id } }),
+    prisma.unit.count({ where: { organizationId: org.id } }),
+    prisma.lead.count({ where: { organizationId: org.id } }),
+  ]);
+  console.log(`Demo listo: ${org.name} · ${devs} desarrollos, ${units} unidades, ${leads} leads. Entradas: demo.admin@tlalli.site, demo.asesor1@tlalli.site, demo.asesor2@tlalli.site`);
+}
+
 async function main() {
+  if (HOSTED) return mainHosted();
   const p = ["NUEVO", "NUEVO", "CONTACTADO", "CONTACTADO", "CITA_AGENDADA", "VISITA_REALIZADA", "COTIZACION", "COTIZACION", "APARTADO", "VENDIDO", "VENDIDO", "PERDIDO", "PERDIDO", "PERDIDO"] as Stage[];
   await seedOrg({
     name: "Desarrollos del Potosí (demo)",
